@@ -218,7 +218,7 @@
 
 // export default ImageGrid;
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./ImageGrid.css";
 import UploadedPhotosList from "./UploadedPhotosList";
 import UploadedVideosList from "./UploadedVideosList";
@@ -241,52 +241,52 @@ interface ImageGridProps {
 }
 
 // New component for rendering fetched photos/videos
-const FetchedMediaGrid: React.FC<{
-  data: any[];
-  contentType: "Photos" | "Videos";
-}> = ({ data, contentType }) => {
-  if (data.length === 0) {
-    return (
-      <div className="no-results-message">
-        <span>😔</span>
-        <p>No {contentType.toLowerCase()} found matching your criteria.</p>
-        <p>Try adjusting your filters or search term!</p>
-      </div>
-    );
-  }
+// const FetchedMediaGrid: React.FC<{
+//   data: any[];
+//   contentType: "Photos" | "Videos";
+// }> = ({ data, contentType }) => {
+//   if (data.length === 0) {
+//     return (
+//       <div className="no-results-message">
+//         <span>😔</span>
+//         <p>No {contentType.toLowerCase()} found matching your criteria.</p>
+//         <p>Try adjusting your filters or search term!</p>
+//       </div>
+//     );
+//   }
 
-  return (
-    <div className="fetched-grid">
-      {data.map((item, index) => (
-        <div
-          key={item.id}
-          className="grid-item"
-          style={{ animationDelay: `${index * 0.05}s` }}
-        >
-          {contentType === "Photos" ? (
-            <img src={item.src} alt={item.alt} loading="lazy" />
-          ) : (
-            <video
-              controls
-              src={item.src}
-              title={item.alt}
-              loading="lazy"
-            ></video>
-          )}
-          <div className="grid-item-content">
-            <h3 className="grid-item-title">{item.alt}</h3>
-            <p className="grid-item-artist">By: {item.artist}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
+//   return (
+//     <div className="fetched-grid">
+//       {data.map((item, index) => (
+//         <div
+//           key={item.id}
+//           className="grid-item"
+//           style={{ animationDelay: `${index * 0.05}s` }}
+//         >
+//           {contentType === "Photos" ? (
+//             <img src={item.src} alt={item.alt} loading="lazy" />
+//           ) : (
+//             <video
+//               controls
+//               src={item.src}
+//               title={item.alt}
+//               // loading="lazy"
+//             ></video>
+//           )}
+//           <div className="grid-item-content">
+//             <h3 className="grid-item-title">{item.alt}</h3>
+//             <p className="grid-item-artist">By: {item.artist}</p>
+//           </div>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
 
 const ImageGrid: React.FC<ImageGridProps> = ({
   contentType,
-  sortOrder,
-  searchTerm,
+  // sortOrder,
+  // searchTerm,
   uploadedPhotos,
   uploadedVideos,
 }: any) => {

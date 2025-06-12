@@ -59,7 +59,7 @@ const UploadedVideosList: React.FC<UploadedVideosListProps> = ({ items }) => {
                 <video
                   controls
                   className="card-img-top uploaded-thumbnail"
-                  loading="lazy"
+                  // loading="lazy"
                 >
                   <source
                     src={item.cloudinaryUrl}

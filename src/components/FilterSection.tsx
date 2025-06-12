@@ -110,15 +110,15 @@ interface FilterSectionProps {
 
 const FilterSection: React.FC<FilterSectionProps> = ({
   onContentTypeChange,
-  onSortChange,
-  onFilterClick,
+  // onSortChange,
+  // onFilterClick,
   onUploadPhotoClick,
   onUploadVideoClick,
 }) => {
   const [activeTab, setActiveTab] = useState<"Photos" | "Videos" | "Users">(
     "Photos"
   );
-  const [sortOrder, setSortOrder] = useState<string>("popular");
+  // const [sortOrder, setSortOrder] = useState<string>("popular");
 
   // Refs for each tab button to measure their dimensions and position
   const photoTabRef = useRef<HTMLButtonElement>(null);
@@ -132,7 +132,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   // Effect to calculate and update indicator position and width
   useEffect(() => {
     const updateIndicator = () => {
-      let activeRef: React.RefObject<HTMLButtonElement> | null = null;
+      let activeRef: React.RefObject<HTMLButtonElement> | null | any = null;
       if (activeTab === "Photos") activeRef = photoTabRef;
       else if (activeTab === "Videos") activeRef = videoTabRef;
       else if (activeTab === "Users") activeRef = userTabRef;
@@ -161,10 +161,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     onContentTypeChange(tab);
   };
 
-  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortOrder(event.target.value);
-    onSortChange(event.target.value);
-  };
+  // const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setSortOrder(event.target.value);
+  //   onSortChange(event.target.value);
+  // };
 
   return (
     <section className="filter-section container">

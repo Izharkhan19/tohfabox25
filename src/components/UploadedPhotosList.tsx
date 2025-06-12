@@ -65,7 +65,7 @@
 
 // export default UploadedPhotosList;
 
-import React, { useEffect } from "react";
+import React from "react";
 import "./UploadedContent.css"; // Import the shared CSS
 
 // Updated UploadedItem interface to reflect data from Cloudinary API response

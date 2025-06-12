@@ -1,0 +1,113 @@
+.hero-section {
+  padding: 80px 0; /* Increased padding for better visual space */
+  margin-bottom: 20px;
+  color: #fff; /* White text for better contrast on images */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Adds shadow for readability */
+  position: relative; /* Needed for pseudo-element overlay */
+
+  /* Background image properties */
+  background-size: cover; /* Cover the entire section */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Don't repeat the image */
+  transition: background-image 1s ease-in-out; /* Smooth transition for image change */
+  animation: fadeInBackground 1s ease-in-out forwards; /* Initial fade in */
+}
+
+/* Optional: Add a subtle overlay for better text readability on various images */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3); /* Dark overlay */
+  z-index: 1; /* Place it above the background image but below content */
+}
+
+.hero-section .container {
+  position: relative; /* Ensure content is above the overlay */
+  z-index: 2;
+}
+
+.hero-section h1 {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 0;
+  text-align: center; /* Center align text on larger screens too for better hero effect */
+  animation: slideInFromTop 1s ease-out forwards; /* Animation for text */
+}
+
+.hero-section h6 {
+  font-size: 20px; /* Slightly larger for better readability */
+  animation: slideInFromBottom 1s ease-out forwards; /* Animation for text */
+  animation-delay: 0.5s; /* Delay the subtitle animation */
+  display: inline-block; /* Required for the animation to work correctly if it's within <i> */
+}
+
+/* Animations */
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* --- Responsive Adjustments --- */
+
+@media (max-width: 1024px) {
+  .hero-section {
+    padding: 60px 0;
+  }
+  .hero-section h1 {
+    font-size: 38px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 50px 0;
+  }
+  .hero-section h1 {
+    font-size: 30px;
+  }
+  .hero-section h6 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 40px 0;
+  }
+  .hero-section h1 {
+    font-size: 24px;
+  }
+  .hero-section h6 {
+    font-size: 16px;
+  }
+}

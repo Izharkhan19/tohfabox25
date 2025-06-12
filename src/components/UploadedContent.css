@@ -1,0 +1,191 @@
+/* src/components/UploadedContent.css */
+
+.uploaded-category {
+    margin-bottom: 50px; /* More space below each section */
+    padding: 20px 0; /* Add some vertical padding */
+}
+
+.uploaded-category h3 {
+    font-size: 2.2em; /* Larger, more prominent heading */
+    color: #333;
+    margin-bottom: 30px; /* More space below heading */
+    text-align: center; /* Center the heading */
+    position: relative;
+    padding-bottom: 10px; /* Space for the underline */
+}
+
+.uploaded-category h3::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 80px; /* Short underline */
+    height: 3px;
+    background-color: #007bff; /* Accent color */
+    border-radius: 2px;
+}
+
+.uploaded-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* Slightly adjusted minmax for better fit */
+    gap: 25px; /* Consistent gap */
+    padding: 0; /* Remove excess padding, container handles it */
+    animation: fadeIn 0.8s ease-out forwards; /* Fade in the whole grid */
+}
+
+.uploaded-item {
+    background-color: #fff;
+    border: 1px solid #e0e0e0; /* Lighter border */
+    border-radius: 10px; /* More rounded corners */
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Softer, deeper shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+    cursor: pointer;
+    display: flex; /* Flex container for content */
+    flex-direction: column; /* Stack image/video and body */
+    height: 100%; /* Ensure cards fill grid height */
+    animation: slideInUp 0.5s ease-out forwards; /* Individual item animation */
+}
+
+.uploaded-item:hover {
+    transform: translateY(-8px); /* More pronounced lift on hover */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Stronger shadow on hover */
+}
+
+.uploaded-thumbnail {
+    width: 100%;
+    height: 200px; /* Slightly taller fixed height for better visuals */
+    object-fit: cover; /* Crop to fit, maintaining aspect ratio */
+    display: block;
+    transition: transform 0.3s ease; /* Smooth zoom for media */
+}
+
+.uploaded-item:hover .uploaded-thumbnail {
+    transform: scale(1.05); /* Subtle zoom on media hover */
+}
+
+.uploaded-item .card-body {
+    padding: 15px;
+    flex-grow: 1; /* Allows card body to take available space */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes text to bottom */
+}
+
+.uploaded-item .card-title {
+    font-size: 1.15em; /* Slightly larger title */
+    font-weight: 600; /* Bolder title */
+    margin-bottom: 8px; /* More space below title */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+}
+
+.uploaded-item .card-text {
+    font-size: 0.85em; /* Slightly smaller text for details */
+    color: #777; /* Softer color for details */
+    margin-top: auto; /* Pushes text to bottom of card body */
+    line-height: 1.4; /* Better readability */
+}
+
+/* --- No Uploads Message --- */
+.no-uploads-message {
+    text-align: center;
+    font-size: 1.4em;
+    color: #888;
+    padding: 60px 20px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    margin: 30px auto;
+    max-width: 600px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.6s ease-out forwards; /* Fade in animation for the message */
+}
+
+.no-uploads-message p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.no-uploads-message span {
+    font-size: 3em; /* Larger emoji */
+    margin-bottom: 20px;
+}
+
+/* --- Keyframe Animations --- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* --- Responsive adjustments --- */
+@media (max-width: 992px) {
+    .uploaded-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+    .uploaded-thumbnail {
+        height: 160px;
+    }
+    .uploaded-category h3 {
+        font-size: 1.9em;
+    }
+}
+
+@media (max-width: 768px) {
+    .uploaded-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Allows 2-3 columns on tablets */
+        gap: 15px;
+    }
+    .uploaded-thumbnail {
+        height: 140px;
+    }
+    .uploaded-category h3 {
+        font-size: 1.6em;
+        margin-bottom: 20px;
+    }
+    .no-uploads-message {
+        font-size: 1.2em;
+        padding: 40px 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .uploaded-grid {
+        grid-template-columns: 1fr; /* Single column on very small screens */
+        gap: 15px;
+    }
+    .uploaded-thumbnail {
+        height: 220px; /* Taller on single column for better view */
+    }
+    .uploaded-category h3 {
+        font-size: 1.4em;
+    }
+    .uploaded-item .card-body {
+        padding: 12px;
+    }
+    .uploaded-item .card-title {
+        font-size: 1.05em;
+    }
+    .uploaded-item .card-text {
+        font-size: 0.8em;
+    }
+}

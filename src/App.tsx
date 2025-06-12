@@ -57,9 +57,9 @@ function App() {
     setFetchStatus("loading");
     setFetchError(null);
     try {
-      // let localURL = "http://localhost:2025/"
-      let liveURL = "https://tohfabox25-backend.onrender.com/";
-      const response = await axios.get(`${liveURL}media`);
+      // let URL = "http://localhost:2025/";
+      let URL = "https://tohfabox25-backend.onrender.com/";
+      const response = await axios.get(`${URL}media`);
       const fetchedItems: UploadedItem[] = response.data.media.map(
         (item: any) => ({
           id: item.publicId,
@@ -131,9 +131,9 @@ function App() {
     setLastUploadedCloudinaryInfo(null);
 
     try {
-      // let localURL = "http://localhost:2025/"
-      let liveURL = "https://tohfabox25-backend.onrender.com/";
-      const response = await axios.post(`${liveURL}upload`, formData, {
+      // let URL: any = "http://localhost:2025/";
+      let URL = "https://tohfabox25-backend.onrender.com/";
+      const response = await axios.post(`${URL}upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

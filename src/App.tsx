@@ -57,7 +57,9 @@ function App() {
     setFetchStatus("loading");
     setFetchError(null);
     try {
-      const response = await axios.get("http://localhost:2025/media");
+      // let localURL = "http://localhost:2025/"
+      let liveURL = "https://tohfabox25-backend.onrender.com/";
+      const response = await axios.get(`${liveURL}media`);
       const fetchedItems: UploadedItem[] = response.data.media.map(
         (item: any) => ({
           id: item.publicId,
@@ -129,22 +131,20 @@ function App() {
     setLastUploadedCloudinaryInfo(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:2025/upload", // Ensure this port matches your backend
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            if (!progressEvent.total) return;
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setUploadStatus(`Uploading: ${percentCompleted}%`);
-          },
-        }
-      );
+      // let localURL = "http://localhost:2025/"
+      let liveURL = "https://tohfabox25-backend.onrender.com/";
+      const response = await axios.post(`${liveURL}upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progressEvent) => {
+          if (!progressEvent.total) return;
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadStatus(`Uploading: ${percentCompleted}%`);
+        },
+      });
 
       const {
         message: backendMessage,

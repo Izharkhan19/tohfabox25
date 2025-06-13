@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
         />
         <span className="logo ms-2">tohfabox25</span>
 
-        <button
+        {/* <button
           className="hamburger-menu"
           onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
           aria-label={isMobileNavOpen ? "Close menu" : "Open menu"}
@@ -41,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           aria-controls="mobile-nav"
         >
           ☰
-        </button>
+        </button> */}
       </div>
 
       {/* Main Search Nav (Centered) */}
@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           </ul> */}
         </nav>
         {/* <span className="more-options">...</span> */}
-        <button className="join-btn">Join</button>
+        {/* <button className="join-btn">Join</button> */}
       </div>
 
       {/* Mobile Navigation - Conditionally Rendered with animation class */}
@@ -90,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
         aria-hidden={!isMobileNavOpen}
       >
         <ul>
-          <li>
+          {/* <li>
             <a href="#" onClick={() => setIsMobileNavOpen(false)}>
               Photos
             </a>
@@ -104,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             <a href="#" onClick={() => setIsMobileNavOpen(false)}>
               License
             </a>
-          </li>
+          </li> 
           <li>
             <button
               className="join-btn"
@@ -112,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             >
               Join
             </button>
-          </li>
+          </li>*/}
         </ul>
       </nav>
     </header>

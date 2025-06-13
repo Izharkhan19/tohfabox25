@@ -1,0 +1,228 @@
+/* --- UploadModal.css (Refined for Gift Hamper Theme) --- */
+
+/* Global Variables for Consistency (ensure these are defined in a central place like index.css or a global vars file) */
+:root {
+    --primary-color: #ff6b6b; /* A warm, inviting red */
+    --accent-color: #ffa07a; /* A soft orange/peach accent */
+    --text-dark: #333333;
+    --text-medium: #666666;
+    --text-light: #999999;
+    --bg-light: #fdfaf6; /* A slightly off-white, warm background */
+    --card-bg: #ffffff;
+    --border-color: #e8e8e8;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+}
+
+/* Override Bootstrap Modal Defaults for Theme */
+.modal-content {
+    background-color: var(--card-bg); /* Use card background for modal */
+    border-radius: 12px; /* Slightly more rounded corners */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* More prominent, soft shadow */
+    border: none; /* Remove default border */
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color); /* Subtle border */
+    padding: 20px 30px; /* More padding */
+    background-color: var(--bg-light); /* Light background for header */
+    border-top-left-radius: 12px; /* Match modal content border-radius */
+    border-top-right-radius: 12px; /* Match modal content border-radius */
+}
+
+.modal-title {
+    font-family: 'Playfair Display', serif; /* Elegant font for title */
+    font-size: 1.8em; /* Prominent title */
+    color: var(--primary-color); /* Primary brand color */
+    font-weight: 700;
+}
+
+.modal-header .btn-close {
+    font-size: 1.2em;
+    color: var(--text-medium);
+    transition: color 0.2s ease;
+}
+
+.modal-header .btn-close:hover {
+    color: var(--primary-color); /* Accent color on close button hover */
+}
+
+.modal-body {
+    padding: 30px; /* Generous padding inside modal body */
+}
+
+/* Upload Section Styling */
+.upload-section {
+    width: 100%;
+    text-align: center;
+}
+
+.upload-section h4 {
+    font-family: 'Montserrat', sans-serif; /* Consistent body font for headings */
+    font-size: 1.3em;
+    color: var(--text-dark);
+    margin-bottom: 25px; /* More space below heading */
+    font-weight: 600;
+}
+
+.drop-area {
+    border: 2px dashed var(--border-color); /* Use border color variable */
+    border-radius: 10px; /* Slightly more rounded */
+    padding: 40px; /* More padding for a larger drop target */
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+    min-height: 180px; /* Increased min-height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-light); /* Light background */
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Subtle inner shadow */
+}
+
+.drop-area:hover,
+.drop-area.drag-over { /* Add a class for drag over state */
+    border-color: var(--accent-color); /* Accent color on hover/drag */
+    background-color: lighten(var(--bg-light), 3%); /* Slightly lighter on hover */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* More pronounced shadow */
+}
+
+.drop-area p {
+    margin: 0;
+    color: var(--text-medium);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.05em; /* Slightly larger text */
+    line-height: 1.4;
+    padding: 10px;
+}
+
+.file-preview {
+    max-width: 100%;
+    max-height: 220px; /* Adjusted max height for preview */
+    object-fit: contain;
+    border-radius: 8px; /* Rounded corners for preview image */
+    display: block;
+    margin: 0 auto 15px auto; /* Centered with bottom margin */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Shadow for preview */
+}
+
+.file-details {
+    background-color: var(--bg-light); /* Use light background for details */
+    padding: 18px; /* More padding */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 0.95em; /* Slightly larger text */
+    color: var(--text-dark);
+    margin-top: 25px; /* Space above details */
+    text-align: left; /* Align text left */
+    box-shadow: inset 0 1px 5px rgba(0,0,0,0.03); /* Subtle inner shadow */
+}
+
+.file-details p {
+    margin: 8px 0; /* More spacing between detail lines */
+    color: var(--text-medium);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.file-details strong {
+    color: var(--text-dark); /* Darker color for strong text */
+}
+
+/* Upload Confirmation Button - Inline */
+.upload-confirm-btn-inline {
+    display: block;
+    margin: 30px auto 0 auto; /* More margin */
+    width: fit-content;
+    background-color: var(--primary-color); /* Primary brand color */
+    color: #fff;
+    padding: 14px 35px; /* Larger padding for a more substantial button */
+    border-radius: 30px; /* Pill shape */
+    font-size: 1.15em; /* Larger font */
+    font-weight: 600; /* Bolder */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2); /* Soft shadow */
+}
+
+.upload-confirm-btn-inline:hover:not(:disabled) {
+    background-color: var(--accent-color); /* Accent color on hover */
+    transform: translateY(-3px); /* Lift effect */
+    box-shadow: 0 8px 20px rgba(255, 160, 122, 0.3); /* More pronounced shadow */
+}
+
+.upload-confirm-btn-inline:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: translateY(0); /* No lift when disabled */
+    box-shadow: none;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color); /* Subtle border */
+    padding: 15px 30px; /* Padding */
+    background-color: var(--bg-light); /* Light background for footer */
+    border-bottom-left-radius: 12px; /* Match modal content border-radius */
+    border-bottom-right-radius: 12px; /* Match modal content border-radius */
+    justify-content: center; /* Center footer buttons if only one */
+}
+
+/* Close button in footer */
+.modal-footer .btn-secondary {
+    background-color: var(--text-light); /* Soft gray for secondary button */
+    border-color: var(--text-light);
+    color: #fff;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: var(--text-medium); /* Darker gray on hover */
+    border-color: var(--text-medium);
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustments for modal */
+@media (max-width: 576px) {
+    .modal-header, .modal-body, .modal-footer {
+        padding: 20px; /* Reduced padding on smaller screens */
+    }
+
+    .modal-title {
+        font-size: 1.5em;
+    }
+
+    .upload-section h4 {
+        font-size: 1.1em;
+        margin-bottom: 20px;
+    }
+
+    .drop-area {
+        padding: 30px;
+        min-height: 150px;
+    }
+
+    .drop-area p {
+        font-size: 1em;
+    }
+
+    .file-details {
+        padding: 15px;
+        font-size: 0.9em;
+        margin-top: 20px;
+    }
+
+    .upload-confirm-btn-inline {
+        padding: 12px 30px;
+        font-size: 1em;
+        margin-top: 25px;
+    }
+
+    .modal-footer .btn-secondary {
+        padding: 8px 20px;
+    }
+}

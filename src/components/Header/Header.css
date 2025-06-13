@@ -1,0 +1,436 @@
+/* --- Header.css (Refined for Gift Hamper Theme) --- */
+
+/* Global Variables for Consistency (ensure these are defined in a central place like index.css or a global vars file) */
+:root {
+    --primary-color: #ff6b6b; /* A warm, inviting red */
+    --accent-color: #ffa07a; /* A soft orange/peach accent */
+    --header-bg: #ffffff; /* White background for header */
+    --header-border: #f0f0f0; /* Lighter border */
+    --text-dark: #333333;
+    --text-medium: #666666;
+    --text-light: #999999;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between; /* Spreads children to ends */
+    align-items: center;
+    padding: 18px 40px; /* Slightly more vertical padding */
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--header-border);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Softer, more elegant shadow */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    flex-wrap: wrap;
+    transition: all 0.3s ease-in-out;
+}
+
+.header-section {
+    display: flex;
+    align-items: center;
+}
+
+/* Header Start Section (Logo + Hamburger) */
+.header-start {
+    /* No specific styles needed here, flex aligns children */
+}
+
+.header-start img { /* Logo image styling */
+    width: 40px; /* Slightly larger logo for presence */
+    height: 40px;
+    border-radius: 50%; /* Make logo round for a softer look */
+    margin-right: 12px; /* Space between image and text */
+    object-fit: cover; /* Ensures image covers the area */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Subtle shadow for the logo */
+}
+
+.header-start img:hover {
+    transform: scale(1.08); /* More pronounced hover */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Logo Text Styling */
+.logo {
+    font-family: 'Playfair Display', serif; /* Elegant serif font */
+    font-size: 2.2em; /* Slightly larger for brand emphasis */
+    font-weight: 700;
+    letter-spacing: -0.02em; /* Adjusted letter spacing */
+    line-height: 1.1;
+    flex-shrink: 0;
+
+    /* Gradient adapted to theme colors */
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Softer text shadow */
+    animation: slideInTohfa 1s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes slideInTohfa {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.95); /* More subtle slide-in */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Hamburger menu (to be uncommented in JSX if needed) */
+.hamburger-menu {
+    display: none; /* Hidden by default */
+    font-size: 32px; /* Larger icon */
+    padding: 8px 12px;
+    margin-left: 20px; /* More spacing from logo */
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-medium);
+    transition: color 0.2s ease, transform 0.2s ease;
+    border-radius: 5px; /* Slight roundness */
+}
+
+.hamburger-menu:hover {
+    color: var(--primary-color); /* Accent color on hover */
+    transform: scale(1.1);
+}
+
+/* --- Main Search Nav (Centered) --- */
+.main-search-nav {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    max-width: 600px; /* Increased max-width for a more prominent search bar */
+    margin: 0 30px; /* More horizontal margin */
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color); /* Lighter border */
+    border-radius: 30px; /* More rounded, pill-like */
+    padding: 10px 22px; /* More padding */
+    background-color: var(--bg-light); /* Light background for input */
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Subtle shadow */
+}
+
+.search-input-wrapper:focus-within {
+    border-color: var(--primary-color); /* Accent color on focus */
+    box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.2); /* Softer glow */
+    background-color: var(--header-bg); /* White background on focus */
+}
+
+.search-input-wrapper input {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 17px; /* Slightly larger font */
+    padding: 0;
+    width: 100%;
+    color: var(--text-dark);
+}
+
+.search-input-wrapper input::placeholder {
+    color: var(--text-light); /* Softer placeholder color */
+}
+
+.search-input-wrapper .search-icon {
+    margin-left: 15px; /* More space */
+    color: var(--text-medium);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 20px; /* Larger icon */
+    transition: color 0.2s ease;
+}
+
+.search-input-wrapper .search-icon:hover {
+    color: var(--primary-color); /* Accent color on hover */
+}
+
+/* Header End Section (Desktop Navigation + Buttons) */
+.header-end {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* More space between items */
+}
+
+.desktop-secondary-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 30px; /* More space between nav items */
+}
+
+.desktop-secondary-nav a {
+    font-family: 'Montserrat', sans-serif; /* Consistent body font */
+    color: var(--text-medium);
+    font-size: 16px;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+    font-weight: 500; /* Slightly bolder */
+}
+
+.desktop-secondary-nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color); /* Accent color for underline */
+    left: 50%;
+    bottom: -8px; /* More space below link */
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+.desktop-secondary-nav a:hover {
+    color: var(--text-dark);
+}
+
+.desktop-secondary-nav a:hover::after {
+    width: 100%;
+}
+
+/* "Join" Button Styling */
+.join-btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 12px 30px; /* Larger button */
+    border-radius: 30px; /* More rounded, pill-like */
+    font-weight: 600; /* Bolder text */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.2); /* Soft shadow */
+}
+
+.join-btn:hover {
+    background-color: var(--accent-color); /* Change to accent color on hover */
+    transform: translateY(-3px); /* More pronounced lift */
+    box-shadow: 0 6px 15px rgba(255, 160, 122, 0.3);
+}
+
+.join-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(255, 107, 107, 0.2);
+}
+
+/* Mobile Secondary Nav (Hidden by Default) */
+.mobile-secondary-nav {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--header-bg);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Stronger shadow for mobile menu */
+    flex-direction: column;
+    z-index: 999;
+    padding: 0;
+    overflow: hidden;
+
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.5s ease-out, opacity 0.4s ease-out; /* Slower transitions */
+}
+
+.mobile-secondary-nav.is-open {
+    max-height: 400px; /* Increased max-height for potential content */
+    opacity: 1;
+    padding-bottom: 20px; /* More padding */
+}
+
+.mobile-secondary-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 20px 0; /* More padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* More space between items */
+    width: 100%;
+}
+
+.mobile-secondary-nav li {
+    width: 100%;
+    text-align: center;
+}
+
+.mobile-secondary-nav a,
+.mobile-secondary-nav .join-btn {
+    display: block;
+    padding: 12px 0; /* More padding */
+    text-decoration: none;
+    color: var(--text-dark); /* Darker text for readability */
+    font-size: 18px; /* Larger font */
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mobile-secondary-nav a:hover {
+    background-color: var(--bg-light); /* Light background on hover */
+    color: var(--primary-color); /* Accent color on hover */
+}
+
+.mobile-secondary-nav .join-btn {
+    width: calc(90% - 30px); /* Wider button */
+    margin: 0 auto;
+    background-color: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.2);
+}
+
+.mobile-secondary-nav .join-btn:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 160, 122, 0.3);
+}
+
+/* --- Responsive Adjustments --- */
+
+@media (max-width: 1024px) {
+    .header {
+        padding: 15px 25px;
+    }
+
+    .logo {
+        font-size: 2em;
+    }
+
+    .header-start img {
+        width: 35px;
+        height: 35px;
+        margin-right: 10px;
+    }
+
+    .main-search-nav {
+        max-width: 450px;
+        margin: 0 20px;
+    }
+
+    .search-input-wrapper {
+        padding: 8px 18px;
+    }
+
+    .search-input-wrapper input {
+        font-size: 16px;
+    }
+
+    .search-input-wrapper .search-icon {
+        font-size: 18px;
+        margin-left: 10px;
+    }
+
+    .desktop-secondary-nav ul {
+        gap: 20px;
+    }
+
+    .header-end {
+        gap: 15px;
+    }
+
+    .join-btn {
+        padding: 10px 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-wrap: wrap;
+        justify-content: space-between; /* Maintain space-between for mobile header elements */
+        padding: 15px;
+    }
+
+    .header-start {
+        width: auto; /* Allow content to dictate width */
+        order: 1; /* First row */
+        margin-bottom: 0; /* Remove margin-bottom */
+    }
+
+    .logo {
+        font-size: 1.8em;
+    }
+
+    .header-start img {
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+    }
+
+    .hamburger-menu {
+        display: block; /* Show hamburger menu on mobile */
+        margin-left: 0; /* Align with right edge */
+    }
+
+    .main-search-nav {
+        width: 100%; /* Full width for search bar */
+        order: 2; /* Second row */
+        margin: 15px 0 0 0; /* Add top margin for separation */
+        max-width: 100%;
+    }
+
+    .header-end {
+        display: none; /* Hide desktop nav container on mobile */
+    }
+
+    .mobile-secondary-nav {
+        transition: max-height 0.4s ease-out, opacity 0.3s ease-out; /* Restore faster transition for mobile menu */
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 10px 10px;
+    }
+
+    .logo {
+        font-size: 1.5em;
+    }
+
+    .header-start img {
+        width: 28px;
+        height: 28px;
+        margin-right: 6px;
+    }
+
+    .main-search-nav {
+        margin-top: 10px;
+    }
+
+    .search-input-wrapper {
+        padding: 6px 15px;
+    }
+
+    .search-input-wrapper input {
+        font-size: 15px;
+    }
+
+    .search-input-wrapper .search-icon {
+        font-size: 16px;
+        margin-left: 8px;
+    }
+
+    .hamburger-menu {
+        font-size: 26px;
+    }
+
+    .mobile-secondary-nav a,
+    .mobile-secondary-nav .join-btn {
+        font-size: 16px;
+        padding: 10px 0;
+    }
+}

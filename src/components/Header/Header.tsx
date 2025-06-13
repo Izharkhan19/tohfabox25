@@ -32,7 +32,8 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           alt="Tohfabox Logo"
         />
         <span className="logo ms-2">tohfabox25</span>
-        {/* <button
+
+        <button
           className="hamburger-menu"
           onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
           aria-label={isMobileNavOpen ? "Close menu" : "Open menu"}
@@ -40,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           aria-controls="mobile-nav"
         >
           ☰
-        </button> */}
+        </button>
       </div>
 
       {/* Main Search Nav (Centered) */}

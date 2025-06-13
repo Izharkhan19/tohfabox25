@@ -1,244 +1,265 @@
 /* --- Filter Section Base Styles --- */
+
+/* Global Variables for Consistency (ensure these are defined in a central place like index.css or a global vars file) */
+:root {
+    --primary-color: #ff6b6b; /* A warm, inviting red */
+    --accent-color: #ffa07a; /* A soft orange/peach accent */
+    --text-dark: #333333;
+    --text-medium: #666666;
+    --text-light: #999999;
+    --bg-light: #fdfaf6; /* A slightly off-white, warm background */
+    --card-bg: #ffffff;
+    --border-color: #e8e8e8;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+}
+
 .filter-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    gap: 15px; /* Add gap for wrapped items */
-    transition: all 0.3s ease-in-out; /* Smooth transitions for layout changes */
+    padding-bottom: 25px; /* Increased padding */
+    margin-bottom: 30px; /* More separation from content below */
+    border-bottom: 1px solid var(--border-color); /* Use theme border color */
+    flex-wrap: wrap;
+    gap: 20px; /* Increased gap */
+    transition: all 0.3s ease-in-out;
 }
 
 /* --- Content Tabs Styling --- */
 .content-tabs {
     display: flex;
-    gap: 15px;
-    flex-wrap: wrap; /* Allow tabs to wrap */
-    position: relative; /* Needed for the active tab indicator */
+    gap: 20px; /* More space between tabs */
+    flex-wrap: wrap;
+    position: relative;
+    padding-bottom: 10px; /* Space for the indicator */
 }
 
 .tab-button {
-    background-color: #e0e0e0;
-    padding: 8px 18px;
-    border-radius: 20px;
+    background-color: var(--bg-light); /* Light background for default tabs */
+    padding: 10px 22px; /* More padding for a softer look */
+    border-radius: 25px; /* More rounded, pill-like shape */
+    font-family: 'Montserrat', sans-serif; /* Consistent body font */
     font-weight: 600;
-    color: #555;
-    border: none; /* Remove default button border */
+    font-size: 1.05em; /* Slightly larger font */
+    color: var(--text-medium);
+    border: 1px solid var(--border-color); /* Subtle border */
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
-    white-space: nowrap; /* Prevent text wrapping inside button */
-    position: relative; /* For potential individual button effects */
-    overflow: hidden; /* Hide overflow for certain effects */
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
 }
 
 .tab-button:hover:not(.active) {
-    background-color: #d0d0d0;
-    transform: translateY(-2px); /* Subtle lift on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow on hover */
+    background-color: #f5f5f5; /* Slightly darker on hover */
+    transform: translateY(-3px); /* More noticeable lift */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12); /* More prominent soft shadow */
+    color: var(--text-dark);
+    border-color: var(--accent-color); /* Accent border on hover */
 }
 
 .tab-button.active {
-    background-color: #007bff; /* A more vibrant active color */
+    background-color: var(--primary-color); /* Primary brand color for active */
     color: #fff;
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4); /* Glow effect for active tab */
-    transform: scale(1.02); /* Slightly larger when active */
+    box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4); /* Glow effect for active tab */
+    transform: scale(1.03); /* Slightly larger when active */
+    border-color: var(--primary-color); /* Solid border matching background */
 }
 
 /* --- Active Tab Indicator (Underline Animation) --- */
 .content-tabs::after {
     content: '';
     position: absolute;
-    bottom: -5px; /* Position below the tabs */
-    height: 3px;
-    background-color: #007bff; /* Color of the underline */
-    width: var(--active-tab-width, 0); /* Dynamic width controlled by JS/React inline style */
-    left: var(--active-tab-left, 0); /* Dynamic position controlled by JS/React inline style */
-    transition: width 0.3s ease-in-out, left 0.3s ease-in-out; /* Smooth transition for indicator */
+    bottom: 0; /* Position exactly at the bottom of the content-tabs div */
+    height: 4px; /* Thicker indicator */
+    background-color: var(--accent-color); /* Accent color for the indicator */
+    width: var(--active-tab-width, 0);
+    left: var(--active-tab-left, 0);
+    transition: width 0.4s ease-in-out, left 0.4s ease-in-out; /* Slower, smoother transition */
     border-radius: 2px;
 }
 
-/* --- Filter Options Styling --- */
+/* --- Filter Options Styling (if you add them later, e.g., Filter Button, Sort Dropdown) --- */
 .filter-options {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
-.filters-btn {
-    background-color: #f8f9fa; /* Lighter background */
-    border: 1px solid #ced4da; /* Subtle border */
-    padding: 8px 15px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+.filters-btn, .sort-by-select {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 10px 18px;
+    border-radius: 8px; /* Slightly rounded for inputs/buttons */
+    color: var(--text-dark);
     font-weight: 500;
-    color: #343a40; /* Darker text for contrast */
     cursor: pointer;
-    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.filters-btn:hover {
-    background-color: #e9ecef;
-    border-color: #a7a7a7;
+.filters-btn:hover, .sort-by-select:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transform: translateY(-2px);
 }
 
 .filters-btn:active {
     transform: translateY(0);
-    background-color: #dee2e6;
 }
-
-.filter-icon {
-    font-size: 16px;
-    transition: transform 0.3s ease; /* Smooth rotation for icon */
-}
-
-/* Example: Rotate icon on click or when filter is active (needs JS toggle) */
-/* .filters-btn.active .filter-icon {
-    transform: rotate(90deg);
-} */
-
 
 .sort-by-select {
-    padding: 8px 15px;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    background-color: #f8f9fa;
     appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-6.4H18.6c-5%200-9.3%201.8-13.2%206.4-3.9%204.6-5.8%2010.5-5.8%2017.4v40c0%206.9%202%2012.8%205.8%2017.4l129.8%20129.8c3.9%203.9%208.9%205.8%2015%205.8s11.1-1.9%2015-5.8l129.8-129.8c3.9-4.6%205.8-10.5%205.8-17.4v-40c0-6.9-2-12.8-5.8-17.4z%22%2F%3E%3C%2Fsvg%3E'); /* Darker arrow for better contrast */
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 10px;
-    padding-right: 30px; /* Space for the custom arrow */
-    cursor: pointer;
-    color: #343a40;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.sort-by-select:hover {
-    border-color: #a7a7a7;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ff6b6b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-6.4H18.6c-5%200-9.3%201.8-13.2%206.4-3.9%204.6-5.8%2010.5-5.8%2017.4v40c0%206.9%202%2012.8%205.8%2017.4l129.8%20129.8c3.9%203.9%208.9%205.8%2015%205.8s11.1-1.9%2015-5.8l129.8-129.8c3.9-4.6%205.8-10.5%205.8-17.4v-40c0-6.9-2-12.8-5.8-17.4z%22%2F%3E%3C%2Fsvg%3E'); /* Primary color arrow */
+    background-position: right 12px center;
+    background-size: 12px;
+    padding-right: 35px;
 }
 
 .sort-by-select:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
 }
 
-/* --- Upload Buttons Styling --- */
+/* Upload Buttons Styling (if you add them later) */
 .upload-buttons-group {
     display: flex;
-    gap: 10px; /* Space between upload buttons */
-    margin-left: auto; /* Push to the right on larger screens */
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    order: 2; /* Keep it after filter options on desktop */
+    gap: 15px; /* Space between upload buttons */
+    margin-left: auto;
+    flex-wrap: wrap;
+    order: 2;
 }
 
 .upload-action-btn {
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    white-space: nowrap; /* Prevent text wrap */
-    transition: all 0.3s ease; /* Smooth transitions for button states */
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    border: none;
+    color: #fff;
 }
 
 .upload-action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.upload-action-btn.btn-success { /* Targeting Bootstrap button colors */
-    background-color: #28a745;
-    border-color: #28a745;
+/* Example: Specific colors for "Upload Photo" and "Upload Video" buttons */
+.upload-action-btn.btn-photo {
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.2);
 }
 
-.upload-action-btn.btn-success:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
+.upload-action-btn.btn-photo:hover {
+    background-color: var(--accent-color);
+    box-shadow: 0 6px 15px rgba(255, 160, 122, 0.3);
 }
 
-.upload-action-btn.btn-info {
-    background-color: #17a2b8;
-    border-color: #17a2b8;
+.upload-action-btn.btn-video {
+    background-color: #4CAF50; /* A distinct green for video */
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.2);
 }
 
-.upload-action-btn.btn-info:hover {
-    background-color: #138496;
-    border-color: #117a8b;
+.upload-action-btn.btn-video:hover {
+    background-color: #45a049;
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
 }
 
 
 /* --- Responsive Adjustments --- */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .filter-section {
-        flex-direction: column; /* Stack items vertically */
-        align-items: flex-start; /* Align to the start */
+        padding-bottom: 20px;
+        margin-bottom: 25px;
+        gap: 15px;
     }
 
     .content-tabs {
-        width: 100%; /* Take full width */
-        justify-content: center; /* Center tabs */
-        margin-bottom: 15px; /* Space between tabs and filters */
+        gap: 15px;
+        padding-bottom: 8px;
     }
 
     .tab-button {
-        flex: 1 1 auto; /* Allow buttons to grow/shrink, distribute space */
-        max-width: 30%; /* Limit width on tablets for 3 buttons */
-        text-align: center;
-        padding: 8px 10px; /* Adjust padding for smaller buttons */
+        padding: 9px 18px;
+        font-size: 1em;
     }
 
-    /* Active tab indicator on smaller screens */
     .content-tabs::after {
-        bottom: 0; /* Align with the bottom of the buttons */
-        height: 2px;
-    }
-
-    .filter-options {
-        width: 100%; /* Take full width */
-        justify-content: space-around; /* Space out filters and sort */
-        margin-bottom: 15px; /* Space above upload buttons */
-    }
-
-    .upload-buttons-group {
-        width: 100%; /* Take full width on mobile */
-        justify-content: space-around; /* Space out buttons */
-        margin-left: 0; /* Remove auto margin */
-        order: 4; /* Place them after filter options */
-    }
-
-    .upload-action-btn {
-        flex: 1 1 45%; /* Allow buttons to share space, roughly 2 per row */
-        text-align: center;
+        height: 3px;
     }
 }
 
-/* For very small screens, make tab buttons stack */
-@media (max-width: 480px) {
-    .tab-button {
-        max-width: 100%; /* Stack tab buttons */
-        margin-bottom: 5px; /* Space between stacked tabs */
-    }
-    .content-tabs {
-        flex-direction: column; /* Stack tabs vertically */
-        gap: 0; /* Remove gap */
-        align-items: center; /* Center stacked tabs */
+@media (max-width: 768px) {
+    .filter-section {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 0; /* Adjust horizontal padding to use container's default */
+        margin-bottom: 20px;
+        border-bottom: none; /* Remove bottom border for a cleaner mobile stack */
     }
 
-    /* Adjust indicator for stacked tabs */
+    .content-tabs {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-color); /* Add border to tabs itself */
+    }
+
+    .tab-button {
+        flex: 1 1 auto;
+        max-width: 48%; /* Allows two buttons per row */
+        text-align: center;
+        padding: 10px 15px;
+        font-size: 0.95em;
+    }
+
+    .filter-options {
+        width: 100%;
+        justify-content: space-around;
+        margin-bottom: 15px;
+    }
+
+    .upload-buttons-group {
+        width: 100%;
+        justify-content: space-around;
+        margin-left: 0;
+        order: 4; /* Place them at the bottom on mobile */
+    }
+
+    .upload-action-btn {
+        flex: 1 1 45%;
+        text-align: center;
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .tab-button {
+        max-width: 100%; /* Stack tab buttons vertically */
+        margin-bottom: 10px; /* Space between stacked tabs */
+    }
+    .content-tabs {
+        flex-direction: column;
+        gap: 0;
+        align-items: center;
+        padding-bottom: 10px;
+    }
+
     .content-tabs::after {
         left: 50%;
         transform: translateX(-50%);
-        width: 80%; /* Make it span most of the width below */
-        bottom: -5px;
+        width: 60%; /* Make it span less for a focused look */
+        bottom: 0; /* Keep it at the very bottom of the tab container */
     }
 
     .upload-action-btn {
         flex: 1 1 100%; /* Stack upload buttons */
+        margin-bottom: 10px; /* Space between stacked upload buttons */
     }
 }

@@ -1,17 +1,39 @@
 /* src/components/UploadedContent.css */
 
+/* Variables for easier theme management */
+:root {
+    --primary-color: #ff6b6b; /* A warm, inviting red */
+    --accent-color: #ffa07a; /* A soft orange/peach accent */
+    --text-dark: #333333;
+    --text-medium: #666666;
+    --text-light: #999999;
+    --bg-light: #fdfaf6; /* A slightly off-white, warm background */
+    --card-bg: #ffffff;
+    --border-color: #e8e8e8;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: 'Montserrat', sans-serif; /* A more modern, elegant font */
+    background-color: var(--bg-light); /* Apply the warm background */
+    color: var(--text-dark);
+}
+
 .uploaded-category {
-    margin-bottom: 50px; /* More space below each section */
-    padding: 20px 0; /* Add some vertical padding */
+    margin-bottom: 60px; /* More space below each section for a luxurious feel */
+    padding: 30px 0; /* Increased vertical padding */
 }
 
 .uploaded-category h3 {
-    font-size: 2.2em; /* Larger, more prominent heading */
-    color: #333;
-    margin-bottom: 30px; /* More space below heading */
-    text-align: center; /* Center the heading */
+    font-family: 'Playfair Display', serif; /* A classic, elegant serif font for headings */
+    font-size: 2.8em; /* Even larger, more prominent heading */
+    color: var(--primary-color); /* Use the primary accent color */
+    margin-bottom: 40px; /* More space below heading */
+    text-align: center;
     position: relative;
-    padding-bottom: 10px; /* Space for the underline */
+    padding-bottom: 15px; /* Space for the underline */
+    letter-spacing: 1.5px; /* Slightly more spaced out letters */
 }
 
 .uploaded-category h3::after {
@@ -20,102 +42,138 @@
     left: 50%;
     bottom: 0;
     transform: translateX(-50%);
-    width: 80px; /* Short underline */
-    height: 3px;
-    background-color: #007bff; /* Accent color */
-    border-radius: 2px;
+    width: 100px; /* Longer underline */
+    height: 4px; /* Thicker underline */
+    background-color: var(--accent-color); /* Accent color */
+    border-radius: 3px;
 }
 
 .uploaded-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* Slightly adjusted minmax for better fit */
-    gap: 25px; /* Consistent gap */
-    padding: 0; /* Remove excess padding, container handles it */
-    animation: fadeIn 0.8s ease-out forwards; /* Fade in the whole grid */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Slightly larger cards */
+    gap: 30px; /* Increased gap for better spacing */
+    padding: 0;
+    animation: fadeIn 0.8s ease-out forwards;
 }
 
 .uploaded-item {
-    background-color: #fff;
-    border: 1px solid #e0e0e0; /* Lighter border */
-    border-radius: 10px; /* More rounded corners */
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color); /* Lighter, more subtle border */
+    border-radius: 12px; /* Even more rounded corners */
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Softer, deeper shadow */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+    box-shadow: 0 6px 20px var(--shadow-light); /* Softer, deeper shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
-    display: flex; /* Flex container for content */
-    flex-direction: column; /* Stack image/video and body */
-    height: 100%; /* Ensure cards fill grid height */
-    animation: slideInUp 0.5s ease-out forwards; /* Individual item animation */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    animation: slideInUp 0.6s ease-out forwards; /* Slightly longer animation */
 }
 
 .uploaded-item:hover {
-    transform: translateY(-8px); /* More pronounced lift on hover */
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Stronger shadow on hover */
+    transform: translateY(-10px); /* More pronounced lift on hover */
+    box-shadow: 0 12px 30px var(--shadow-medium); /* Stronger shadow on hover */
 }
 
 .uploaded-thumbnail {
     width: 100%;
-    height: 200px; /* Slightly taller fixed height for better visuals */
-    object-fit: cover; /* Crop to fit, maintaining aspect ratio */
+    height: 220px; /* Taller fixed height for better visuals */
+    object-fit: cover;
     display: block;
-    transition: transform 0.3s ease; /* Smooth zoom for media */
+    transition: transform 0.3s ease;
 }
 
 .uploaded-item:hover .uploaded-thumbnail {
-    transform: scale(1.05); /* Subtle zoom on media hover */
+    transform: scale(1.08); /* More pronounced zoom on media hover */
 }
 
 .uploaded-item .card-body {
-    padding: 15px;
-    flex-grow: 1; /* Allows card body to take available space */
+    padding: 20px; /* More padding inside the card body */
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Pushes text to bottom */
+    justify-content: space-between;
 }
 
 .uploaded-item .card-title {
-    font-size: 1.15em; /* Slightly larger title */
-    font-weight: 600; /* Bolder title */
-    margin-bottom: 8px; /* More space below title */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.25em; /* Larger title */
+    font-weight: 700; /* Bolder title */
+    margin-bottom: 10px; /* More space below title */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #333;
+    color: var(--text-dark);
 }
 
 .uploaded-item .card-text {
-    font-size: 0.85em; /* Slightly smaller text for details */
-    color: #777; /* Softer color for details */
-    margin-top: auto; /* Pushes text to bottom of card body */
-    line-height: 1.4; /* Better readability */
+    font-size: 0.9em; /* Slightly larger text for details */
+    color: var(--text-medium); /* Softer color for details */
+    margin-top: auto;
+    line-height: 1.5; /* Better readability */
 }
+
+.uploaded-item .btn {
+    font-size: 0.9em;
+    padding: 8px 15px;
+    border-radius: 25px; /* Pill-shaped buttons */
+    transition: all 0.3s ease;
+    margin-top: 15px; /* More space above buttons */
+}
+
+.uploaded-item .btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background-color: transparent;
+}
+
+.uploaded-item .btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: var(--card-bg); /* White text on hover */
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+}
+
+.uploaded-item .btn-danger {
+    background-color: #dc3545; /* Standard danger red */
+    border-color: #dc3545;
+    color: white;
+}
+
+.uploaded-item .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+}
+
 
 /* --- No Uploads Message --- */
 .no-uploads-message {
     text-align: center;
-    font-size: 1.4em;
-    color: #888;
-    padding: 60px 20px;
-    background-color: #f8f8f8;
-    border-radius: 8px;
-    margin: 30px auto;
-    max-width: 600px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    font-size: 1.6em; /* Larger font size */
+    color: var(--text-light); /* Softer color */
+    padding: 80px 30px; /* More padding */
+    background-color: var(--card-bg);
+    border-radius: 15px; /* More rounded */
+    margin: 50px auto; /* More margin */
+    max-width: 700px; /* Wider message box */
+    box-shadow: 0 5px 20px var(--shadow-light); /* Softer shadow */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    animation: fadeIn 0.6s ease-out forwards; /* Fade in animation for the message */
+    animation: fadeIn 0.8s ease-out forwards;
 }
 
 .no-uploads-message p {
-    margin-bottom: 15px;
-    line-height: 1.6;
+    margin-bottom: 20px; /* More space between paragraphs */
+    line-height: 1.8; /* Better readability */
+    font-family: 'Lora', serif; /* A graceful serif font for message text */
 }
 
 .no-uploads-message span {
-    font-size: 3em; /* Larger emoji */
-    margin-bottom: 20px;
+    font-size: 4em; /* Even larger emoji */
+    margin-bottom: 30px; /* More space below emoji */
+    color: var(--accent-color); /* Color the emoji */
 }
 
 /* --- Keyframe Animations --- */
@@ -127,7 +185,7 @@
 @keyframes slideInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px); /* Slide in from further down */
     }
     to {
         opacity: 1;
@@ -139,7 +197,20 @@
 /* --- Responsive adjustments --- */
 @media (max-width: 992px) {
     .uploaded-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 25px;
+    }
+    .uploaded-thumbnail {
+        height: 180px;
+    }
+    .uploaded-category h3 {
+        font-size: 2.2em;
+    }
+}
+
+@media (max-width: 768px) {
+    .uploaded-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 20px;
     }
     .uploaded-thumbnail {
@@ -147,45 +218,40 @@
     }
     .uploaded-category h3 {
         font-size: 1.9em;
-    }
-}
-
-@media (max-width: 768px) {
-    .uploaded-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Allows 2-3 columns on tablets */
-        gap: 15px;
-    }
-    .uploaded-thumbnail {
-        height: 140px;
-    }
-    .uploaded-category h3 {
-        font-size: 1.6em;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
     }
     .no-uploads-message {
-        font-size: 1.2em;
-        padding: 40px 20px;
+        font-size: 1.4em;
+        padding: 60px 25px;
     }
 }
 
 @media (max-width: 576px) {
     .uploaded-grid {
-        grid-template-columns: 1fr; /* Single column on very small screens */
-        gap: 15px;
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
     .uploaded-thumbnail {
-        height: 220px; /* Taller on single column for better view */
+        height: 250px; /* Taller on single column for better view */
     }
     .uploaded-category h3 {
-        font-size: 1.4em;
+        font-size: 1.6em;
     }
     .uploaded-item .card-body {
-        padding: 12px;
+        padding: 15px;
     }
     .uploaded-item .card-title {
-        font-size: 1.05em;
+        font-size: 1.1em;
     }
     .uploaded-item .card-text {
-        font-size: 0.8em;
+        font-size: 0.85em;
+    }
+    .no-uploads-message {
+        font-size: 1.2em;
+        padding: 40px 20px;
+        margin: 30px auto;
+    }
+    .no-uploads-message span {
+        font-size: 3.5em;
     }
 }

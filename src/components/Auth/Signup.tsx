@@ -40,7 +40,10 @@ const Signup = () => {
   return (
     <div className="signin-outer-container">
       <div className="signin-card">
-        <h2 className="signin-heading">Join Us!</h2>
+        <h2 className="signin-heading">
+          Sign-Up
+          <span className="logo ms-2">tohfabox25</span>
+        </h2>
         <form onSubmit={handleSubmit} className="signin-form">
           <div>
             <label htmlFor="UserName" className="form-label">
@@ -115,7 +118,6 @@ const Signup = () => {
             {isLoading ? "Registering..." : "Sign Up"}
           </button>
         </form>
-
         <div className="signin-navigation-section">
           <p className="navigation-text">Already have an account?</p>
           <button onClick={onNavigateToSignin} className="navigation-button">

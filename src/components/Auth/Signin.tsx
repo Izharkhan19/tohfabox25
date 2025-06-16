@@ -45,7 +45,10 @@ const Signin = () => {
   return (
     <div className="signin-outer-container">
       <div className="signin-card">
-        <h2 className="signin-heading">Welcome Back!</h2>
+        <h2 className="signin-heading">
+          Sign-In
+          <span className="logo ms-2">tohfabox25</span>
+        </h2>
         <form onSubmit={handleSubmit} className="signin-form">
           <div>
             <label htmlFor="login-email" className="form-label">
@@ -85,7 +88,6 @@ const Signin = () => {
             {isLoading ? "Signing In..." : "Sign In"}
           </button>
         </form>
-
         <div className="signin-navigation-section">
           <p className="navigation-text">Don't have an account?</p>
           <button onClick={onNavigateToSignup} className="navigation-button">

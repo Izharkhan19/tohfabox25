@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./Header.css";
 import { useNavigate } from "react-router-dom";
 import { SuccessToast } from "../Common/toastUtils";
-import { getItem } from "../Common/CommonServices";
 
 interface HeaderProps {
   onSearch: (searchTerm: string) => void;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import "./UploadModal.css";
-import { ErrorToast, SuccessToast } from "../Common/toastUtils";
+import { ErrorToast } from "../Common/toastUtils";
 
 interface UploadModalProps {
   onClose: () => void;

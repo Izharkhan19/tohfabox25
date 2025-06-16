@@ -113,7 +113,7 @@
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    max-width: 35rem; /* 560px, Adjusted for mobile-first, narrower default */
+    max-width: 40rem; /* 560px, Adjusted for mobile-first, narrower default */
     margin: 0 1.25rem; /* 20px, Adjusted horizontal margin */
     order: 3; /* Default order, will change on mobile */
     min-width: 15rem; /* Ensure search bar is not too small */

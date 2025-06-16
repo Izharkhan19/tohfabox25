@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import "./Header.css";
+import { useNavigate } from "react-router-dom";
+import { SuccessToast } from "../Common/toastUtils";
+import { getItem } from "../Common/CommonServices";
 
 interface HeaderProps {
   onSearch: (searchTerm: string) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ onSearch }) => {
+  const navigate: any = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
 
@@ -19,6 +23,13 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
     if (isMobileNavOpen) {
       setIsMobileNavOpen(false); // Close mobile nav after search
     }
+  };
+
+  const handleLogout = (event: any) => {
+    event.preventDefault();
+    localStorage.clear();
+    navigate("/");
+    SuccessToast("Signout successfully.");
   };
 
   return (
@@ -43,7 +54,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           ☰
         </button> */}
       </div>
-
       {/* Main Search Nav (Centered) */}
       <nav className="main-search-nav">
         <form onSubmit={handleSearchSubmit} className="search-input-wrapper">
@@ -62,26 +72,27 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             🔍
           </button>
         </form>
-      </nav>
 
-      {/* Header Right Section (Desktop Navigation + Buttons) */}
-      <div className="header-section header-end desktop-nav-container">
-        <nav className="desktop-secondary-nav">
-          {/* <ul>
-            <li>
-              <a href="#">Photos</a>
-            </li>
-            <li>
-              <a href="#">Explore</a>
-            </li>
-            <li>
-              <a href="#">License</a>
-            </li>
-          </ul> */}
-        </nav>
-        {/* <span className="more-options">...</span> */}
-        {/* <button className="join-btn">Join</button> */}
-      </div>
+        <button className="ms-3" onClick={handleLogout} title="Signout">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="35"
+            height="35"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            className="icon icon-tabler icons-tabler-outline icon-tabler-logout"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+            <path d="M9 12h12l-3 -3" />
+            <path d="M18 15l3 -3" />
+          </svg>
+        </button>
+      </nav>
 
       {/* Mobile Navigation - Conditionally Rendered with animation class */}
       <nav
@@ -105,14 +116,28 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
               License
             </a>
           </li> 
+          */}
           <li>
-            <button
-              className="join-btn"
-              onClick={() => setIsMobileNavOpen(false)}
-            >
-              Join
+            <button onClick={handleLogout} title="Signout">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-logout"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                <path d="M9 12h12l-3 -3" />
+                <path d="M18 15l3 -3" />
+              </svg>
             </button>
-          </li>*/}
+          </li>
         </ul>
       </nav>
     </header>

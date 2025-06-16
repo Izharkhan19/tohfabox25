@@ -1,13 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./FilterSection.css";
+import PhotoManager from "./pages/PhotoManager";
+import VideoManager from "./pages/VideoManager";
 
-interface FilterSectionProps {
-  onContentTypeChange: (type: "Photos" | "Videos") => void;
-}
-
-const FilterSection: React.FC<FilterSectionProps> = ({
-  onContentTypeChange,
-}) => {
+const FilterSection: any = () => {
   const [activeTab, setActiveTab] = useState<"Photos" | "Videos">("Photos");
 
   const photoTabRef = useRef<HTMLButtonElement>(null);
@@ -39,7 +35,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   const handleTabClick = (tab: "Photos" | "Videos") => {
     setActiveTab(tab);
-    onContentTypeChange(tab);
   };
 
   return (
@@ -54,16 +49,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           className={`tab-button ${activeTab === "Photos" ? "active" : ""}`}
           onClick={() => handleTabClick("Photos")}
         >
-          Photos 30K
+          Photos
         </button>
         <button
           ref={videoTabRef}
           className={`tab-button ${activeTab === "Videos" ? "active" : ""}`}
           onClick={() => handleTabClick("Videos")}
         >
-          Videos 4.5K
+          Videos
         </button>
       </div>
+      {activeTab === "Photos" && <PhotoManager />}
+      {activeTab === "Videos" && <VideoManager />}
     </section>
   );
 };

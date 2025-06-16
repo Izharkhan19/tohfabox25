@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import "./UploadModal.css";
+import { ErrorToast, SuccessToast } from "../Common/toastUtils";
 
 interface UploadModalProps {
   onClose: () => void;
@@ -79,14 +80,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
     if (selectedFile) {
       // Final validation before "upload"
       if (mode === "photo" && !selectedFile.type.startsWith("image/")) {
-        alert(
-          // Replaced with a more robust message box if preferred
+        ErrorToast(
           "Selected file is not an image. Please select an image for photo upload."
         );
         return;
       }
       if (mode === "video" && !selectedFile.type.startsWith("video/")) {
-        alert(
+        ErrorToast(
           // Replaced with a more robust message box if preferred
           "Selected file is not a video. Please select a video for video upload."
         );
@@ -102,7 +102,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       }
       onClose(); // Close modal after successful "upload"
     } else {
-      alert("Please select a file to upload."); // Replaced with a more robust message box if preferred
+      ErrorToast("Please select a file to upload."); // Replaced with a more robust message box if preferred
     }
   };
 

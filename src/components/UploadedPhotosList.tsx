@@ -1,5 +1,6 @@
 import React from "react";
 import "./UploadedContent.css";
+import { checkIsAdminUser } from "./Common/CommonServices";
 
 // New interface matching Cloudinary-style backend response
 interface UploadedItem {
@@ -73,12 +74,14 @@ const UploadedPhotosList: React.FC<UploadedPhotosListProps> = ({
               >
                 View Original
               </a>
-              <button
-                className="btn btn-danger btn-sm ms-2"
-                onClick={() => onDelete(item.publicId)}
-              >
-                Delete
-              </button>
+              {checkIsAdminUser() && (
+                <button
+                  className="btn btn-danger btn-sm ms-2"
+                  onClick={() => onDelete(item.publicId)}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </div>
         ))}

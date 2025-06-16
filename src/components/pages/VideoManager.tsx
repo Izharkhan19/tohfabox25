@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
-import { fetchVideos, deleteMedia, uploadMedia } from "../APIServices/cloudinaryAPI";
+import {
+  fetchVideos,
+  deleteMedia,
+  uploadMedia,
+} from "../APIServices/cloudinaryAPI";
 import UploadedVideosList from "../UploadedVideosList";
 import { Button, Container, Spinner } from "react-bootstrap";
 import type { UploadedItem } from "../../types/types";
 import UploadModal from "../Models/UploadModal";
 import "./CommonManager.css";
+import { checkIsAdminUser } from "../Common/CommonServices";
+import { ErrorToast, SuccessToast } from "../Common/toastUtils";
+import { DeleteConfirmation } from "../Common/AlertPopup";
 
 const VideoManager = () => {
   const [videos, setVideos] = useState<UploadedItem[]>([]);
@@ -16,7 +23,8 @@ const VideoManager = () => {
     try {
       const data = await fetchVideos();
       setVideos(data);
-    } catch (err) {
+    } catch (err: any) {
+      ErrorToast(err?.response?.data?.message);
       console.error("Failed to load videos", err);
     } finally {
       setLoading(false);
@@ -24,29 +32,33 @@ const VideoManager = () => {
   };
 
   const handleDelete = async (publicId: string) => {
-    try {
-      setLoading(true);
-      await deleteMedia(publicId, "video");
-      loadVideos();
-      // setVideos((prev: any) =>
-      //   prev.filter((item: any) => item.publicId !== publicId)
-      // );
-    } catch (err) {
-      console.error("Failed to delete video", err);
-      setLoading(false);
+    let isDelete: any = await DeleteConfirmation();
+    if (isDelete) {
+      try {
+        setLoading(true);
+        let response: any = await deleteMedia(publicId, "video");
+        loadVideos();
+        SuccessToast(response?.data?.message);
+        // setVideos((prev: any) =>
+        //   prev.filter((item: any) => item.publicId !== publicId)
+        // );
+      } catch (err) {
+        console.error("Failed to delete video", err);
+        setLoading(false);
+      }
     }
   };
 
   const handleUpload = async (file: File) => {
     try {
       setLoading(true);
-      // const uploaded =
-      await uploadMedia(file, "video");
+      const uploaded = await uploadMedia(file);
+      SuccessToast(uploaded?.data?.message);
       loadVideos();
       // setVideos((prev: any) => [uploaded, ...prev]);
       setIsUploadModalOpen(false);
     } catch (err: any) {
-      console.error("Upload failed", err);
+      ErrorToast("Upload failed");
       setLoading(false);
     }
   };
@@ -58,10 +70,12 @@ const VideoManager = () => {
   return (
     <Container className="my-4 video-manager-container">
       <div className="video-manager-header">
-        <h4 className="mb-0">Video Library 🎬</h4>{" "}
-        <Button onClick={() => setIsUploadModalOpen(true)}>
-          Upload New Video
-        </Button>{" "}
+        <h4 className="mb-0">Video Library 🎬 : ({videos?.length})</h4>{" "}
+        {checkIsAdminUser() && (
+          <Button onClick={() => setIsUploadModalOpen(true)}>
+            Upload New Video
+          </Button>
+        )}
       </div>
       {loading ? (
         <div className="loading-spinner">

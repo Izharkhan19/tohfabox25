@@ -23,9 +23,9 @@
 
 // export default HeroSection;
 
-
 import React, { useState, useEffect } from "react";
 import "./HeroSection.css"; // Ensure this path is correct
+import { getItem } from "./Common/CommonServices";
 
 // Array of background images.
 // Make sure these paths are correct relative to your project's public folder
@@ -37,12 +37,13 @@ const backgroundImages = [
 ];
 
 const HeroSection: React.FC = () => {
+  let userData = getItem("user");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) =>
-        (prevIndex + 1) % backgroundImages.length
+      setCurrentImageIndex(
+        (prevIndex) => (prevIndex + 1) % backgroundImages.length
       );
     }, 5000); // Change image every 5 seconds
 
@@ -66,6 +67,9 @@ const HeroSection: React.FC = () => {
             </h6>
           </i>
         </div>
+        <h4 className="adjust-user-name">
+          {userData?.userName ? userData?.userName : "N/A"}
+        </h4>
       </div>
     </section>
   );

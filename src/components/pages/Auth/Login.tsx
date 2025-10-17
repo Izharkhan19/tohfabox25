@@ -1,14 +1,14 @@
 // Login.tsx
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useAppDispatch } from "../../store/hooks";
+// import { useAppDispatch } from "../../store/hooks";
 import { auth } from "../../../firebase/config";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const dispatch = useAppDispatch(); // Not directly used, but for future RTK integration
+  // const dispatch = useAppDispatch(); // Not directly used, but for future RTK integration
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

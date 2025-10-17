@@ -5,9 +5,9 @@ import App from "./App";
 import "./index.css";
 import { store } from "./components/store";
 import { StripeProvider } from "./stripe/StripeProvider";
-import { loadStripe } from '@stripe/stripe-js';
+// import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe("pk_test_51SI2GaPiXHYf1iLSrEdCdGoZYf0JrEFQfOmCIuKxxJXpchNv1sgndg49EBn2bgSnzPAOVKthUinI5Qus7iVlltFJ00gnB5H8Ou");
+// const stripePromise = loadStripe("pk_test_51SI2GaPiXHYf1iLSrEdCdGoZYf0JrEFQfOmCIuKxxJXpchNv1sgndg49EBn2bgSnzPAOVKthUinI5Qus7iVlltFJ00gnB5H8Ou");
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

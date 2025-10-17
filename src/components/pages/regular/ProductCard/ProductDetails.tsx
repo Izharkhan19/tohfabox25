@@ -11,6 +11,8 @@ const products: Product[] = [
     price: 29.99,
     image: "https://via.placeholder.com/300",
     description: "A fantastic product for your needs.",
+    category: "A fantastic product for your needs.",
+    
   },
   {
     id: 2,
@@ -18,6 +20,7 @@ const products: Product[] = [
     price: 49.99,
     image: "https://via.placeholder.com/300",
     description: "Another amazing product.",
+    category: "Another amazing product.",
   },
   {
     id: 3,
@@ -25,6 +28,7 @@ const products: Product[] = [
     price: 19.99,
     image: "https://via.placeholder.com/300",
     description: "High-quality product at a great price.",
+    category: "High-quality product at a great price.",
   },
 ];
 

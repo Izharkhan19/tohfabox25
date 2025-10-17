@@ -1,56 +1,42 @@
-/* App.css or a new PWA.css */
-.pwa-update-prompt {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: var(--primary-color); /* Your theme's primary color */
-  color: white;
-  padding: 15px 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.95rem;
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
 }
 
-.pwa-update-prompt p {
-  margin: 0;
-  font-weight: 500;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-.pwa-update-prompt button {
-  background-color: white;
-  color: var(--primary-color);
-  border: none;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.pwa-update-prompt button:hover {
-  background-color: #f0f0f0;
-  transform: translateY(-2px);
-}
-
-/* Responsive adjustments for the prompt */
-@media (max-width: 600px) {
-  .pwa-update-prompt {
-    flex-direction: column;
-    text-align: center;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    transform: translateX(0);
-    width: auto;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
   }
-  .pwa-update-prompt button {
-    width: 100%;
-    margin-top: 10px;
+  to {
+    transform: rotate(360deg);
   }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
 }

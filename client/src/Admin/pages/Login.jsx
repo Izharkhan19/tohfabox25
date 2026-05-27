@@ -90,9 +90,9 @@ export default function Login() {
           {loading ? "Loading..." : "Login"}
         </button>
 
-        <p className="text-sm text-center mt-5 text-gray-300">
+        {/* <p className="text-sm text-center mt-5 text-gray-300">
           Demo: admin@example.com / admin123
-        </p>
+        </p> */}
       </div>
     </div>
   );

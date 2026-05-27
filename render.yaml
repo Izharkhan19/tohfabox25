@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: tohfabox-backend
+    runtime: node
+    plan: free
+    region: ohio
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        scope: build
+      - key: JWT_SECRET
+        scope: build
+      - key: CLOUDINARY_CLOUD_NAME
+        scope: build
+      - key: CLOUDINARY_API_KEY
+        scope: build
+      - key: CLOUDINARY_API_SECRET
+        scope: build
+      - key: STRIPE_SECRET_KEY
+        scope: build
+      - key: STRIPE_PUBLISHABLE_KEY
+        scope: build
+      - key: ADMIN_EMAIL
+        scope: build
+      - key: ADMIN_PASSWORD
+        scope: build
+      - key: JWT_EXPIRE
+        value: 30d

@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 // @route   POST /api/orders
 // @access  Private
 
-// const stripe = require("stripe")("sk_test_51OoQQiSDMvvYMBnMA7nLzyEiUiQP8f7VWbjR9VPNrqH64TaVoHmWx6OMgcoqAOpMUx6j0MamPOlfF5AIpOkSUs1n00Sq1qncmk")
+// const stripe = require("stripe")("")
 
 // let makePayment = () => {
 //     const { product, token } = req.body

@@ -6,16 +6,28 @@ const sendEmail = async (options) => {
     let transporter;
 
     if (process.env.SENDER_EMAIL && process.env.SENDER_PASSWORD) {
-        const port = parseInt(process.env.SMTP_PORT || 587);
-        transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || "smtp.ethereal.email",
-            port: port,
-            secure: port === 465, // Must be true for 465, false for 587
-            auth: {
-                user: process.env.SENDER_EMAIL,
-                pass: process.env.SENDER_PASSWORD,
-            },
-        });
+        // If SMTP_SERVICE is defined (e.g. 'gmail'), use the service shorthand.
+        // This is much more reliable on cloud providers like Render.
+        if (process.env.SMTP_SERVICE) {
+            transporter = nodemailer.createTransport({
+                service: process.env.SMTP_SERVICE, // e.g. 'gmail'
+                auth: {
+                    user: process.env.SENDER_EMAIL,
+                    pass: process.env.SENDER_PASSWORD,
+                },
+            });
+        } else {
+            const port = parseInt(process.env.SMTP_PORT || 587);
+            transporter = nodemailer.createTransport({
+                host: process.env.SMTP_HOST || "smtp.ethereal.email",
+                port: port,
+                secure: port === 465, // Must be true for 465, false for 587
+                auth: {
+                    user: process.env.SENDER_EMAIL,
+                    pass: process.env.SENDER_PASSWORD,
+                },
+            });
+        }
     } else {
         // Automatically generate a test account if no credentials are provided
         let testAccount = await nodemailer.createTestAccount();

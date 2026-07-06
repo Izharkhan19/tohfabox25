@@ -6,10 +6,11 @@ const sendEmail = async (options) => {
     let transporter;
 
     if (process.env.SENDER_EMAIL && process.env.SENDER_PASSWORD) {
+        const port = parseInt(process.env.SMTP_PORT || 587);
         transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST || "smtp.ethereal.email",
-            port: process.env.SMTP_PORT || 587,
-            secure: false, // true for 465, false for other ports
+            port: port,
+            secure: port === 465, // Must be true for 465, false for 587
             auth: {
                 user: process.env.SENDER_EMAIL,
                 pass: process.env.SENDER_PASSWORD,

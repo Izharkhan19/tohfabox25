@@ -129,6 +129,12 @@ export const registerUser = (userData) =>
 export const loginUser = (credentials) =>
     handleApiCall(() => api.post("/auth/login", credentials));
 
+export const forgotPassword = (identifier) =>
+    handleApiCall(() => api.post("/auth/forgot-password", { identifier }));
+
+export const resetPassword = (token, password) =>
+    handleApiCall(() => api.put(`/auth/reset-password/${token}`, { password }));
+
 export const getAllUser = () =>
     handleApiCall(() => api.get("/auth/users"));
 

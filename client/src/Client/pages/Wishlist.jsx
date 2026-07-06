@@ -14,6 +14,7 @@ import {
 } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 export default function Wishlist() {
     const [wishlistItems, setWishlistItems] = useState([]);
@@ -70,13 +71,23 @@ export default function Wishlist() {
     const handleClearAll = async () => {
         if (wishlistItems.length === 0) return;
 
-        if (!confirm("Remove all items from your collection?")) return;
+        const result = await Swal.fire({
+            title: 'Clear Wishlist?',
+            text: "Remove all items from your collection?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#12343b',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, clear it!'
+        });
 
-        const result = await clearWishlist();
-        if (result?.success) {
+        if (!result.isConfirmed) return;
+
+        const apiResult = await clearWishlist();
+        if (apiResult?.success) {
             setWishlistItems([]);
         } else {
-            toast.error(result?.message || "Failed to clear wishlist");
+            toast.error(apiResult?.message || "Failed to clear wishlist");
         }
     };
 

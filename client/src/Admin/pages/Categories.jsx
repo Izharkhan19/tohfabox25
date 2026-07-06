@@ -303,6 +303,7 @@
 // }
 
 import { useEffect, useState } from "react";
+import Swal from 'sweetalert2';
 import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 import {
   getCategories,
@@ -391,15 +392,20 @@ export default function Categories() {
   };
 
   const handleDelete = async (id) => {
-    if (
-      !window.confirm(
-        "Delete this category? Products will become uncategorized."
-      )
-    )
-      return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Delete this category? Products will become uncategorized.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
 
-    const result = await removeCategory(id);
-    if (result?.success) {
+    if (!result.isConfirmed) return;
+
+    const apiResult = await removeCategory(id);
+    if (apiResult?.success) {
       fetchCategories();
     }
   };

@@ -17,6 +17,7 @@ import {
 } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 export default function Cart() {
     const [cartItems, setCartItems] = useState([]);
@@ -92,13 +93,23 @@ export default function Cart() {
     };
 
     const clearAll = async () => {
-        if (!confirm("Are you sure you want to clear your entire cart?")) return;
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to clear your entire cart?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#12343b',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, clear it!'
+        });
 
-        const result = await clearCart();
-        if (result?.success) {
+        if (!result.isConfirmed) return;
+
+        const apiResult = await clearCart();
+        if (apiResult?.success) {
             setCartItems([]);
         } else {
-            toast.error(result?.message || "Failed to clear cart");
+            toast.error(apiResult?.message || "Failed to clear cart");
         }
     };
 

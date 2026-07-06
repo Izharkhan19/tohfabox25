@@ -85,12 +85,12 @@ export default function Login() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Email Address or Phone Number</label>
                             <input
-                                type="email"
+                                type="text"
                                 required
                                 className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
-                                placeholder="you@example.com"
+                                placeholder="you@example.com or +1 (555) 000-0000"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             />
@@ -113,9 +113,9 @@ export default function Login() {
                                 <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-resin-blue focus:ring-resin-blue" />
                                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
                             </label>
-                            <a href="#" className="text-sm font-bold text-resin-blue hover:text-resin-dark transition-colors">
+                            <Link to="/forgot-password" className="text-sm font-bold text-resin-blue hover:text-resin-dark transition-colors">
                                 Forgot password?
-                            </a>
+                            </Link>
                         </div>
 
                         <button

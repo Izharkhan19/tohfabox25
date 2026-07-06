@@ -3,9 +3,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 // Load environment variables
 dotenv.config();
+
+// Initialize external services
+// No external services currently running locally (Redis and RabbitMQ removed)
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -17,6 +21,10 @@ const cartRoutes = require('./routes/cart')
 
 const app = express();
 
+// Trust proxy if you are behind a reverse proxy (e.g. Render, Heroku, AWS, Nginx)
+// This is important for the Rate Limiter to get the correct IP address of the client
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors({
   origin: true,
@@ -26,6 +34,19 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Global Rate limiting middleware applied to all API routes
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes'
+  }
+});
+app.use('/api', apiLimiter);
 
 // Static folder for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

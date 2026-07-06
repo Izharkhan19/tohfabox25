@@ -240,6 +240,69 @@ export default function OrderList() {
 
                                         {isExpanded && (
                                             <div className="border-t border-gray-100 p-5 sm:p-6 bg-gray-50/50">
+                                                {/* Stepper tracking component */}
+                                                {(() => {
+                                                    const steps = ["Pending", "Processing", "Shipped", "Delivered"];
+                                                    const getStepIndex = (s) => {
+                                                        switch (s?.toLowerCase()) {
+                                                            case "pending": return 0;
+                                                            case "processing": return 1;
+                                                            case "shipped": return 2;
+                                                            case "delivered": return 3;
+                                                            case "cancelled": return -1;
+                                                            default: return 0;
+                                                        }
+                                                    };
+                                                    const currentStep = getStepIndex(order.status);
+
+                                                    if (currentStep === -1) {
+                                                        return (
+                                                            <div className="flex items-center justify-center py-6 mb-8 bg-white border border-red-100 rounded-3xl shadow-sm">
+                                                                <div className="text-red-500 px-6 py-2 rounded-full font-black tracking-widest text-sm flex items-center gap-2">
+                                                                    <XCircleIcon className="w-6 h-6" />
+                                                                    Order Cancelled
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <div className="py-6 mb-10 px-4 sm:px-10">
+                                                            <div className="relative max-w-2xl mx-auto">
+                                                                {/* Background line */}
+                                                                <div className="absolute left-4 right-4 top-5 transform -translate-y-1/2 h-1 bg-gray-200 z-0 rounded-full hidden sm:block"></div>
+                                                                {/* Active line */}
+                                                                <div 
+                                                                    className="absolute left-4 top-5 transform -translate-y-1/2 h-1 bg-green-500 z-0 rounded-full transition-all duration-500 hidden sm:block" 
+                                                                    style={{ width: `calc(${(currentStep / (steps.length - 1)) * 100}% - 32px)` }}
+                                                                ></div>
+                                                                
+                                                                <div className="flex flex-col sm:flex-row justify-between gap-6 sm:gap-0 relative z-10">
+                                                                    {steps.map((step, index) => {
+                                                                        const isCompleted = index <= currentStep;
+                                                                        const isCurrent = index === currentStep;
+                                                                        
+                                                                        return (
+                                                                            <div key={step} className="flex sm:flex-col items-center gap-4 sm:gap-2">
+                                                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-[3px] bg-white transition-all duration-300 flex-shrink-0 ${isCompleted ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)] text-green-500' : 'border-gray-200 text-gray-300'}`}>
+                                                                                    {isCompleted ? (
+                                                                                        <CheckCircleIcon className="w-6 h-6" />
+                                                                                    ) : (
+                                                                                        <div className="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+                                                                                    )}
+                                                                                </div>
+                                                                                <div className={`text-sm font-black uppercase tracking-wider ${isCompleted ? 'text-gray-800' : 'text-gray-400'} ${isCurrent ? 'text-green-600' : ''}`}>
+                                                                                    {step}
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
+
                                                 <div className="grid md:grid-cols-2 gap-8">
                                                     <div>
                                                         <h4 className="text-xs uppercase tracking-widest font-black text-gray-500 mb-4 border-b border-gray-200 pb-2">

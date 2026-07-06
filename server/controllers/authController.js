@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -16,10 +18,10 @@ exports.register = async (req, res) => {
         const { name, email, password, phone } = req.body;
 
         // Validation
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !phone) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide name, email, and password'
+                message: 'Please provide name, email, password, and phone number'
             });
         }
 
@@ -37,7 +39,7 @@ exports.register = async (req, res) => {
             name,
             email,
             password,
-            phone
+            phone: phone || undefined
         });
 
         // Generate token
@@ -72,18 +74,21 @@ exports.register = async (req, res) => {
 // @access  Public
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { identifier, email, password } = req.body;
+        const loginId = identifier || email;
 
         // Validation
-        if (!email || !password) {
+        if (!loginId || !password) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide email and password'
+                message: 'Please provide email/phone and password'
             });
         }
 
         // Check for user (include password for comparison)
-        const user = await User.findOne({ email }).select('+password');
+        const user = await User.findOne({ 
+            $or: [{ email: loginId }, { phone: loginId }] 
+        }).select('+password');
         if (!user) {
             return res.status(400).json({
                 success: false,
@@ -257,5 +262,141 @@ exports.changePassword = async (req, res) => {
             message: 'Error changing password',
             error: error.message
         });
+    }
+};
+
+// @desc    Forgot password
+// @route   POST /api/auth/forgot-password
+// @access  Public
+exports.forgotPassword = async (req, res) => {
+    try {
+        const { identifier } = req.body; // 'identifier' comes from the API request payload
+        if (!identifier) {
+            return res.status(400).json({ success: false, message: 'Please provide your email address' });
+        }
+
+        const user = await User.findOne({ email: identifier });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'There is no user with that email address' });
+        }
+
+        console.log("object", user)
+        // Get reset token
+        const resetToken = user.getResetPasswordToken();
+        await user.save({ validateBeforeSave: false });
+
+        // Create reset URL
+        const frontendUrl = process.env.FRONTEND_URL || 'https://tohfabox25.vercel.app' || "http://localhost:5173";
+        const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
+
+        const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
+
+        const emailHtml = `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #eaeaec; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h1 style="color: #4f46e5; margin: 0; font-size: 28px; letter-spacing: -0.5px;">Tohfabox25</h1>
+                </div>
+                
+                <h3 style="color: #1f2937; font-size: 20px; margin-bottom: 15px;">Password Reset Request</h3>
+                
+                <p style="color: #4b5563; line-height: 1.6; font-size: 16px;">
+                    Hello <strong>${user.name || 'User'}</strong>,<br><br>
+                    We received a request to reset the password associated with your account. 
+                    If you made this request, please click the button below to choose a new password. 
+                    For your security, this link will expire in exactly <strong>10 minutes</strong>.
+                </p>
+                
+                <div style="text-align: center; margin: 35px 0;">
+                    <a href="${resetUrl}" style="background-color: #4f46e5; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);">
+                        Reset Password
+                    </a>
+                </div>
+                
+                <p style="color: #6b7280; line-height: 1.6; font-size: 14px;">
+                    If the button above does not work, you can copy and paste the following link into your web browser:<br>
+                    <a href="${resetUrl}" style="color: #4f46e5; word-break: break-all;">${resetUrl}</a>
+                </p>
+                
+                <hr style="border: none; border-top: 1px solid #eaeaec; margin: 30px 0;">
+                
+                <p style="color: #9ca3af; font-size: 12px; text-align: center; line-height: 1.5;">
+                    If you did not request a password reset, please safely ignore this email. Your password will remain unchanged.<br><br>
+                    &copy; ${new Date().getFullYear()} Tohfabox25. All rights reserved.
+                </p>
+            </div>
+        `;
+
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: 'Tohfabox25 - Password Reset Instructions',
+                message,
+                html: emailHtml
+            });
+
+            res.status(200).json({ success: true, data: 'Email sent' });
+        } catch (err) {
+            console.error('Email could not be sent', err);
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+            await user.save({ validateBeforeSave: false });
+            return res.status(500).json({ success: false, message: 'Email could not be sent', error: err.message });
+        }
+    } catch (error) {
+        console.error('Forgot Password error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    }
+};
+
+// @desc    Reset password
+// @route   PUT /api/auth/reset-password/:token
+// @access  Public
+exports.resetPassword = async (req, res) => {
+    try {
+        // Get hashed token
+        const resetPasswordToken = crypto
+            .createHash('sha256')
+            .update(req.params.token)
+            .digest('hex');
+
+        const user = await User.findOne({
+            resetPasswordToken,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+        }
+
+        if (!req.body.password) {
+            return res.status(400).json({ success: false, message: 'Please provide a new password' });
+        }
+
+        // Set new password
+        user.password = req.body.password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        const token = generateToken(user._id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Password reset successfully',
+            data: {
+                user: {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    phone: user.phone
+                },
+                token
+            }
+        });
+    } catch (error) {
+        console.error('Reset Password error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 };

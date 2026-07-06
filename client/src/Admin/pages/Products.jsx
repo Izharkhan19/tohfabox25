@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { deleteProduct, getProducts } from "../../api-services/apiService";
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -30,8 +31,17 @@ export default function Products() {
 
   /* -------------------- DELETE PRODUCT -------------------- */
   const deleteProductById = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?"))
-      return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete this product?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     setDeletingId(id);
     const resData = await deleteProduct(id);

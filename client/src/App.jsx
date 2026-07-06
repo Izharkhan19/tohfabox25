@@ -148,6 +148,8 @@ import ClientLayout from "./Client/components/Layout";
 // === Auth ===
 import Login from "./Client/pages/Login"; // Your client login page
 import Register from "./Client/pages/Register";
+import ForgotPassword from "./Client/pages/ForgotPassword";
+import ResetPassword from "./Client/pages/ResetPassword";
 
 // ==================== AUTH HELPERS ====================
 
@@ -252,6 +254,8 @@ export default function App() {
         {/* ==================== CLIENT AUTH ==================== */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* ==================== CLIENT PUBLIC + PROTECTED ==================== */}
         <Route path="/" element={<ClientLayout user={user} />}>
@@ -295,19 +299,26 @@ export default function App() {
           />
           <Route path="order-success" element={<OrderSuccess />} />
 
-          {/* 404 */}
+          {/* 404 / Under Construction */}
           <Route
             path="*"
             element={
-              <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                  <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
-                  <p className="text-2xl text-gray-600 mb-8">Page not found</p>
+              <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+                <div className="max-w-lg w-full bg-white rounded-3xl shadow-xl p-10 text-center border border-gray-100">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                    <svg className="w-12 h-12 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  <h1 className="text-3xl font-serif font-bold text-gray-800 mb-4">Work in Progress</h1>
+                  <p className="text-gray-600 mb-8 leading-relaxed">
+                    We are currently crafting this section of the web application. Please check back soon as we put the finishing touches on our masterpiece!
+                  </p>
                   <Link
                     to="/"
-                    className="text-amber-600 hover:underline text-lg font-medium"
+                    className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-sm font-bold rounded-full text-white bg-gray-900 hover:bg-gray-800 transition-all shadow-md uppercase tracking-widest"
                   >
-                    ← Back to Home
+                    Return to Home
                   </Link>
                 </div>
               </div>

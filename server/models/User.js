@@ -84,6 +84,8 @@
 // models/User.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -122,7 +124,8 @@ const userSchema = new mongoose.Schema({
     phone: {
         type: String,
         trim: true,
-        sparse: true // Allows null but unique if exists
+        required: [true, 'Phone number is required'],
+        unique: true
     },
 
     // Shipping address (can be multiple later)
@@ -203,6 +206,23 @@ userSchema.pre('save', async function (next) {
 // Compare password
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Generate and hash password token
+userSchema.methods.getResetPasswordToken = function() {
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Hash token and set to resetPasswordToken field
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    // Set expire (10 minutes)
+    this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
 };
 
 // Hide sensitive fields

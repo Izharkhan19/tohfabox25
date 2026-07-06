@@ -8,6 +8,7 @@ import {
 } from "../../api-services/apiService";
 import { getDateInFormat } from "../../utils/commonService";
 import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
 
 export default function Clients() {
   const [users, setUsers] = useState([]);
@@ -36,8 +37,17 @@ export default function Clients() {
 
   /* -------------------- DELETE PRODUCT -------------------- */
   const deleteProductById = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?"))
-      return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete this product?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     setDeletingId(id);
     const resData = await deleteProduct(id);

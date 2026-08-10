@@ -104,6 +104,7 @@ export default function ClientLayout() {
     const navLinks = [
         { to: "/", label: "Home" },
         { to: "/products", label: "Shop Art" },
+        { to: "/gallery", label: "Gallery" },
     ];
 
     const actionLinks = [
@@ -347,6 +348,7 @@ export default function ClientLayout() {
                         <h3 className="text-lg font-bold mb-6 tracking-widest uppercase text-[#e1b382]">Explore</h3>
                         <div className="flex flex-col gap-4 text-[#fdfbf9]/80 font-medium">
                             <Link to="/products" className="hover:text-[#e1b382] transition-colors">All Art Pieces</Link>
+                            <Link to="/gallery" className="hover:text-[#e1b382] transition-colors">Gallery</Link>
                             <Link to="/custom-orders" className="hover:text-[#e1b382] transition-colors">Custom Orders</Link>
                             <Link to="/about" className="hover:text-[#e1b382] transition-colors">Our Story</Link>
                         </div>

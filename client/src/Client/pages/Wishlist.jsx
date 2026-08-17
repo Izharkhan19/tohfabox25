@@ -212,6 +212,10 @@ export default function Wishlist() {
                                         <img
                                             src={image}
                                             alt={name}
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = '/logo.png';
+                                            }}
                                             className="w-full h-full object-cover rounded-xl"
                                         />
                                     </Link>

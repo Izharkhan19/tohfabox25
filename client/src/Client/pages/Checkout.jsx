@@ -359,8 +359,12 @@ export default function Checkout() {
                     <div key={item._id} className="flex gap-4">
                       <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0">
                         <img
-                          src={product.images?.[0]?.url || "https://via.placeholder.com/300"}
+                          src={product.images?.[0]?.url || "/logo.png"}
                           alt={product.name}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = '/logo.png';
+                          }}
                           className="w-full h-full object-cover"
                         />
                       </div>

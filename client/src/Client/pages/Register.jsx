@@ -157,6 +157,10 @@ export default function Register() {
             <div className="hidden lg:block lg:w-1/2 relative order-1 lg:order-2">
                 <img referrerPolicy="no-referrer" 
                     src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1920&fit=crop" 
+                    onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/logo.png';
+                    }}
                     alt="Resin Art Background" 
                     className="absolute inset-0 w-full h-full object-cover"
                 />

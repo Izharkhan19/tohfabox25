@@ -228,8 +228,12 @@ export default function Cart() {
                                 >
                                     <Link to={`/products/${product._id}`} className="w-full sm:w-32 h-32 flex-shrink-0">
                                         <img
-                                            src={product.images?.[0]?.url || "https://via.placeholder.com/300?text=No+Image"}
+                                            src={product.images?.[0]?.url || "/logo.png"}
                                             alt={product.name}
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = '/logo.png';
+                                            }}
                                             className="w-full h-full object-cover rounded-xl"
                                         />
                                     </Link>

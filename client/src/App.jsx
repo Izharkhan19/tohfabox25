@@ -240,7 +240,25 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer
+        position="bottom-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName="mobile-toast"
+        bodyClassName="mobile-toast-body"
+        style={{
+          width: "min(92vw, 22rem)",
+          left: "50%",
+          bottom: "1rem",
+          transform: "translateX(-50%)",
+        }}
+      />
       <Routes>
         {/* ==================== ADMIN PORTAL ==================== */}
         <Route path="/admin/login" element={<AdminLogin />} />

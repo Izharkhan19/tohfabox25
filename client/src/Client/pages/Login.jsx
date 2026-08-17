@@ -56,8 +56,8 @@ export default function Login() {
                     referrerPolicy="no-referrer"
                     src="/fallback-demo.svg"
                     onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://images.unsplash.com/photo-1615529328331-f8917597711f?w=1920&fit=crop';
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/logo.png';
                     }}
                     alt="Resin Art Background"
                     className="absolute inset-0 w-full h-full object-cover"

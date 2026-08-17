@@ -313,8 +313,12 @@ export default function OrderList() {
                                                                 <div key={item._id || Math.random()} className="flex gap-4 bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
                                                                     <div className="w-14 h-14 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
                                                                         <img
-                                                                            src={item.image || "https://via.placeholder.com/150"}
+                                                                            src={item.image || "/logo.png"}
                                                                             alt={item.name || "Product"}
+                                                                            onError={(e) => {
+                                                                                e.currentTarget.onerror = null;
+                                                                                e.currentTarget.src = '/logo.png';
+                                                                            }}
                                                                             className="w-full h-full object-cover"
                                                                         />
                                                                     </div>

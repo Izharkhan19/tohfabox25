@@ -90,6 +90,14 @@ export default function Login() {
           {loading ? "Loading..." : "Login"}
         </button>
 
+        <button
+          type="button"
+          onClick={() => navigate("/login")}
+          className="w-full mt-4 bg-transparent border border-white/40 py-3 rounded-lg text-white font-semibold hover:bg-white/10 transition"
+        >
+          Go to Client Login
+        </button>
+
         {/* <p className="text-sm text-center mt-5 text-gray-300">
           Demo: admin@example.com / admin123
         </p> */}

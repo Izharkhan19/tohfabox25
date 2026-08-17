@@ -20,6 +20,39 @@
   }
 }
 
+.Toastify__toast-container {
+  width: min(92vw, 22rem) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  bottom: 1rem !important;
+  top: auto !important;
+  padding: 0 !important;
+}
+
+.mobile-toast {
+  border-radius: 1rem !important;
+  min-height: 3.25rem !important;
+  padding: 0.7rem 0.9rem !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15) !important;
+}
+
+.mobile-toast-body {
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+@media (min-width: 768px) {
+  .Toastify__toast-container {
+    left: auto !important;
+    right: 1.25rem !important;
+    transform: none !important;
+    width: 22rem !important;
+  }
+}
+
 /* Glassmorphism utilities */
 @layer utilities {
   .glass {

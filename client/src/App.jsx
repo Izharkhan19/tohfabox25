@@ -137,6 +137,7 @@ import AdminLayout from "./Admin/components/Layout";
 // === Client ===
 import Home from "./Client/pages/Home";
 import Products from "./Client/pages/Products";
+import Gallery from "./Client/pages/Gallery";
 import ProductDetail from "./Client/pages/ProductDetail";
 import Cart from "./Client/pages/Cart";
 import Checkout from "./Client/pages/Checkout";
@@ -206,6 +207,16 @@ function PublicOnly({ children }) {
   return authenticated ? <Navigate to="/" replace /> : children;
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [pathname]);
+
+  return null;
+}
+
 // ==================== MAIN APP ====================
 export default function App() {
   const [user, setUser] = useState(getCurrentUser());
@@ -228,6 +239,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         {/* ==================== ADMIN PORTAL ==================== */}
@@ -262,6 +274,7 @@ export default function App() {
           {/* Public Routes */}
           <Route index element={<Home />} />
           <Route path="products" element={<Products />} />
+          <Route path="gallery" element={<Gallery />} />
           <Route path="products/:id" element={<ProductDetail />} />
 
           {/* Protected Routes - Require Login */}

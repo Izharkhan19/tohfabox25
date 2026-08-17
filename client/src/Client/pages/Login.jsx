@@ -52,7 +52,7 @@ export default function Login() {
         <div className="min-h-screen flex">
             {/* Left: Image Side */}
             <div className="hidden lg:block lg:w-1/2 relative">
-                <img 
+                <img referrerPolicy="no-referrer" 
                     src="https://images.unsplash.com/photo-1615529328331-f8917597711f?w=1920&fit=crop" 
                     alt="Resin Art Background" 
                     className="absolute inset-0 w-full h-full object-cover"

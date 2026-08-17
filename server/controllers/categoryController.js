@@ -1,6 +1,6 @@
 const Category = require('../models/Category');
 const Product = require('../models/Product');
-const { uploadToCloudinary, deleteFromCloudinary } = require('../config/cloudinary');
+const { uploadToGoogleDrive, deleteFromGoogleDrive } = require('../config/googleDrive');
 
 // @desc    Get all categories
 // @route   GET /api/categories
@@ -128,7 +128,7 @@ exports.createCategory = async (req, res) => {
 
         // Handle image upload
         if (req.file) {
-            const result = await uploadToCloudinary(req.file.path, 'categories');
+            const result = await uploadToGoogleDrive(req.file.path);
             categoryData.image = {
                 url: result.url,
                 publicId: result.publicId
@@ -178,10 +178,10 @@ exports.updateCategory = async (req, res) => {
         if (req.file) {
             // Delete old image if exists
             if (category.image && category.image.publicId) {
-                await deleteFromCloudinary(category.image.publicId);
+                await deleteFromGoogleDrive(category.image.publicId);
             }
 
-            const result = await uploadToCloudinary(req.file.path, 'categories');
+            const result = await uploadToGoogleDrive(req.file.path);
             category.image = {
                 url: result.url,
                 publicId: result.publicId
@@ -237,9 +237,9 @@ exports.deleteCategory = async (req, res) => {
             });
         }
 
-        // Delete image from cloudinary
+        // Delete image from Google Drive
         if (category.image && category.image.publicId) {
-            await deleteFromCloudinary(category.image.publicId);
+            await deleteFromGoogleDrive(category.image.publicId);
         }
 
         await category.deleteOne();

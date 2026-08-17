@@ -200,7 +200,7 @@ export default function Home() {
                 key={index} 
                 className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
             >
-                <img
+                <img referrerPolicy="no-referrer"
                     src={slide.image}
                     alt={slide.title}
                     className="w-full h-full object-cover"
@@ -277,7 +277,7 @@ export default function Home() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                   {occasions.map((occ, i) => (
                       <Link to="/products" key={i} className="group relative rounded-3xl overflow-hidden shadow-lg aspect-square">
-                          <img src={occ.image} alt={occ.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          <img referrerPolicy="no-referrer" src={occ.image} alt={occ.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/30 to-transparent"></div>
                           <div className="absolute bottom-0 left-0 w-full p-6 md:p-8">
                               <h3 className="text-brand-secondary font-black text-2xl md:text-3xl tracking-wide drop-shadow-md">{occ.name}</h3>
@@ -299,7 +299,7 @@ export default function Home() {
                   {relationships.map((rel, i) => (
                       <Link to="/products" key={i} className="group flex flex-col items-center gap-6">
                           <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden shadow-[0_15px_30px_rgba(45,84,94,0.2)] border-8 border-[#fdfbf9] group-hover:border-brand-primary transition-colors">
-                              <img src={rel.image} alt={rel.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                              <img referrerPolicy="no-referrer" src={rel.image} alt={rel.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                           </div>
                           <h3 className="font-black text-brand-dark text-xl md:text-2xl group-hover:text-brand-primary transition-colors tracking-wide">{rel.name}</h3>
                       </Link>

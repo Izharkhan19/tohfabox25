@@ -365,7 +365,7 @@ export default function Products() {
                     className={`group bg-white rounded-3xl shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all duration-300 overflow-hidden border border-[#c89666]/20 flex ${viewMode === 'list' ? 'flex-row h-48 md:h-64' : 'flex-col'}`}
                   >
                     <Link to={`/products/${product._id}`} className={`block overflow-hidden relative bg-gray-100 ${viewMode === 'list' ? 'w-2/5 md:w-1/3' : 'w-full aspect-square'}`}>
-                      <img
+                      <img referrerPolicy="no-referrer"
                         src={
                           product.images?.[0]?.url ||
                           "https://via.placeholder.com/600"

@@ -94,7 +94,7 @@ export default function Sidebar({ onClose }) {
       {/* Logo */}
       <div className="p-6 border-b border-gray-800 bg-gray-900/50 backdrop-blur-md relative">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="Tohfabox25 Logo" className="w-12 h-12 rounded-xl object-cover shadow-[0_0_15px_rgba(20,184,166,0.5)] hover:scale-105 transition-all duration-300" />
+          <img referrerPolicy="no-referrer" src="/logo.png" alt="Tohfabox25 Logo" className="w-12 h-12 rounded-xl object-cover shadow-[0_0_15px_rgba(20,184,166,0.5)] hover:scale-105 transition-all duration-300" />
           <h1 className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-orange-400">
             Tohfabox<span className="text-white font-light">25</span>
           </h1>

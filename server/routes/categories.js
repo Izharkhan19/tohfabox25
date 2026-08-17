@@ -9,7 +9,7 @@ const {
 } = require('../controllers/categoryController');
 const { protect } = require('../middleware/auth');
 const { isAdmin } = require('../middleware/admin');
-const { upload } = require('../config/cloudinary');
+const { upload } = require('../config/googleDrive');
 
 // Public routes
 router.get('/', getCategories);

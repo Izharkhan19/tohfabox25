@@ -151,7 +151,7 @@ export default function ProductDetail() {
                                             activeImage === i ? "border-resin-blue shadow-md opacity-100" : "border-transparent opacity-60 hover:opacity-100"
                                         }`}
                                     >
-                                        <img src={img.url} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+                                        <img referrerPolicy="no-referrer" src={img.url} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
                                     </button>
                                 ))}
                             </div>

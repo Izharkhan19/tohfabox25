@@ -1,6 +1,6 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
-const { uploadToCloudinary, deleteFromCloudinary } = require('../config/cloudinary');
+const { uploadToGoogleDrive, deleteFromGoogleDrive } = require('../config/googleDrive');
 
 // @desc    Get all products with filters, search, and pagination
 // @route   GET /api/products
@@ -193,7 +193,7 @@ exports.createProduct = async (req, res) => {
 
         // Handle multiple image uploads
         if (req.files && req.files.length > 0) {
-            const imageUploads = req.files.map(file => uploadToCloudinary(file.path, 'products'));
+            const imageUploads = req.files.map(file => uploadToGoogleDrive(file.path));
             const uploadedImages = await Promise.all(imageUploads);
 
             productData.images = uploadedImages.map((result, index) => ({
@@ -293,7 +293,7 @@ exports.updateProduct = async (req, res) => {
 
         // Handle new image uploads
         if (req.files && req.files.length > 0) {
-            const imageUploads = req.files.map(file => uploadToCloudinary(file.path, 'products'));
+            const imageUploads = req.files.map(file => uploadToGoogleDrive(file.path));
             const uploadedImages = await Promise.all(imageUploads);
 
             const newImages = uploadedImages.map(result => ({
@@ -346,8 +346,8 @@ exports.deleteProductImage = async (req, res) => {
             });
         }
 
-        // Delete from cloudinary
-        await deleteFromCloudinary(image.publicId);
+        // Delete from Google Drive
+        await deleteFromGoogleDrive(image.publicId);
 
         // Remove from product
         product.images.pull(req.params.imageId);
@@ -381,9 +381,9 @@ exports.deleteProduct = async (req, res) => {
             });
         }
 
-        // Delete all images from cloudinary
+        // Delete all images from Google Drive
         if (product.images && product.images.length > 0) {
-            const deletePromises = product.images.map(img => deleteFromCloudinary(img.publicId));
+            const deletePromises = product.images.map(img => deleteFromGoogleDrive(img.publicId));
             await Promise.all(deletePromises);
         }
 

@@ -104,6 +104,7 @@ export default function ClientLayout() {
     const navLinks = [
         { to: "/", label: "Home" },
         { to: "/products", label: "Shop Art" },
+        { to: "/gallery", label: "Gallery" },
     ];
 
     const actionLinks = [
@@ -118,7 +119,7 @@ export default function ClientLayout() {
             {showInstallBanner && (
                 <div className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 md:left-auto md:-translate-x-0 md:right-8 z-[100] w-[92%] sm:w-[400px] bg-[#12343b] rounded-2xl shadow-[0_15px_50px_rgba(45,84,94,0.4)] border border-[#c89666]/30 p-4 flex items-center justify-between transition-all animate-fade-in-up">
                     <div className="flex items-center gap-4">
-                        <img src="/logo.png" alt="App Icon" className="w-12 h-12 rounded-xl object-cover shadow-inner" />
+                        <img referrerPolicy="no-referrer" src="/logo.png" alt="App Icon" className="w-12 h-12 rounded-xl object-cover shadow-inner" />
                         <div>
                             <p className="font-bold text-white text-base leading-tight">Install Tohfabox25</p>
                             <p className="text-sm text-[#e1b382] mt-0.5 font-medium">Faster, offline access!</p>
@@ -157,7 +158,7 @@ export default function ClientLayout() {
                         {/* Logo: Center on Mobile, Left on Desktop */}
                         <div className="flex-1 md:flex-none flex justify-center md:justify-start">
                             <Link to="/" className="flex items-center gap-3 group">
-                                <img src="/logo.png" alt="Tohfabox25 Logo" className="w-10 h-10 md:w-12 md:h-12 rounded-xl object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)] transform group-hover:scale-105 transition-all duration-300" />
+                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Tohfabox25 Logo" className="w-10 h-10 md:w-12 md:h-12 rounded-xl object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)] transform group-hover:scale-105 transition-all duration-300" />
                                 <h1 className="text-2xl md:text-3xl font-extrabold text-[#e1b382] tracking-tight drop-shadow-md font-serif hidden sm:block">
                                     Tohfabox<span className="text-white font-light">25</span>
                                 </h1>
@@ -248,7 +249,7 @@ export default function ClientLayout() {
                         {/* Drawer Header */}
                         <div className="p-6 border-b border-white/10 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl" />
+                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl" />
                                 <span className="text-xl font-black text-[#e1b382] font-serif">Tohfabox25</span>
                             </div>
                             <button onClick={() => setMobileMenuOpen(false)} className="p-2 bg-white/5 rounded-full text-[#fdfbf9] hover:text-white hover:bg-[#c89666] transition-colors">
@@ -334,7 +335,7 @@ export default function ClientLayout() {
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-8 text-center lg:text-left mb-16">
                     <div className="lg:col-span-2">
                         <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
-                            <img src="/logo.png" alt="Tohfabox25 Logo" className="w-14 h-14 rounded-xl object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)]" />
+                            <img referrerPolicy="no-referrer" src="/logo.png" alt="Tohfabox25 Logo" className="w-14 h-14 rounded-xl object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)]" />
                             <h2 className="text-4xl font-extrabold text-[#e1b382] drop-shadow-md font-serif">
                                 Tohfabox<span className="text-white font-light">25</span>
                             </h2>
@@ -347,6 +348,7 @@ export default function ClientLayout() {
                         <h3 className="text-lg font-bold mb-6 tracking-widest uppercase text-[#e1b382]">Explore</h3>
                         <div className="flex flex-col gap-4 text-[#fdfbf9]/80 font-medium">
                             <Link to="/products" className="hover:text-[#e1b382] transition-colors">All Art Pieces</Link>
+                            <Link to="/gallery" className="hover:text-[#e1b382] transition-colors">Gallery</Link>
                             <Link to="/custom-orders" className="hover:text-[#e1b382] transition-colors">Custom Orders</Link>
                             <Link to="/about" className="hover:text-[#e1b382] transition-colors">Our Story</Link>
                         </div>

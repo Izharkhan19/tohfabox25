@@ -52,9 +52,14 @@ export default function Login() {
         <div className="min-h-screen flex">
             {/* Left: Image Side */}
             <div className="hidden lg:block lg:w-1/2 relative">
-                <img referrerPolicy="no-referrer" 
-                    src="https://images.unsplash.com/photo-1615529328331-f8917597711f?w=1920&fit=crop" 
-                    alt="Resin Art Background" 
+                <img
+                    referrerPolicy="no-referrer"
+                    src="/fallback-demo.svg"
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1615529328331-f8917597711f?w=1920&fit=crop';
+                    }}
+                    alt="Resin Art Background"
                     className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-resin-dark/40 mix-blend-multiply"></div>
@@ -124,6 +129,14 @@ export default function Login() {
                             className="w-full bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold h-14 rounded-full tracking-widest uppercase text-sm transition-all shadow-md mt-4"
                         >
                             {loading ? 'Authenticating...' : 'Sign In'}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => navigate('/admin/login')}
+                            className="w-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-bold h-12 rounded-full tracking-widest uppercase text-xs transition-all mt-3"
+                        >
+                            Login as Admin
                         </button>
                     </form>
 

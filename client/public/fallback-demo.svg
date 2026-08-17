@@ -1,0 +1,40 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="1080" y2="830" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#031A1A"/>
+      <stop offset="0.48" stop-color="#0D2B2A"/>
+      <stop offset="1" stop-color="#112A4C"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="260" y1="170" x2="980" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59E0B"/>
+      <stop offset="0.52" stop-color="#F472B6"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <circle cx="180" cy="170" r="150" fill="#FDE68A" fill-opacity="0.22"/>
+  <circle cx="1010" cy="220" r="180" fill="#C084FC" fill-opacity="0.18"/>
+  <circle cx="920" cy="720" r="210" fill="#7DD3FC" fill-opacity="0.12"/>
+
+  <g>
+    <rect x="150" y="120" width="900" height="660" rx="30" fill="#0B1E1E" fill-opacity="0.18" stroke="#F8FAFC" stroke-opacity="0.18"/>
+  </g>
+
+  <g>
+    <circle cx="300" cy="290" r="110" fill="url(#accent)"/>
+    <text x="300" y="315" text-anchor="middle" fill="#F8FAFC" font-size="78" font-family="Arial, sans-serif" font-weight="700">25</text>
+    <text x="300" y="370" text-anchor="middle" fill="#F8FAFC" font-size="22" font-family="Arial, sans-serif" font-weight="600" opacity="0.9">Tohfabox25</text>
+  </g>
+
+  <g>
+    <text x="620" y="430" text-anchor="middle" fill="#F8FAFC" font-size="126" font-weight="700" font-family="Arial, sans-serif" letter-spacing="-4">Tohfabox25</text>
+    <line x1="470" y1="478" x2="770" y2="478" stroke="#F9A8D4" stroke-width="8" stroke-linecap="round" opacity="0.9"/>
+    <text x="620" y="550" text-anchor="middle" fill="#D1FAE5" font-size="32" font-family="Arial, sans-serif" font-weight="600" letter-spacing="4">HOME DECOR • RESIN ART</text>
+  </g>
+
+  <g>
+    <rect x="420" y="600" width="400" height="90" rx="18" fill="#F8FAFC" fill-opacity="0.08" stroke="#F8FAFC" stroke-opacity="0.2"/>
+    <text x="620" y="660" text-anchor="middle" fill="#FDE68A" font-size="34" font-family="Arial, sans-serif" font-weight="700">Premium Collection</text>
+  </g>
+</svg>

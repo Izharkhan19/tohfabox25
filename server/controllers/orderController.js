@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const { findValidPromo, incrementPromoUsage } = require('./promoController');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -52,6 +53,7 @@ exports.createOrder = async (req, res) => {
             tax = 0,
             shippingCost = 0,
             discount = 0,
+            promoCode,
             notes,
         } = req.body;
 
@@ -92,7 +94,16 @@ exports.createOrder = async (req, res) => {
             await product.save();
         }
 
-        const total = calculatedSubtotal + tax + shippingCost - discount;
+        let appliedDiscount = 0;
+        if (promoCode) {
+            try {
+                appliedDiscount = (await findValidPromo(promoCode, calculatedSubtotal)).discount;
+            } catch (error) {
+                return res.status(400).json({ success: false, message: error.message });
+            }
+        }
+
+        const total = calculatedSubtotal + tax + shippingCost - appliedDiscount;
 
         let paymentStatus = 'pending';
         let paymentDetails = {};
@@ -121,7 +132,8 @@ exports.createOrder = async (req, res) => {
                     subtotal: calculatedSubtotal,
                     tax,
                     shippingCost,
-                    discount,
+                    discount: appliedDiscount,
+                    promoCode: promoCode?.trim().toUpperCase(),
                     total,
                     notes,
                 },
@@ -136,12 +148,14 @@ exports.createOrder = async (req, res) => {
                 subtotal: calculatedSubtotal,
                 tax,
                 shippingCost,
-                discount,
+                discount: appliedDiscount,
+                promoCode: promoCode?.trim().toUpperCase(),
                 total,
                 notes,
                 paymentStatus: 'pending',
             });
 
+            await incrementPromoUsage(promoCode);
             await order.populate('user', 'name email');
             return res.status(201).json({ success: true, message: 'Order created (COD)', data: order });
         }
@@ -168,6 +182,15 @@ exports.confirmOrder = async (req, res) => {
             });
         }
 
+        let confirmedDiscount = 0;
+        if (orderData.promoCode) {
+            try {
+                confirmedDiscount = (await findValidPromo(orderData.promoCode, Number(orderData.subtotal))).discount;
+            } catch (error) {
+                return res.status(400).json({ success: false, message: error.message });
+            }
+        }
+
         // Create the order now that payment is confirmed
         const order = await Order.create({
             user: req.user._id,
@@ -177,8 +200,9 @@ exports.confirmOrder = async (req, res) => {
             subtotal: orderData.subtotal,
             tax: orderData.tax || 0,
             shippingCost: orderData.shippingCost || 0,
-            discount: orderData.discount || 0,
-            total: orderData.total,
+            discount: confirmedDiscount,
+            promoCode: orderData.promoCode?.trim().toUpperCase(),
+            total: Number(orderData.subtotal) + Number(orderData.tax || 0) + Number(orderData.shippingCost || 0) - confirmedDiscount,
             notes: orderData.notes || '',
             paymentStatus: 'paid',
             paymentDetails: {
@@ -186,6 +210,8 @@ exports.confirmOrder = async (req, res) => {
                 paidAt: new Date(paymentIntent.created * 1000),
             },
         });
+
+        await incrementPromoUsage(orderData.promoCode);
 
         await order.populate('user', 'name email');
 

@@ -132,6 +132,7 @@ import AdminProducts from "./Admin/pages/Products";
 import AddEditProduct from "./Admin/pages/AddEditProduct";
 import AdminCategories from "./Admin/pages/Categories";
 import AdminOrders from "./Admin/pages/Orders";
+import AdminPromos from "./Admin/pages/Promos";
 import AdminLayout from "./Admin/components/Layout";
 
 // === Client ===
@@ -278,6 +279,7 @@ export default function App() {
           <Route path="products/edit/:id" element={<AddEditProduct />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="promos" element={<AdminPromos />} />
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Route>
 

@@ -141,6 +141,109 @@
   animation: logo-breathe 1.8s ease-in-out infinite;
 }
 
+.react-datepicker {
+  border: 1px solid #dbe2e8 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 16px 35px rgba(18, 52, 59, 0.16) !important;
+  color: #12343b !important;
+  font-family: "DM Sans", sans-serif !important;
+  overflow: hidden;
+}
+
+.react-datepicker__header {
+  background: #f4f8f8 !important;
+  border-bottom: 1px solid #dbe2e8 !important;
+  padding-top: 0.75rem !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-list-item {
+  font-family: "DM Sans", sans-serif !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header {
+  color: #12343b !important;
+  font-weight: 700 !important;
+}
+
+.react-datepicker__day-name {
+  color: #7a8f94 !important;
+  font-weight: 700 !important;
+}
+
+.react-datepicker__day {
+  color: #12343b !important;
+  border-radius: 0.45rem !important;
+}
+
+.react-datepicker__day:hover,
+.react-datepicker__month-text:hover,
+.react-datepicker__quarter-text:hover,
+.react-datepicker__year-text:hover {
+  background: #e1b382 !important;
+  color: #12343b !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background: #2d545e !important;
+  color: #fff !important;
+}
+
+.react-datepicker__day--today {
+  border: 1px solid #c89666 !important;
+  font-weight: 700 !important;
+}
+
+.react-datepicker__day--disabled,
+.react-datepicker__time-list-item--disabled {
+  color: #b8c2c5 !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #2d545e !important;
+}
+
+.react-datepicker__time-container {
+  border-left: 1px solid #dbe2e8 !important;
+}
+
+.react-datepicker__time {
+  background: #fff !important;
+}
+
+.react-datepicker__time-list-item {
+  color: #12343b !important;
+}
+
+.react-datepicker__time-list-item:hover {
+  background: #f4f8f8 !important;
+}
+
+.react-datepicker__time-list-item--selected {
+  background: #2d545e !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+@media (max-width: 640px) {
+  .react-datepicker {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .react-datepicker__time-container {
+    width: 5.75rem !important;
+  }
+
+  .react-datepicker__time-list {
+    scrollbar-width: thin;
+  }
+}
+
 @media (min-width: 768px) {
   .Toastify__toast-container {
     left: auto !important;

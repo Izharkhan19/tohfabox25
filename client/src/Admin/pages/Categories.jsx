@@ -304,13 +304,14 @@
 
 import { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
-import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   getCategories,
   createCategory,
   updateCategory,
   deleteCategory,
 } from "../../api-services/apiService";
+import { toast } from "react-toastify";
 
 export default function Categories() {
   /* -------------------- STATE -------------------- */
@@ -344,21 +345,23 @@ export default function Categories() {
 
   const saveCategory = async () => {
     setSaving(true);
-
-    const payload = { name: formData.name.trim() };
-    const result = editingCategory
-      ? await updateCategory(editingCategory._id, payload)
-      : await createCategory(payload);
-
-    setSaving(false);
-    return result;
+    try {
+      const payload = { name: formData.name.trim() };
+      return editingCategory
+        ? await updateCategory(editingCategory._id, payload)
+        : await createCategory(payload);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const removeCategory = async (id) => {
     setDeletingId(id);
-    const result = await deleteCategory(id);
-    setDeletingId(null);
-    return result;
+    try {
+      return await deleteCategory(id);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   /* -------------------- EFFECT -------------------- */
@@ -386,8 +389,11 @@ export default function Categories() {
 
     const result = await saveCategory();
     if (result?.success) {
+      toast.success(editingCategory ? "Category updated successfully" : "Category created successfully");
       fetchCategories();
       closeModal();
+    } else {
+      toast.error(result?.message || "Unable to save category");
     }
   };
 
@@ -406,7 +412,10 @@ export default function Categories() {
 
     const apiResult = await removeCategory(id);
     if (apiResult?.success) {
+      toast.success("Category deleted successfully");
       fetchCategories();
+    } else {
+      toast.error(apiResult?.message || "Failed to delete category");
     }
   };
 
@@ -485,14 +494,13 @@ export default function Categories() {
 
                   <button
                     onClick={() => handleDelete(category._id)}
-                    disabled={
-                      deletingId === category._id ||
-                      (category.productCount ?? 0) > 0
-                    }
+                    disabled={deletingId === category._id}
+                    title={category.productCount > 0 ? "Cannot delete a category that contains products" : "Delete category"}
+                    aria-label={`Delete ${category.name}`}
                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-40"
                   >
                     {deletingId === category._id ? (
-                      "..."
+                      <span className="block h-5 w-5 animate-spin rounded-full border-2 border-red-200 border-t-red-600" aria-hidden="true" />
                     ) : (
                       <TrashIcon className="w-5 h-5" />
                     )}
@@ -530,33 +538,51 @@ export default function Categories() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold mb-6">
-              {editingCategory ? "Edit Category" : "Create Category"}
-            </h2>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#12343b]/45 p-4 backdrop-blur-sm"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeModal();
+          }}
+          role="presentation"
+        >
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-white/60 bg-white shadow-[0_24px_70px_rgba(18,52,59,0.28)]" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+            <div className="flex items-start justify-between border-b border-gray-100 bg-[#f8fbfa] px-6 py-5">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#2d545e]">Catalog</p>
+                <h2 id="category-modal-title" className="mt-1 text-2xl font-bold text-[#12343b]">
+                  {editingCategory ? "Edit Category" : "Create Category"}
+                </h2>
+              </div>
+              <button type="button" onClick={closeModal} aria-label="Close category dialog" className="rounded-full p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-500">
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
 
-            <form onSubmit={handleSubmit}>
-              <input
-                value={formData.name}
-                onChange={(e) => setFormData({ name: e.target.value })}
-                className="w-full px-4 py-3 border rounded-xl mb-6"
-                placeholder="Category name"
-                required
-              />
+            <form onSubmit={handleSubmit} className="p-6">
+              <label className="block text-xs font-black uppercase tracking-wider text-gray-600">
+                Category name
+                <input
+                  value={formData.name}
+                  onChange={(e) => setFormData({ name: e.target.value })}
+                  className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#12343b] outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                  placeholder="e.g. Resin Clocks"
+                  required
+                  autoFocus
+                />
+              </label>
 
-              <div className="flex justify-end gap-4">
+              <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-6 py-3 border rounded-xl"
+                  className="rounded-xl border border-gray-200 px-6 py-3 text-sm font-bold text-gray-600 transition hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-8 py-3 bg-blue-600 text-white rounded-xl"
+                  className="rounded-xl bg-blue-600 px-8 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:bg-gray-400"
                 >
                   {saving ? "Saving..." : editingCategory ? "Update" : "Create"}
                 </button>

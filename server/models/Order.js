@@ -98,6 +98,11 @@ const orderSchema = new mongoose.Schema({
         default: 0,
         min: 0
     },
+    promoCode: {
+        type: String,
+        trim: true,
+        uppercase: true
+    },
     total: {
         type: Number,
         required: true,

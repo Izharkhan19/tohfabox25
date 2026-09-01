@@ -14,6 +14,7 @@ import {
   getCart,
   createOrder,
   getCurrentUser,
+  validatePromo,
 } from "../../api-services/apiService";
 import LogoLoader from "../../components/LogoLoader";
 
@@ -23,6 +24,9 @@ export default function Checkout() {
   const [loadingCart, setLoadingCart] = useState(true);
   const [loadingUser, setLoadingUser] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState(null);
+  const [promoLoading, setPromoLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [paymentMethod, setPaymentMethod] = useState("credit_card");
@@ -83,7 +87,26 @@ export default function Checkout() {
     0
   );
   const shippingCost = subtotal >= 100 ? 0 : 12.9;
-  const total = subtotal + shippingCost;
+  const discount = appliedPromo?.discount || 0;
+  const total = subtotal + shippingCost - discount;
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) {
+      toast.info("Enter a promo code first");
+      return;
+    }
+
+    setPromoLoading(true);
+    const result = await validatePromo(promoCode, subtotal);
+    if (result?.success) {
+      setAppliedPromo(result.data?.data);
+      toast.success(`Promo ${result.data?.data?.code} applied`);
+    } else {
+      setAppliedPromo(null);
+      toast.error(result?.message || "Invalid promo code");
+    }
+    setPromoLoading(false);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -121,7 +144,8 @@ export default function Checkout() {
         subtotal: Number(subtotal.toFixed(2)),
         tax: 0,
         shippingCost: Number(shippingCost.toFixed(2)),
-        discount: 0,
+        discount: Number(discount.toFixed(2)),
+        promoCode: appliedPromo?.code,
         notes: "",
       };
 
@@ -133,7 +157,7 @@ export default function Checkout() {
       } else {
         setError(result.message || "Failed to place order. Please try again.");
       }
-    } catch (err) {
+    } catch {
       setError("Something went wrong processing your order.");
     } finally {
       setPlacingOrder(false);
@@ -380,6 +404,34 @@ export default function Checkout() {
                 })}
               </div>
 
+              <div className="mb-7 rounded-2xl border border-resin-gold/20 bg-resin-light p-4">
+                <label className="mb-2 block text-xs font-black uppercase tracking-wider text-resin-blue">Have a promo code?</label>
+                <div className="flex gap-2">
+                  <input
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                    placeholder="ENTER CODE"
+                    disabled={promoLoading || Boolean(appliedPromo)}
+                    className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm font-bold tracking-wider text-resin-dark focus:border-resin-blue focus:outline-none focus:ring-2 focus:ring-resin-blue/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={appliedPromo ? () => { setAppliedPromo(null); setPromoCode(""); } : handleApplyPromo}
+                    disabled={promoLoading}
+                    aria-busy={promoLoading}
+                    className="rounded-xl bg-resin-dark px-4 py-3 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-resin-blue disabled:bg-gray-400"
+                  >
+                    {promoLoading ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+                        Checking
+                      </span>
+                    ) : appliedPromo ? "Remove" : "Apply"}
+                  </button>
+                </div>
+                {appliedPromo && <p className="mt-2 text-xs font-bold text-green-700">{appliedPromo.code} saved you ₹{discount.toFixed(2)}</p>}
+              </div>
+
               <div className="space-y-4 mb-6">
                  <div className="flex justify-between text-gray-600">
                      <span>Subtotal</span>
@@ -391,6 +443,7 @@ export default function Checkout() {
                          {shippingCost === 0 ? "Complimentary" : `₹${shippingCost.toFixed(2)}`}
                      </span>
                  </div>
+                 {discount > 0 && <div className="flex justify-between font-semibold text-green-700"><span>Promo discount</span><span>-₹{discount.toFixed(2)}</span></div>}
              </div>
 
              <div className="border-t border-gray-100 pt-4 mb-8">

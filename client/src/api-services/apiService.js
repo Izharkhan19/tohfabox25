@@ -102,7 +102,6 @@
 
 // src/api-services/apiService.js
 import api from './api';
-import { toast } from 'react-toastify';
 
 // Generic handler for consistent response/error flow
 const handleApiCall = async (apiCall, successMessage = null) => {
@@ -117,7 +116,6 @@ const handleApiCall = async (apiCall, successMessage = null) => {
     } catch (err) {
         const message = err?.response?.data?.message || err?.message || "An error occurred";
         console.error("API Error:", message);
-        toast.info(message); // Replace with toast later
         return { success: false, error: err, message };
     }
 };
@@ -225,6 +223,13 @@ export const clearCart = async () => {
     if (result?.success) window.dispatchEvent(new Event("cartChanged"));
     return result;
 };
+
+export const validatePromo = (code, subtotal) =>
+    handleApiCall(() => api.post('/promos/validate', { code, subtotal }));
+
+export const getPromos = () => handleApiCall(() => api.get('/promos'));
+export const createPromo = (data) => handleApiCall(() => api.post('/promos', data));
+export const deletePromo = (id) => handleApiCall(() => api.delete(`/promos/${id}`));
 
 // ==================== WISHLIST (NEW!) ====================
 export const getWishlist = () =>

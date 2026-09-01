@@ -66,6 +66,7 @@ import {
   QueueListIcon,
   TagIcon,
   InboxIcon,
+  TicketIcon,
   ChartBarIcon,
   ArrowRightOnRectangleIcon,
   XMarkIcon
@@ -77,6 +78,7 @@ const menu = [
   { name: "Products", icon: ShoppingBagIcon, path: "/admin/products" },
   { name: "Categories", icon: TagIcon, path: "/admin/categories" },
   { name: "Orders", icon: InboxIcon, path: "/admin/orders" },
+  { name: "Promo Codes", icon: TicketIcon, path: "/admin/promos" },
 ];
 
 export default function Sidebar({ onClose }) {

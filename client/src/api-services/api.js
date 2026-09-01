@@ -171,7 +171,18 @@
 // src/api-services/api.js
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || (
+    import.meta.env.DEV
+        ? "http://localhost:5000/api"
+        : "https://tohfabox25.onrender.com/api"
+);
+
+const RETRYABLE_STATUS_CODES = new Set([408, 429, 500, 502, 503, 504]);
+const MAX_RETRIES = 2;
+
+const wait = (milliseconds) => new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+});
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -192,6 +203,24 @@ api.interceptors.request.use(
     },
     (error) => Promise.reject(error)
 );
+// Render free services can need a moment to wake up after inactivity.
+api.interceptors.response.use(undefined, async (error) => {
+    const config = error.config;
+    const status = error.response?.status;
+    const retryCount = config?._retryCount || 0;
+    const method = config?.method?.toUpperCase();
+    const isReadRequest = ["GET", "HEAD", "OPTIONS"].includes(method);
+    const isRetryable = isReadRequest && (!error.response || RETRYABLE_STATUS_CODES.has(status));
+
+    if (config && isRetryable && retryCount < MAX_RETRIES) {
+        config._retryCount = retryCount + 1;
+        await wait(1000 * 2 ** retryCount);
+        return api(config);
+    }
+
+    return Promise.reject(error);
+});
+
 
 // Ultimate Response Handler
 api.interceptors.response.use(

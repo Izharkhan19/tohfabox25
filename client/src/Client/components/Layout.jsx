@@ -157,8 +157,8 @@ export default function ClientLayout() {
             {/* Premium Header */}
             <header className={`fixed w-full top-0 z-40 transition-all duration-500 border-b ${
                 scrolled 
-                ? "bg-[#12343b]/90 backdrop-blur-xl shadow-lg border-[#c89666]/20 py-2 md:py-3" 
-                : "bg-[#12343b] border-transparent py-4 md:py-6"
+                ? "bg-[#0f2b31]/95 backdrop-blur-xl shadow-[0_12px_35px_rgba(18,52,59,0.18)] border-[#e1b382]/25 py-2 md:py-3" 
+                : "bg-[#12343b] border-[#e1b382]/15 py-4 md:py-5"
             }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-14 md:h-16">
@@ -176,7 +176,7 @@ export default function ClientLayout() {
                         {/* Logo: Center on Mobile, Left on Desktop */}
                         <div className="flex-1 md:flex-none flex justify-center md:justify-start">
                             <Link to="/" className="flex items-center gap-3 group">
-                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Tohfabox25 Logo" className="w-10 h-10 md:w-12 md:h-12 rounded-xl object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)] transform group-hover:scale-105 transition-all duration-300" />
+                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Tohfabox25 Logo" className="w-10 h-10 md:w-11 md:h-11 rounded-lg object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)] transform group-hover:scale-105 transition-all duration-300" />
                                 <h1 className="text-2xl md:text-3xl font-extrabold text-[#e1b382] tracking-tight drop-shadow-md font-serif hidden sm:block">
                                     Tohfabox<span className="text-white font-light">25</span>
                                 </h1>
@@ -184,12 +184,12 @@ export default function ClientLayout() {
                         </div>
 
                         {/* Desktop Navigation (Center) */}
-                        <nav className="hidden md:flex flex-1 justify-center items-center gap-10">
+                            <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.to}
                                     to={link.to}
-                                    className={`relative text-base font-bold transition-colors tracking-wide ${isActive(link.to)
+                                    className={`relative text-sm font-bold transition-colors tracking-[0.08em] uppercase ${isActive(link.to)
                                         ? "text-[#e1b382]"
                                         : "text-[#fdfbf9] hover:text-[#e1b382]"
                                         }`}

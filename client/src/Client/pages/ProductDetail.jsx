@@ -208,7 +208,7 @@ export default function ProductDetail() {
                     <div className="flex flex-col">
                         <div className="mb-8">
                             <div className="flex justify-between items-start mb-4">
-                                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 font-serif leading-tight">
+                                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 font-serif leading-tight">
                                     {product.name}
                                 </h1>
                                 <button
@@ -270,7 +270,7 @@ export default function ProductDetail() {
                                 {!isLoggedIn && <p className="mt-2 text-xs text-gray-500">Sign in to submit your rating.</p>}
                             </div>
 
-                            <div className="text-4xl font-bold text-resin-dark mb-8">
+                            <div className="text-3xl sm:text-4xl font-bold text-resin-dark mb-8">
                                 ₹{Number(product.price).toFixed(2)}
                             </div>
                             

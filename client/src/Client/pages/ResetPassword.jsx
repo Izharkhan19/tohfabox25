@@ -38,7 +38,7 @@ export default function ResetPassword() {
             } else {
                 setError(result.message || 'Failed to reset password. The token may have expired.');
             }
-        } catch (err) {
+        } catch {
             setError('An error occurred. Please try again later.');
         } finally {
             setLoading(false);
@@ -46,8 +46,8 @@ export default function ResetPassword() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-            <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-brand-light soft-grid">
+            <div className="max-w-md w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-[0_20px_60px_rgba(18,52,59,0.14)] p-8 border border-resin-gold/20">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-serif font-bold text-resin-dark mb-2">New Password</h1>
                     <p className="text-gray-500 text-sm">

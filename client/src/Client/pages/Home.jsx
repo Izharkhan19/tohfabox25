@@ -239,7 +239,7 @@ export default function Home() {
   return (
     <div className="bg-brand-light">
       {/* Dynamic Hero Section */}
-      <section className="relative h-[85vh] md:h-[650px] flex items-center overflow-hidden">
+      <section className="relative min-h-[620px] md:min-h-[680px] flex items-center overflow-hidden bg-brand-dark">
         {heroSlides.map((slide, index) => (
             <div 
                 key={index} 
@@ -250,20 +250,21 @@ export default function Home() {
                     alt={slide.title}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/90 via-brand-primary/60 to-transparent mix-blend-multiply" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#071d22]/95 via-[#12343b]/65 to-transparent" />
                 
                 <div className="absolute inset-0 flex items-center">
                     <div className="max-w-7xl mx-auto px-6 w-full">
-                        <div className="max-w-2xl text-left animate-fade-in-up">
-                            <h1 className="text-5xl md:text-7xl font-extrabold text-brand-light mb-6 leading-tight drop-shadow-xl font-serif">
+                        <div className="max-w-2xl text-left animate-fade-in-up pt-12">
+                            <p className="text-[#e1b382] uppercase tracking-[0.28em] text-xs md:text-sm font-black mb-5">Handmade pieces for meaningful spaces</p>
+                            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-6 leading-[0.98] drop-shadow-xl font-serif">
                                 {slide.title}
                             </h1>
-                            <p className="text-xl md:text-2xl text-brand-light/90 mb-10 max-w-xl font-medium drop-shadow-md">
+                            <p className="text-lg md:text-xl text-white/90 mb-10 max-w-xl font-medium leading-relaxed drop-shadow-md">
                                 {slide.subtitle}
                             </p>
                             <Link
                                 to={slide.link}
-                                className="inline-flex items-center gap-3 bg-white hover:bg-brand-secondary text-brand-dark font-black py-4 px-10 rounded-full text-xl transition-all transform hover:-translate-y-1 shadow-[0_15px_30px_rgba(0,0,0,0.3)] opacity-100"
+                                className="inline-flex items-center gap-3 bg-brand-secondary hover:bg-white text-brand-dark font-black py-4 px-9 rounded-full text-base uppercase tracking-wider transition-all transform hover:-translate-y-1 shadow-[0_15px_30px_rgba(0,0,0,0.3)] opacity-100"
                             >
                                 {slide.cta}
                                 <ChevronRightIcon className="w-6 h-6 stroke-2" />
@@ -312,7 +313,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-6">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
                   <div className="mb-4 md:mb-0">
-                      <h2 className="text-4xl md:text-5xl font-black text-brand-dark mb-3 font-serif">Shop by Occasion</h2>
+                          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-brand-dark mb-3 font-serif">Shop by Occasion</h2>
                       <p className="text-lg md:text-xl text-brand-muted font-medium">Find the perfect gift for their special day.</p>
                   </div>
                   <Link to="/products" className="flex items-center gap-2 text-brand-primary font-black text-lg hover:text-brand-dark transition-colors">
@@ -337,7 +338,7 @@ export default function Home() {
       <section className="py-20 bg-[#fdfbf9]">
           <div className="max-w-7xl mx-auto px-6">
               <div className="text-center mb-16">
-                  <h2 className="text-4xl md:text-5xl font-black text-brand-dark mb-4 font-serif">Gifts by Relationship</h2>
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-brand-dark mb-4 font-serif">Gifts by Relationship</h2>
                   <p className="text-lg md:text-xl text-brand-muted font-medium">Curated selections for the ones you love.</p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
@@ -358,7 +359,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
             <div className="mb-4 md:mb-0">
-              <h2 className="text-4xl md:text-5xl font-black text-brand-dark mb-3 font-serif">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-brand-dark mb-3 font-serif">
                 Trending Gifts
               </h2>
               <p className="text-lg md:text-xl text-brand-muted font-medium">

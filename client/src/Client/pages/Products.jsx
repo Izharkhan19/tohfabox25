@@ -39,7 +39,7 @@ export default function Products() {
     if (result?.success) {
       setCategories([
         { _id: "all", name: "All Masterpieces" },
-        ...result?.data?.data,
+        ...(Array.isArray(result?.data?.data) ? result.data.data : []),
       ]);
     } else {
       setCategories([{ _id: "all", name: "All Masterpieces" }]);
@@ -124,7 +124,7 @@ export default function Products() {
         user.wishlist = updatedWishlist;
         localStorage.setItem("user", JSON.stringify(user));
       }
-    } catch (error) {
+    } catch {
       setProducts((prev) =>
         prev.map((p) =>
           p._id === productId
@@ -139,11 +139,12 @@ export default function Products() {
   return (
     <>
       {/* Premium Hero Header */}
-      <section className="relative bg-[#12343b] py-20 md:py-28 overflow-hidden border-b border-[#c89666]/30">
+      <section className="relative bg-[#12343b] py-20 md:py-28 overflow-hidden border-b border-[#c89666]/30 soft-grid">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1549490349-8643362247b5?w=1920&fit=crop')] opacity-10 object-cover mix-blend-overlay" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#12343b] to-transparent" />
         <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 font-serif tracking-wide drop-shadow-md">
+          <p className="text-[#e1b382] uppercase tracking-[0.28em] text-xs md:text-sm font-black mb-5">Made slowly. Chosen thoughtfully.</p>
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-white mb-6 font-serif tracking-wide drop-shadow-md">
             The <span className="text-[#e1b382] italic">Collection</span>
           </h1>
           <p className="text-base md:text-xl text-[#fdfbf9]/90 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-sm">

@@ -42,7 +42,7 @@ export default function Login() {
             } else {
                 setError(result.message || 'Invalid email or password');
             }
-        } catch (err) {
+        } catch {
             setError('An error occurred. Please try again later.');
         } finally {
             setLoading(false);
@@ -65,15 +65,15 @@ export default function Login() {
             </div>
 
             {/* Right: Form Side */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-brand-light soft-grid">
                 <div className="max-w-md w-full">
                     <Link to="/" className="inline-flex items-center text-sm uppercase tracking-widest text-gray-500 hover:text-resin-blue transition-colors font-bold mb-12">
                         <ArrowLeftIcon className="w-4 h-4 mr-2" />
                         Return to Gallery
                     </Link>
 
-                    <div className="mb-10">
-                        <h1 className="text-4xl font-serif font-bold text-resin-dark mb-3">Sign In</h1>
+                    <div className="mb-10 border-l-4 border-resin-gold pl-5">
+                        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-resin-dark mb-3">Sign In</h1>
                         <p className="text-gray-500">Please enter your credentials to access your account.</p>
                     </div>
 

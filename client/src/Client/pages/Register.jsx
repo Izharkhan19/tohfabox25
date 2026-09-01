@@ -57,14 +57,14 @@ export default function Register() {
     return (
         <div className="min-h-screen flex">
             {/* Left: Form Side */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 bg-gray-50 order-2 lg:order-1">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 bg-brand-light soft-grid order-2 lg:order-1">
                 <div className="max-w-md w-full">
                     <Link to="/" className="inline-flex items-center text-sm uppercase tracking-widest text-gray-500 hover:text-resin-blue transition-colors font-bold mb-4">
                         <ArrowLeftIcon className="w-4 h-4 mr-2" />
                         Return to Gallery
                     </Link>
 
-                    <div className="mb-4">
+                    <div className="mb-4 border-l-4 border-resin-gold pl-4">
                         <h1 className="text-2xl font-serif font-bold text-resin-dark mb-1">Create Account</h1>
                         <p className="text-gray-500 text-xs">Join our community of art collectors and enthusiasts.</p>
                     </div>

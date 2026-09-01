@@ -26,7 +26,7 @@ export default function ForgotPassword() {
             } else {
                 setError(result.message || 'Failed to send reset request');
             }
-        } catch (err) {
+        } catch {
             setError('An error occurred. Please try again later.');
         } finally {
             setLoading(false);
@@ -36,14 +36,14 @@ export default function ForgotPassword() {
     return (
         <div className="min-h-screen flex">
             {/* Left: Form Side */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 bg-gray-50">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 bg-brand-light soft-grid">
                 <div className="max-w-md w-full">
                     <Link to="/login" className="inline-flex items-center text-sm uppercase tracking-widest text-gray-500 hover:text-resin-blue transition-colors font-bold mb-6">
                         <ArrowLeftIcon className="w-4 h-4 mr-2" />
                         Back to Login
                     </Link>
 
-                    <div className="mb-8">
+                    <div className="mb-8 border-l-4 border-resin-gold pl-4">
                         <h1 className="text-3xl font-serif font-bold text-resin-dark mb-2">Reset Password</h1>
                         <p className="text-gray-500 text-sm">
                             Enter your email address and we'll send you instructions to reset your password.

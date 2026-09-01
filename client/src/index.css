@@ -1,22 +1,77 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-resin-dark: #0A192F;
-  --color-resin-blue: #007BB5;
-  --color-resin-light: #E6F4F1;
-  --color-resin-gold: #D4AF37;
-  --color-resin-goldAccent: #F3E5AB;
+  --color-resin-dark: #12343b;
+  --color-resin-blue: #2d545e;
+  --color-resin-light: #fdfbf9;
+  --color-resin-gold: #c89666;
+  --color-resin-goldAccent: #e1b382;
 
-  --font-sans: "Inter", sans-serif;
-  --font-serif: "Playfair Display", serif;
+  --color-brand-primary: #2d545e;
+  --color-brand-secondary: #e1b382;
+  --color-brand-accent: #c89666;
+  --color-brand-dark: #12343b;
+  --color-brand-light: #fdfbf9;
+  --color-brand-muted: #7a8f94;
+
+  --font-sans: "DM Sans", sans-serif;
+  --font-serif: "Fraunces", serif;
 }
+
+:root {
+  color: #12343b;
+  background: #fdfbf9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
 @layer base {
-  body {
-    @apply font-sans text-gray-800 bg-gray-50;
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
+
+  body {
+    @apply font-sans text-resin-dark;
+    margin: 0;
+    min-width: 320px;
+    overflow-x: hidden;
+    line-height: 1.5;
+    background:
+      radial-gradient(circle at 8% 15%, rgba(225, 179, 130, 0.12), transparent 22rem),
+      radial-gradient(circle at 92% 70%, rgba(45, 84, 94, 0.08), transparent 26rem),
+      #fdfbf9;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
+  }
+
+  button, a, input, select, textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, a {
+    @apply cursor-pointer;
+  }
+
+  ::selection {
+    background: #e1b382;
+    color: #12343b;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f5eee7;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #c89666;
+    border: 3px solid #f5eee7;
+    border-radius: 999px;
   }
 }
 
@@ -31,17 +86,50 @@
 }
 
 .mobile-toast {
-  border-radius: 1rem !important;
-  min-height: 3.25rem !important;
-  padding: 0.7rem 0.9rem !important;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15) !important;
+  align-items: center !important;
+  border: 1px solid rgba(225, 179, 130, 0.35) !important;
+  border-radius: 0.9rem !important;
+  min-height: 3.5rem !important;
+  padding: 0.75rem 0.9rem !important;
+  background: #12343b !important;
+  color: #fdfbf9 !important;
+  box-shadow: 0 16px 36px rgba(18, 52, 59, 0.28) !important;
 }
 
 .mobile-toast-body {
+  color: #fdfbf9 !important;
   font-size: 0.875rem !important;
+  font-weight: 600 !important;
   line-height: 1.4 !important;
   padding: 0 !important;
   margin: 0 !important;
+}
+
+.mobile-toast .Toastify__toast-icon {
+  width: 1.35rem !important;
+  margin-inline-end: 0.65rem !important;
+}
+
+.mobile-toast .Toastify__close-button {
+  align-self: flex-start !important;
+  color: #e1b382 !important;
+  opacity: 0.9 !important;
+}
+
+.mobile-toast .Toastify__progress-bar {
+  height: 3px !important;
+  background: #e1b382 !important;
+}
+
+.brand-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200, 150, 102, 0.7), transparent);
+}
+
+.soft-grid {
+  background-image: linear-gradient(rgba(45, 84, 94, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 84, 94, 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 @media (min-width: 768px) {
@@ -50,6 +138,16 @@
     right: 1.25rem !important;
     transform: none !important;
     width: 22rem !important;
+  }
+}
+
+@media (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  .Toastify__toast-container {
+    bottom: calc(72px + env(safe-area-inset-bottom) + 0.75rem) !important;
   }
 }
 

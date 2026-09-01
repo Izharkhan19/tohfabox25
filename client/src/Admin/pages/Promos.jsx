@@ -83,7 +83,7 @@ export default function Promos() {
     const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-3 text-sm text-gray-800 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100';
 
     return (
-        <div className="max-w-6xl space-y-8">
+        <div className="w-full space-y-8">
             <div>
                 <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-600">Campaigns</p>
                 <h1 className="mt-1 text-3xl font-bold text-gray-800">Promo codes</h1>

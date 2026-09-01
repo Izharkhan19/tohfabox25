@@ -65,6 +65,8 @@ export default function AdminLayout() {
                 ? "Orders"
                 : location.pathname.includes("clients")
                 ? "Clients"
+                : location.pathname.includes("promos")
+                ? "Promo Codes"
                 : "Dashboard"}
             </h2>
           </div>

@@ -29,6 +29,11 @@ const TermsOfService = () => {
             <h2 className="text-xl font-semibold text-gray-800 mb-3">4. Governing Law</h2>
             <p>These Terms shall be governed by and construed in accordance with the laws of our operating jurisdiction, without regard to its conflict of law provisions.</p>
           </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">5. Contact Us</h2>
+            <p>If you have any questions about these Terms, please contact us at tohfabox25@gmail.com.</p>
+          </section>
         </div>
 
         <div className="mt-10">

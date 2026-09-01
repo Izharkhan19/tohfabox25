@@ -44,7 +44,7 @@ const PrivacyPolicy = () => {
 
           <section>
             <h2 className="text-lg font-bold text-gray-800 mb-2">5. Contact Us</h2>
-            <p>If you have any questions about this Privacy Policy, please contact us by email: support@tohfabox25.com</p>
+            <p>If you have any questions about this Privacy Policy, please contact us by email: tohfabox25@gmail.com</p>
           </section>
         </div>
 

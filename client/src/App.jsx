@@ -139,6 +139,8 @@ import AdminLayout from "./Admin/components/Layout";
 import Home from "./Client/pages/Home";
 import Products from "./Client/pages/Products";
 import Gallery from "./Client/pages/Gallery";
+import PrivacyPolicy from "./Client/pages/PrivacyPolicy";
+import TermsOfService from "./Client/pages/TermsOfService";
 import ProductDetail from "./Client/pages/ProductDetail";
 import Cart from "./Client/pages/Cart";
 import Checkout from "./Client/pages/Checkout";
@@ -296,6 +298,8 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="products" element={<Products />} />
           <Route path="gallery" element={<Gallery />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="terms-of-service" element={<TermsOfService />} />
           <Route path="products/:id" element={<ProductDetail />} />
 
           {/* Protected Routes - Require Login */}

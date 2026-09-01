@@ -16,6 +16,8 @@ import {
   addToWishlist,
   removeFromWishlist,
   getFeaturedProducts,
+  addToCart,
+  getCart,
 } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import { toast } from 'react-toastify';
@@ -26,6 +28,8 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState({});
+  const [cartLoading, setCartLoading] = useState({});
+  const [cartCounts, setCartCounts] = useState({});
 
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
@@ -142,6 +146,19 @@ export default function Home() {
     fetchFeaturedProducts();
   }, []);
 
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    getCart().then((result) => {
+      if (result?.success && Array.isArray(result?.data?.data)) {
+        setCartCounts(Object.fromEntries(result.data.data.map((item) => {
+          const productId = item.product?._id || item.product;
+          return [productId, item.quantity || 0];
+        })));
+      }
+    });
+  }, [isLoggedIn]);
+
   const handleWishlistClick = async (productId) => {
     if (!isLoggedIn) {
       setShowLoginModal(true);
@@ -179,7 +196,7 @@ export default function Home() {
         );
       }
       localStorage.setItem("user", JSON.stringify(updatedUser));
-    } catch (error) {
+    } catch {
         toast.error("Failed to update wishlist.");
       setFeaturedProducts((prev) =>
         prev.map((p) =>
@@ -188,6 +205,34 @@ export default function Home() {
       );
     } finally {
       setWishlistLoading((prev) => ({ ...prev, [productId]: false }));
+    }
+  };
+
+  const handleAddToCart = async (productId, productName) => {
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    if (cartLoading[productId]) return;
+    setCartLoading((prev) => ({ ...prev, [productId]: true }));
+
+    try {
+      const result = await addToCart(productId, 1);
+      if (result?.success) {
+        const updatedCart = result.data?.data;
+        if (Array.isArray(updatedCart)) {
+          const cartItem = updatedCart.find((item) => String(item.product?._id || item.product) === String(productId));
+          setCartCounts((prev) => ({ ...prev, [productId]: cartItem?.quantity || (prev[productId] || 0) + 1 }));
+        } else {
+          setCartCounts((prev) => ({ ...prev, [productId]: (prev[productId] || 0) + 1 }));
+        }
+        toast.success(`Added ${productName} to cart!`);
+      } else toast.error(result?.message || "Failed to add to cart");
+    } catch {
+      toast.error("Failed to add to cart");
+    } finally {
+      setCartLoading((prev) => ({ ...prev, [productId]: false }));
     }
   };
 
@@ -395,8 +440,22 @@ export default function Home() {
                       <span className="text-lg md:text-3xl font-black text-brand-dark">
                         ₹{Number(product.price).toFixed(2)}
                       </span>
-                      <button className="text-brand-primary hover:text-brand-dark hover:bg-brand-secondary bg-brand-primary/10 p-3 rounded-xl transition-colors">
-                          <ShoppingCartIcon className="w-5 h-5 md:w-6 md:h-6 stroke-2" />
+                      <button
+                        onClick={() => handleAddToCart(product.id, product.name)}
+                        disabled={cartLoading[product.id]}
+                        aria-label={`Add ${product.name} to cart`}
+                        className="relative text-brand-primary hover:text-brand-dark hover:bg-brand-secondary bg-brand-primary/10 p-3 rounded-xl transition-colors disabled:opacity-50"
+                      >
+                          {cartCounts[product.id] > 0 && (
+                            <span className="absolute -right-2 -top-2 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center shadow-md" aria-label={`${cartCounts[product.id]} in cart`}>
+                              {cartCounts[product.id]}
+                            </span>
+                          )}
+                          {cartLoading[product.id] ? (
+                            <span className="block h-5 w-5 md:h-6 md:w-6 animate-spin rounded-full border-2 border-brand-primary/30 border-t-brand-primary" aria-hidden="true" />
+                          ) : (
+                            <ShoppingCartIcon className="w-5 h-5 md:w-6 md:h-6 stroke-2" />
+                          )}
                       </button>
                     </div>
                   </div>

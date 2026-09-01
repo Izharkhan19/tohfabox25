@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
         }
 
         // Check if user exists
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ email: email.toLowerCase().trim() });
         if (userExists) {
             return res.status(400).json({
                 success: false,
@@ -61,6 +61,20 @@ exports.register = async (req, res) => {
         });
     } catch (error) {
         console.error('Register error:', error);
+
+        if (error.code === 11000) {
+            const duplicateField = Object.keys(error.keyPattern || error.keyValue || {})[0];
+            const message = duplicateField === 'phone'
+                ? 'This phone number is already registered'
+                : 'User with this email already exists';
+            return res.status(400).json({ success: false, message });
+        }
+
+        if (error.name === 'ValidationError') {
+            const message = Object.values(error.errors)[0]?.message || 'Please check the registration details';
+            return res.status(400).json({ success: false, message });
+        }
+
         res.status(500).json({
             success: false,
             message: 'Error registering user',

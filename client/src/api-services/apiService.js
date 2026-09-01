@@ -193,36 +193,51 @@ export const deleteCategory = (id) =>
 export const getCart = () =>
     handleApiCall(() => api.get("/cart"), "Cart loaded");
 
-export const addToCart = (productId, quantity = 1) =>
-    handleApiCall(
+export const addToCart = async (productId, quantity = 1) => {
+    const result = await handleApiCall(
         () => api.post("/cart", { productId, quantity }),
         "Added to cart!"
     );
+    if (result?.success) window.dispatchEvent(new Event("cartChanged"));
+    return result;
+};
 
-export const updateCartItem = (productId, quantity) =>
-    handleApiCall(
+export const updateCartItem = async (productId, quantity) => {
+    const result = await handleApiCall(
         () => api.put(`/cart/${productId}`, { quantity }),
         "Cart updated"
     );
+    if (result?.success) window.dispatchEvent(new Event("cartChanged"));
+    return result;
+};
 
-export const removeFromCart = (productId) =>
-    handleApiCall(
+export const removeFromCart = async (productId) => {
+    const result = await handleApiCall(
         () => api.delete(`/cart/${productId}`),
         "Removed from cart"
     );
+    if (result?.success) window.dispatchEvent(new Event("cartChanged"));
+    return result;
+};
 
-export const clearCart = () =>
-    handleApiCall(() => api.delete("/cart"), "Cart cleared");
+export const clearCart = async () => {
+    const result = await handleApiCall(() => api.delete("/cart"), "Cart cleared");
+    if (result?.success) window.dispatchEvent(new Event("cartChanged"));
+    return result;
+};
 
 // ==================== WISHLIST (NEW!) ====================
 export const getWishlist = () =>
     handleApiCall(() => api.get("/wishlist"), "Wishlist loaded");
 
-export const addToWishlist = (productId) =>
-    handleApiCall(
+export const addToWishlist = async (productId) => {
+    const result = await handleApiCall(
         () => api.post("/wishlist", { productId }),
         "Added to wishlist!"
     );
+    if (result?.success) window.dispatchEvent(new Event("wishlistChanged"));
+    return result;
+};
 
 export const updateWishlistItem = (productId, quantity) =>
     handleApiCall(
@@ -230,14 +245,20 @@ export const updateWishlistItem = (productId, quantity) =>
         "Wishlist updated"
     );
 
-export const removeFromWishlist = (productId) =>
-    handleApiCall(
+export const removeFromWishlist = async (productId) => {
+    const result = await handleApiCall(
         () => api.delete(`/wishlist/${productId}`),
         "Removed from wishlist"
     );
+    if (result?.success) window.dispatchEvent(new Event("wishlistChanged"));
+    return result;
+};
 
-export const clearWishlist = () =>
-    handleApiCall(() => api.delete("/wishlist"), "Wishlist cleared");
+export const clearWishlist = async () => {
+    const result = await handleApiCall(() => api.delete("/wishlist"), "Wishlist cleared");
+    if (result?.success) window.dispatchEvent(new Event("wishlistChanged"));
+    return result;
+};
 
 // ==================== ORDERS ====================
 export const createOrder = (orderData) =>

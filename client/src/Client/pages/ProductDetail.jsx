@@ -23,6 +23,7 @@ export default function ProductDetail() {
     const [reviews, setReviews] = useState([]);
     const [selectedRating, setSelectedRating] = useState(0);
     const [reviewLoading, setReviewLoading] = useState(false);
+    const [cartLoading, setCartLoading] = useState(false);
 
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
@@ -111,6 +112,8 @@ export default function ProductDetail() {
             return;
         }
 
+        if (cartLoading) return;
+        setCartLoading(true);
         try {
             const res = await addToCart(id, quantity);
             if (res?.success) {
@@ -118,6 +121,8 @@ export default function ProductDetail() {
             }
         } catch {
             toast.error("Failed to add to cart");
+        } finally {
+            setCartLoading(false);
         }
     };
 
@@ -245,7 +250,7 @@ export default function ProductDetail() {
                                                 role="radio"
                                                 aria-checked={selectedRating === rating}
                                                 aria-label={`${rating} star${rating > 1 ? 's' : ''}`}
-                                                className="p-1 text-resin-gold"
+                                                className="cursor-pointer p-1 text-resin-gold transition-transform hover:scale-110"
                                             >
                                                 <svg className={`w-6 h-6 ${rating <= selectedRating ? "fill-current" : "fill-gray-200"}`} viewBox="0 0 20 20" aria-hidden="true">
                                                     <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
@@ -318,9 +323,10 @@ export default function ProductDetail() {
 
                                     <button
                                         onClick={handleAddToCart}
-                                        className="w-full bg-resin-dark hover:bg-resin-blue text-white font-bold tracking-widest uppercase text-sm h-14 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                                        disabled={cartLoading}
+                                        className="w-full bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold tracking-widest uppercase text-sm h-14 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
                                     >
-                                        Add to Cart
+                                        {cartLoading ? "Adding..." : "Add to Cart"}
                                     </button>
                                 </div>
                             )}

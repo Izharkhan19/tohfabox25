@@ -34,14 +34,32 @@ export default function ClientLayout() {
     const { data: cartData = [], request: fetchCart } = useApi(getCart);
     const { data: wishlistData = [], request: fetchWishlist } = useApi(getWishlist);
 
-    const cartCount = Array.isArray(cartData) ? cartData.reduce((sum, item) => sum + (item.quantity || 1), 0) : 0;
-    const wishlistCount = Array.isArray(wishlistData) ? wishlistData.length : 0;
+    const cartItems = Array.isArray(cartData?.data) ? cartData.data : [];
+    const wishlistItems = Array.isArray(wishlistData?.data) ? wishlistData.data : [];
+    const cartCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    const wishlistCount = wishlistItems.length;
 
     useEffect(() => {
         if (isLoggedIn) {
             fetchCart();
             fetchWishlist();
         }
+    }, [isLoggedIn]);
+
+    useEffect(() => {
+        const refreshBadges = () => {
+            if (isLoggedIn) {
+                fetchCart();
+                fetchWishlist();
+            }
+        };
+
+        window.addEventListener("cartChanged", refreshBadges);
+        window.addEventListener("wishlistChanged", refreshBadges);
+        return () => {
+            window.removeEventListener("cartChanged", refreshBadges);
+            window.removeEventListener("wishlistChanged", refreshBadges);
+        };
     }, [isLoggedIn]);
 
     // Prevent scrolling when mobile menu is open

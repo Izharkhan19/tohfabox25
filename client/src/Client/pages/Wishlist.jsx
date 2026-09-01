@@ -21,6 +21,7 @@ export default function Wishlist() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [cartLoading, setCartLoading] = useState({});
 
     const isLoggedIn = !!localStorage.getItem("token") || !!localStorage.getItem("adminToken");
 
@@ -44,7 +45,7 @@ export default function Wishlist() {
                 setWishlistItems([]);
                 if (result?.message) setError(result.message);
             }
-        } catch (err) {
+        } catch {
             setError("Failed to load wishlist");
             setWishlistItems([]);
         } finally {
@@ -94,11 +95,19 @@ export default function Wishlist() {
     const handleAddToCart = async (productId) => {
         if (!productId) return;
 
-        const result = await addToCart(productId, 1);
-        if (result?.success) {
-            toast.success("Added to cart!");
-        } else {
-            toast.error(result?.message || "Failed to add to cart");
+        if (cartLoading[productId]) return;
+        setCartLoading((prev) => ({ ...prev, [productId]: true }));
+        try {
+            const result = await addToCart(productId, 1);
+            if (result?.success) {
+                toast.success("Added to cart!");
+            } else {
+                toast.error(result?.message || "Failed to add to cart");
+            }
+        } catch {
+            toast.error("Failed to add to cart");
+        } finally {
+            setCartLoading((prev) => ({ ...prev, [productId]: false }));
         }
     };
 
@@ -253,13 +262,13 @@ export default function Wishlist() {
                                         <div className="flex flex-col sm:flex-row gap-4 mt-auto">
                                             <button
                                                 onClick={() => handleAddToCart(id)}
-                                                disabled={stock === 0}
+                                                disabled={stock === 0 || cartLoading[id]}
                                                 className={`w-full py-3 md:py-4 rounded-full font-bold uppercase tracking-widest text-xs transition-all shadow-md shrink-0 ${stock > 0
                                                     ? "bg-resin-dark hover:bg-resin-blue text-white"
                                                     : "bg-gray-100 text-gray-400 cursor-not-allowed"
                                                     }`}
                                             >
-                                                {stock > 0 ? "Add to Cart" : "Unavailable"}
+                                                {stock === 0 ? "Unavailable" : cartLoading[id] ? "Adding..." : "Add to Cart"}
                                             </button>
                                         </div>
                                     </div>

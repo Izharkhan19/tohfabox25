@@ -150,9 +150,28 @@ app.use((err, req, res, next) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+const KEEP_ALIVE_URL = process.env.KEEP_ALIVE_URL || 'https://tohfabox25.onrender.com/api/health';
+const KEEP_ALIVE_INTERVAL_MS = 10 * 60 * 1000;
+
+const pingKeepAliveUrl = async () => {
+    try {
+        const response = await fetch(KEEP_ALIVE_URL, {
+            signal: AbortSignal.timeout(10000),
+        });
+
+        console.log(`Keep-alive ping: ${response.status}`);
+    } catch (error) {
+        console.warn(`Keep-alive ping failed: ${error.message}`);
+    }
+};
 
 app.listen(PORT, HOST, () => {
     console.log(`🚀 Server running on ${HOST}:${PORT}`);
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🌐 API ready at http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}/api`);
+
+    if (process.env.NODE_ENV === 'production') {
+        setInterval(pingKeepAliveUrl, KEEP_ALIVE_INTERVAL_MS);
+        console.log(`Keep-alive enabled: pinging ${KEEP_ALIVE_URL} every 10 minutes`);
+    }
 });

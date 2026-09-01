@@ -16,8 +16,7 @@ import {
     ShoppingCartIcon as ShoppingCartIconSolid,
     UserIcon as UserIconSolid
 } from "@heroicons/react/24/solid";
-import { useApi } from "../../api-services/hooks/useApi";
-import { getCart, getWishlist } from "../../api-services/apiService";
+import { useAppStore } from "../../stores/useAppStore";
 
 export default function ClientLayout() {
     const location = useLocation();
@@ -31,24 +30,24 @@ export default function ClientLayout() {
     const user = storedUser ? JSON.parse(storedUser) : null;
     const isLoggedIn = !!localStorage.getItem("token");
 
-    const { data: cartData = [], request: fetchCart } = useApi(getCart);
-    const { data: wishlistData = [], request: fetchWishlist } = useApi(getWishlist);
-
-    const cartItems = Array.isArray(cartData?.data) ? cartData.data : [];
-    const wishlistItems = Array.isArray(wishlistData?.data) ? wishlistData.data : [];
+    const cartItems = useAppStore((state) => state.cartItems) || [];
+    const wishlistItems = useAppStore((state) => state.wishlistItems) || [];
+    const fetchCart = useAppStore((state) => state.fetchCart);
+    const fetchWishlist = useAppStore((state) => state.fetchWishlist);
+    const invalidate = useAppStore((state) => state.invalidate);
     const cartCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
     const wishlistCount = wishlistItems.length;
 
     useEffect(() => {
-        if (isLoggedIn) {
-            fetchCart();
-            fetchWishlist();
-        }
-    }, [isLoggedIn]);
+        if (!isLoggedIn) return;
+        if (!useAppStore.getState().cartItems) fetchCart();
+        if (!useAppStore.getState().wishlistItems) fetchWishlist();
+    }, [isLoggedIn, fetchCart, fetchWishlist]);
 
     useEffect(() => {
         const refreshBadges = () => {
             if (isLoggedIn) {
+                invalidate("cart", "wishlist");
                 fetchCart();
                 fetchWishlist();
             }
@@ -60,7 +59,7 @@ export default function ClientLayout() {
             window.removeEventListener("cartChanged", refreshBadges);
             window.removeEventListener("wishlistChanged", refreshBadges);
         };
-    }, [isLoggedIn]);
+    }, [isLoggedIn, fetchCart, fetchWishlist, invalidate]);
 
     // Prevent scrolling when mobile menu is open
     useEffect(() => {

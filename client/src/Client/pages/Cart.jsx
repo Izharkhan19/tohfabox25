@@ -11,7 +11,6 @@ import {
     TrashIcon
 } from "@heroicons/react/24/outline";
 import {
-    getCart,
     updateCartItem,
     removeFromCart,
     clearCart,
@@ -20,6 +19,7 @@ import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { useAppStore } from "../../stores/useAppStore";
 
 export default function Cart() {
     const [cartItems, setCartItems] = useState([]);
@@ -27,6 +27,8 @@ export default function Cart() {
     const [error, setError] = useState(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const navigate = useNavigate();
+    const cachedCartItems = useAppStore((state) => state.cartItems);
+    const fetchSharedCart = useAppStore((state) => state.fetchCart);
 
     const isLoggedIn = !!localStorage.getItem("token") || !!localStorage.getItem("adminToken");
 
@@ -40,7 +42,9 @@ export default function Cart() {
         setError(null);
 
         try {
-            const result = await getCart();
+            const result = cachedCartItems
+                ? { success: true, data: { data: cachedCartItems } }
+                : await fetchSharedCart();
 
             if (result?.success && Array.isArray(result?.data?.data)) {
                 const validItems = result?.data?.data.filter(
@@ -62,7 +66,7 @@ export default function Cart() {
 
     useEffect(() => {
         fetchCart();
-    }, [isLoggedIn]);
+    }, [isLoggedIn, cachedCartItems, fetchSharedCart]);
 
     const updateQuantity = async (productId, newQty) => {
         if (newQty < 1) return;
@@ -195,10 +199,10 @@ export default function Cart() {
             {/* Header */}
             <div className="bg-white/90 border-b border-resin-gold/20 soft-grid">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-7 md:py-8">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h1 className="text-3xl md:text-4xl font-bold text-resin-dark font-serif flex flex-wrap items-center gap-3 md:gap-4">
-                            Your Cart
-                            <span className="rounded-full bg-resin-gold/10 px-3 py-1 text-sm md:text-lg font-sans font-semibold text-resin-blue">
+                    <div className="flex flex-row md:flex-row justify-between items-start md:items-center gap-4">
+                        <h1 className="flex flex-nowrap items-center gap-2 text-2xl font-bold text-resin-dark font-serif sm:gap-3 sm:text-3xl md:gap-4 md:text-4xl">
+                            Cart
+                            <span className="shrink-0 rounded-full bg-resin-gold/10 px-2.5 py-1 text-xs font-sans font-semibold text-resin-blue sm:px-3 sm:text-sm md:text-lg">
                                 ({totalItemsCount} {totalItemsCount === 1 ? "item" : "items"})
                             </span>
                         </h1>
@@ -207,7 +211,6 @@ export default function Cart() {
                             className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95"
                         >
                             <TrashIcon className="h-4 w-4" aria-hidden="true" />
-                            Clear Cart
                         </button>
                     </div>
                 </div>

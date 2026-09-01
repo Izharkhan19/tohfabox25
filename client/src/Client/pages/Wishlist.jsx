@@ -8,7 +8,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import {
-    getWishlist,
     removeFromWishlist,
     clearWishlist,
     addToCart,
@@ -17,6 +16,7 @@ import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { useAppStore } from "../../stores/useAppStore";
 
 export default function Wishlist() {
     const [wishlistItems, setWishlistItems] = useState([]);
@@ -24,6 +24,8 @@ export default function Wishlist() {
     const [error, setError] = useState(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [cartLoading, setCartLoading] = useState({});
+    const cachedWishlistItems = useAppStore((state) => state.wishlistItems);
+    const fetchSharedWishlist = useAppStore((state) => state.fetchWishlist);
 
     const isLoggedIn = !!localStorage.getItem("token") || !!localStorage.getItem("adminToken");
 
@@ -37,7 +39,9 @@ export default function Wishlist() {
         setError(null);
 
         try {
-            const result = await getWishlist();
+            const result = cachedWishlistItems
+                ? { success: true, data: { data: cachedWishlistItems } }
+                : await fetchSharedWishlist();
             if (result?.success && Array.isArray(result?.data?.data)) {
                 const validItems = result?.data?.data.filter(
                     (item) => item && (item._id || item.id)
@@ -57,7 +61,7 @@ export default function Wishlist() {
 
     useEffect(() => {
         fetchWishlist();
-    }, [isLoggedIn]);
+    }, [isLoggedIn, cachedWishlistItems, fetchSharedWishlist]);
 
     const handleRemove = async (productId) => {
         if (!productId) return;
@@ -184,10 +188,10 @@ export default function Wishlist() {
         <div className="bg-gray-50 min-h-screen pb-24">
             <div className="bg-white border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-6 py-8">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h1 className="text-3xl md:text-4xl font-bold text-resin-dark font-serif flex items-center gap-4">
-                            My Collection
-                            <span className="text-lg font-sans font-normal text-gray-400">
+                    <div className="flex flex-row md:flex-row justify-between items-start md:items-center gap-4">
+                        <h1 className="flex flex-nowrap items-center gap-2 text-2xl font-bold text-resin-dark font-serif sm:gap-4 sm:text-3xl md:text-4xl">
+                            Collection
+                            <span className="shrink-0 text-sm font-sans font-semibold text-gray-400 sm:text-lg">
                                 ({wishlistItems.length} {wishlistItems.length === 1 ? "item" : "items"})
                             </span>
                         </h1>
@@ -196,7 +200,6 @@ export default function Wishlist() {
                             className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95"
                         >
                             <TrashIcon className="h-4 w-4" aria-hidden="true" />
-                            Clear Collection
                         </button>
                     </div>
                 </div>

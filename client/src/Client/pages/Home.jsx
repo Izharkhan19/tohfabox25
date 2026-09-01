@@ -15,10 +15,9 @@ import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import {
   addToWishlist,
   removeFromWishlist,
-  getFeaturedProducts,
   addToCart,
-  getCart,
 } from "../../api-services/apiService";
+import { useAppStore } from "../../stores/useAppStore";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
@@ -31,6 +30,10 @@ export default function Home() {
   const [wishlistLoading, setWishlistLoading] = useState({});
   const [cartLoading, setCartLoading] = useState({});
   const [cartCounts, setCartCounts] = useState({});
+  const cachedFeaturedProducts = useAppStore((state) => state.featuredProducts);
+  const cachedCartItems = useAppStore((state) => state.cartItems);
+  const fetchFeaturedProductsFromStore = useAppStore((state) => state.fetchFeaturedProducts);
+  const fetchCart = useAppStore((state) => state.fetchCart);
 
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
@@ -133,32 +136,33 @@ export default function Home() {
 
   const fetchFeaturedProducts = async () => {
     setLoading(true);
-    const resData = await getFeaturedProducts();
-    if (resData?.success) {
-      const simplifiedData = resData?.data?.data?.map(transformProduct) || [];
-      setFeaturedProducts(simplifiedData);
-    } else {
-      setFeaturedProducts([]);
+    if (cachedFeaturedProducts) {
+      setFeaturedProducts(cachedFeaturedProducts.map(transformProduct));
+      setLoading(false);
+      return;
     }
+    const resData = await fetchFeaturedProductsFromStore();
+    setFeaturedProducts(resData?.success ? (resData.data?.data || []).map(transformProduct) : []);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchFeaturedProducts();
-  }, []);
+    const timer = setTimeout(fetchFeaturedProducts, 0);
+    return () => clearTimeout(timer);
+  }, [cachedFeaturedProducts, fetchFeaturedProductsFromStore]);
 
   useEffect(() => {
     if (!isLoggedIn) return;
 
-    getCart().then((result) => {
-      if (result?.success && Array.isArray(result?.data?.data)) {
-        setCartCounts(Object.fromEntries(result.data.data.map((item) => {
+    if (cachedCartItems) {
+        setCartCounts(Object.fromEntries(cachedCartItems.map((item) => {
           const productId = item.product?._id || item.product;
           return [productId, item.quantity || 0];
         })));
-      }
-    });
-  }, [isLoggedIn]);
+    } else {
+      fetchCart();
+    }
+  }, [isLoggedIn, cachedCartItems, fetchCart]);
 
   const handleWishlistClick = async (productId) => {
     if (!isLoggedIn) {

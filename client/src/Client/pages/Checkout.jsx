@@ -11,12 +11,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { toast } from 'react-toastify';
 import {
-  getCart,
   createOrder,
   getCurrentUser,
   validatePromo,
 } from "../../api-services/apiService";
 import LogoLoader from "../../components/LogoLoader";
+import { useAppStore } from "../../stores/useAppStore";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -28,6 +28,8 @@ export default function Checkout() {
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoLoading, setPromoLoading] = useState(false);
   const [error, setError] = useState(null);
+  const cachedCartItems = useAppStore((state) => state.cartItems);
+  const fetchSharedCart = useAppStore((state) => state.fetchCart);
 
   const [paymentMethod, setPaymentMethod] = useState("credit_card");
 
@@ -45,7 +47,9 @@ export default function Checkout() {
 
   const fetchCart = async () => {
     setLoadingCart(true);
-    const result = await getCart();
+    const result = cachedCartItems
+      ? { success: true, data: { data: cachedCartItems } }
+      : await fetchSharedCart();
     if (result.success && Array.isArray(result?.data?.data)) {
         const validItems = result.data.data.filter(
             (item) => item && item.product && (item._id || item.product._id)
@@ -79,8 +83,11 @@ export default function Checkout() {
 
   useEffect(() => {
     fetchUser();
-    fetchCart();
   }, []);
+
+  useEffect(() => {
+    fetchCart();
+  }, [cachedCartItems, fetchSharedCart]);
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + (item.product?.price || 0) * (item.quantity || 1),
@@ -196,11 +203,11 @@ export default function Checkout() {
     <div className="bg-gray-50 min-h-screen pb-24">
       {/* Header */}
       <div className="bg-white/90 border-b border-resin-gold/20 soft-grid">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-8 flex flex-row md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.24em] text-resin-gold">Almost there</p>
             <h1 className="mt-1 text-2xl sm:text-3xl md:text-4xl font-bold text-resin-dark font-serif flex items-center gap-4">
-             Secure Checkout
+              Checkout
             </h1>
           </div>
           <Link

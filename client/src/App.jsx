@@ -242,7 +242,7 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       <ToastContainer
-        position="bottom-center"
+        position="top-center"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop
@@ -254,9 +254,10 @@ export default function App() {
         toastClassName="mobile-toast"
         bodyClassName="mobile-toast-body"
         style={{
-          width: "min(92vw, 22rem)",
+          width: "min(96vw, 48rem)",
           left: "50%",
-          bottom: "1rem",
+          top: "1rem",
+          bottom: "auto",
           transform: "translateX(-50%)",
         }}
       />

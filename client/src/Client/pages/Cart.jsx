@@ -39,7 +39,9 @@ export default function Cart() {
       return;
     }
 
-    setLoading(true);
+    if (!cachedCartItems) {
+      setLoading(true);
+    }
     setError(null);
 
     try {

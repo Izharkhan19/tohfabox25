@@ -36,7 +36,9 @@ export default function Wishlist() {
       return;
     }
 
-    setLoading(true);
+    if (!cachedWishlistItems) {
+      setLoading(true);
+    }
     setError(null);
 
     try {

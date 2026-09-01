@@ -30,8 +30,8 @@ export default function ProductDetail() {
     const user = storedUser ? JSON.parse(storedUser) : null;
     const isLoggedIn = !!localStorage.getItem("token");
 
-    const fetchProduct = async () => {
-        setLoading(true);
+    const fetchProduct = async (showLoader = true) => {
+        if (showLoader) setLoading(true);
         try {
             const result = await getProduct(id);
             if (result?.success && result?.data) {
@@ -94,7 +94,7 @@ export default function ProductDetail() {
             const result = await saveProductReview(id, { rating: selectedRating });
             if (result?.success) {
                 toast.success("Thanks for rating this product!");
-                await fetchProduct();
+                await fetchProduct(false);
                 const updatedReviews = await getProductReviews(id);
                 if (updatedReviews?.success && updatedReviews?.data?.data) setReviews(updatedReviews.data.data);
             } else {

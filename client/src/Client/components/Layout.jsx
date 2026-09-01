@@ -47,7 +47,6 @@ export default function ClientLayout() {
     useEffect(() => {
         const refreshBadges = () => {
             if (isLoggedIn) {
-                invalidate("cart", "wishlist");
                 fetchCart();
                 fetchWishlist();
             }
@@ -59,7 +58,7 @@ export default function ClientLayout() {
             window.removeEventListener("cartChanged", refreshBadges);
             window.removeEventListener("wishlistChanged", refreshBadges);
         };
-    }, [isLoggedIn, fetchCart, fetchWishlist, invalidate]);
+    }, [isLoggedIn, fetchCart, fetchWishlist]);
 
     // Prevent scrolling when mobile menu is open
     useEffect(() => {

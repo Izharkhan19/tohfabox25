@@ -210,7 +210,7 @@ api.interceptors.response.use(undefined, async (error) => {
     const retryCount = config?._retryCount || 0;
     const method = config?.method?.toUpperCase();
     const isReadRequest = ["GET", "HEAD", "OPTIONS"].includes(method);
-    const isRetryable = isReadRequest && (!error.response || RETRYABLE_STATUS_CODES.has(status));
+    const isRetryable = isReadRequest && (!error.response || RETRYABLE_STATUS_CODES.has(status)) && !import.meta.env.DEV;
 
     if (config && isRetryable && retryCount < MAX_RETRIES) {
         config._retryCount = retryCount + 1;

@@ -81,7 +81,6 @@ export default function Products() {
 
   useEffect(() => {
     fetchCategories();
-    fetchProducts();
   }, []);
 
   useEffect(() => {

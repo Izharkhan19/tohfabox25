@@ -195,27 +195,30 @@ export default function Checkout() {
   return (
     <div className="bg-gray-50 min-h-screen pb-24">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-resin-dark font-serif flex items-center gap-4">
+      <div className="bg-white/90 border-b border-resin-gold/20 soft-grid">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.24em] text-resin-gold">Almost there</p>
+            <h1 className="mt-1 text-2xl sm:text-3xl md:text-4xl font-bold text-resin-dark font-serif flex items-center gap-4">
              Secure Checkout
-          </h1>
+            </h1>
+          </div>
           <Link
             to="/cart"
-            className="flex items-center gap-2 text-sm uppercase tracking-widest text-gray-500 hover:text-resin-blue transition-colors font-bold"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-resin-blue/20 bg-white px-4 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-resin-blue shadow-sm transition-all hover:border-resin-blue hover:bg-resin-blue hover:text-white active:scale-95"
           >
             <ArrowLeftIcon className="w-4 h-4" />
-            Back to Cart
+            Back to cart
           </Link>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <form onSubmit={handlePlaceOrder} className="grid lg:grid-cols-12 gap-12">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-8 md:py-12">
+        <form onSubmit={handlePlaceOrder} className="grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
           {/* Left: Form */}
           <div className="lg:col-span-7 space-y-10">
             {/* Contact Information */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <div className="min-w-0 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
               <h2 className="text-xl font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">Contact Information</h2>
               <div className="space-y-4">
                   <input
@@ -240,7 +243,7 @@ export default function Checkout() {
             </div>
 
             {/* Shipping Address */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <div className="min-w-0 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
               <h2 className="text-xl font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">Shipping Address</h2>
               
               <div className="space-y-4">
@@ -316,7 +319,7 @@ export default function Checkout() {
             </div>
 
             {/* Payment Method */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <div className="min-w-0 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
               <h2 className="text-xl font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">Payment Method</h2>
 
               <div className="space-y-4">
@@ -369,7 +372,7 @@ export default function Checkout() {
 
           {/* Right: Order Summary Sidebar */}
           <div className="lg:col-span-5">
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sticky top-8">
+            <div className="min-w-0 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8 lg:sticky lg:top-8">
               <h2 className="text-xl font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">
                 Order Summary
               </h2>

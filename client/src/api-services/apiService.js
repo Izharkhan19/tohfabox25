@@ -154,6 +154,12 @@ export const getProducts = (filters = {}) =>
 export const getProduct = (id) =>
     handleApiCall(() => api.get(`/products/${id}`));
 
+export const getProductReviews = (productId) =>
+    handleApiCall(() => api.get(`/products/${productId}/reviews`));
+
+export const saveProductReview = (productId, reviewData) =>
+    handleApiCall(() => api.post(`/products/${productId}/reviews`, reviewData));
+
 export const getFeaturedProducts = () =>
     handleApiCall(() => api.get("/products/featured"));
 

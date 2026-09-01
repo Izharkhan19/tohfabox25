@@ -9,6 +9,7 @@ const {
     deleteProductImage,
     getFeaturedProducts
 } = require('../controllers/productController');
+const { getProductReviews, createOrUpdateReview } = require('../controllers/reviewController');
 const { protect } = require('../middleware/auth');
 const { isAdmin } = require('../middleware/admin');
 const { upload } = require('../config/googleDrive');
@@ -16,6 +17,8 @@ const { upload } = require('../config/googleDrive');
 // Public routes
 router.get('/', getProducts);
 router.get('/featured', getFeaturedProducts);
+router.get('/:productId/reviews', getProductReviews);
+router.post('/:productId/reviews', protect, createOrUpdateReview);
 router.get('/:identifier', getProduct);
 
 // Protected/Admin routes

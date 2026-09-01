@@ -8,7 +8,7 @@ import {
     SparklesIcon
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartFilledIcon } from "@heroicons/react/24/solid";
-import { getProduct, addToCart, addToWishlist, removeFromWishlist } from "../../api-services/apiService";
+import { getProduct, getProductReviews, saveProductReview, addToCart, addToWishlist, removeFromWishlist } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import { toast } from 'react-toastify';
 
@@ -20,6 +20,9 @@ export default function ProductDetail() {
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [activeImage, setActiveImage] = useState(0);
+    const [reviews, setReviews] = useState([]);
+    const [selectedRating, setSelectedRating] = useState(0);
+    const [reviewLoading, setReviewLoading] = useState(false);
 
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
@@ -61,8 +64,46 @@ export default function ProductDetail() {
     };
 
     useEffect(() => {
-        if (id) fetchProduct();
+        if (id) {
+            fetchProduct();
+            getProductReviews(id).then((result) => {
+                if (result?.success && result?.data?.data) {
+                    setReviews(result.data.data);
+                    const ownReview = result.data.data.find((review) => String(review.user?._id) === String(user?._id));
+                    if (ownReview) setSelectedRating(ownReview.rating);
+                }
+            });
+        }
     }, [id]);
+
+    const handleRatingSubmit = async () => {
+        if (!isLoggedIn) {
+            toast.info("Please sign in to rate this product");
+            return;
+        }
+
+        if (!selectedRating) {
+            toast.info("Please select a rating first");
+            return;
+        }
+
+        setReviewLoading(true);
+        try {
+            const result = await saveProductReview(id, { rating: selectedRating });
+            if (result?.success) {
+                toast.success("Thanks for rating this product!");
+                await fetchProduct();
+                const updatedReviews = await getProductReviews(id);
+                if (updatedReviews?.success && updatedReviews?.data?.data) setReviews(updatedReviews.data.data);
+            } else {
+                toast.error(result?.message || "Unable to save rating");
+            }
+        } catch {
+            toast.error("Unable to save rating");
+        } finally {
+            setReviewLoading(false);
+        }
+    };
 
     const handleAddToCart = async () => {
         if (!isLoggedIn) {
@@ -75,7 +116,7 @@ export default function ProductDetail() {
             if (res?.success) {
                 toast.success(`Added ${quantity} × ${product.name} to cart!`);
             }
-        } catch (err) {
+        } catch {
             toast.error("Failed to add to cart");
         }
     };
@@ -95,7 +136,7 @@ export default function ProductDetail() {
             } else {
                 await removeFromWishlist(id);
             }
-        } catch (error) {
+        } catch {
             setIsWishlisted(!newState);
             toast.error("Failed to update wishlist");
         }
@@ -187,9 +228,41 @@ export default function ProductDetail() {
                                         ))}
                                     </div>
                                     <span className="text-sm text-gray-500">
-                                        ({product.rating.toFixed(1)} / {product.reviews} reviews)
+                                        ({product.rating.toFixed(1)} / {reviews.length || product.reviews} reviews)
                                     </span>
                                 </div>
+                            </div>
+
+                            <div className="mb-8 rounded-2xl border border-gray-100 bg-white p-5">
+                                <p className="text-sm font-bold text-gray-700 mb-3">Rate this piece</p>
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <div className="flex items-center" role="radiogroup" aria-label="Product rating">
+                                        {[1, 2, 3, 4, 5].map((rating) => (
+                                            <button
+                                                key={rating}
+                                                type="button"
+                                                onClick={() => setSelectedRating(rating)}
+                                                role="radio"
+                                                aria-checked={selectedRating === rating}
+                                                aria-label={`${rating} star${rating > 1 ? 's' : ''}`}
+                                                className="p-1 text-resin-gold"
+                                            >
+                                                <svg className={`w-6 h-6 ${rating <= selectedRating ? "fill-current" : "fill-gray-200"}`} viewBox="0 0 20 20" aria-hidden="true">
+                                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                                </svg>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleRatingSubmit}
+                                        disabled={reviewLoading}
+                                        className="rounded-full bg-resin-dark px-5 py-2 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-resin-blue disabled:bg-gray-400"
+                                    >
+                                        {reviewLoading ? "Saving..." : "Submit Rating"}
+                                    </button>
+                                </div>
+                                {!isLoggedIn && <p className="mt-2 text-xs text-gray-500">Sign in to submit your rating.</p>}
                             </div>
 
                             <div className="text-4xl font-bold text-resin-dark mb-8">

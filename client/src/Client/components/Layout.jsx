@@ -407,7 +407,7 @@ export default function ClientLayout() {
                         </Link>
                         <Link to="/cart" className="relative flex flex-col items-center justify-center w-16 h-full gap-1.5 active:scale-95 transition-transform group">
                             {isActive("/cart") ? <ShoppingCartIconSolid className="w-7 h-7 text-[#12343b]" /> : <ShoppingCartIcon className="w-7 h-7 text-[#7a8f94] group-hover:text-[#12343b]" />}
-                            {cartCount > 0 && <span className="absolute top-2 right-2 w-4 h-4 bg-[#2d545e] text-[#12343b] text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">{cartCount}</span>}
+                            {cartCount > 0 && <span className="absolute top-2 right-2 w-4 h-4 bg-[#c89666] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">{cartCount}</span>}
                             <span className={`text-[11px] font-black tracking-wide ${isActive("/cart") ? "text-[#12343b]" : "text-[#7a8f94]"}`}>Cart</span>
                         </Link>
                         <Link to="/orders" className="flex flex-col items-center justify-center w-16 h-full gap-1.5 active:scale-95 transition-transform group">

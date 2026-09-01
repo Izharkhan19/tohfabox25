@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { loginUser } from '../../api-services/apiService';
 
 export default function Login() {
@@ -8,6 +8,7 @@ export default function Login() {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -54,19 +55,13 @@ export default function Login() {
             <div className="hidden lg:block lg:w-1/2 relative">
                 <img
                     referrerPolicy="no-referrer"
-                    src="/fallback-demo.svg"
+                    src="/logo.png"
                     onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src = '/logo.png';
                     }}
-                    alt="Resin Art Background"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    alt="Tohfabox25"
+                    className="absolute inset-0 w-full h-full object-contain bg-white p-8"
                 />
-                <div className="absolute inset-0 bg-resin-dark/40 mix-blend-multiply"></div>
-                <div className="absolute inset-0 flex flex-col justify-end p-16">
-                    <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 drop-shadow-md mb-4">Welcome back to Tohfabox25</h2>
-                    <p className="text-resin-light text-lg font-light max-w-md">Access your collection, track your bespoke orders, and discover new masterpieces.</p>
-                </div>
             </div>
 
             {/* Right: Form Side */}
@@ -103,14 +98,29 @@ export default function Login() {
 
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-2">Password</label>
-                            <input
-                                type="password"
-                                required
-                                className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    className="w-full px-5 py-4 pr-14 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
+                                    placeholder="••••••••"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((visible) => !visible)}
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                    title={showPassword ? 'Hide password' : 'Show password'}
+                                    className="absolute inset-y-0 right-0 flex items-center px-5 text-gray-500 hover:text-resin-blue focus:outline-none focus:ring-2 focus:ring-inset focus:ring-resin-blue rounded-r-xl"
+                                >
+                                    {showPassword ? (
+                                        <EyeSlashIcon className="w-5 h-5" aria-hidden="true" />
+                                    ) : (
+                                        <EyeIcon className="w-5 h-5" aria-hidden="true" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex items-center justify-between">
@@ -126,9 +136,15 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
+                            aria-busy={loading}
                             className="w-full bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold h-14 rounded-full tracking-widest uppercase text-sm transition-all shadow-md mt-4"
                         >
-                            {loading ? 'Authenticating...' : 'Sign In'}
+                            {loading ? (
+                                <span className="inline-flex items-center justify-center gap-2" aria-live="polite">
+                                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+                                    Signing in...
+                                </span>
+                            ) : 'Sign In'}
                         </button>
 
                         <button

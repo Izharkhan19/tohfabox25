@@ -40,15 +40,20 @@ export default function Login() {
   // };
 
   const handleLogin = async () => {
-    const result = await loginUser({
-      email: email,
-      password: password,
-    }); // Your API call
-    if (result.success) {
-      localStorage.setItem("adminToken", result?.data?.data?.token);
-      localStorage.setItem("token", result?.data?.data?.token); // For shared API use
-      localStorage.setItem("user", JSON.stringify(result?.data?.data?.user)); // { role: 'admin', ... }
-      navigate("/admin"); // Goes to Dashboard
+    setLoading(true);
+    try {
+      const result = await loginUser({
+        email: email,
+        password: password,
+      });
+      if (result.success) {
+        localStorage.setItem("adminToken", result?.data?.data?.token);
+        localStorage.setItem("token", result?.data?.data?.token); // For shared API use
+        localStorage.setItem("user", JSON.stringify(result?.data?.data?.user)); // { role: 'admin', ... }
+        navigate("/admin"); // Goes to Dashboard
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,9 +90,15 @@ export default function Login() {
           disabled={loading}
           onClick={handleLogin}
           type="submit"
+          aria-busy={loading}
           className="w-full bg-blue-600 py-3 rounded-lg text-white font-semibold hover:bg-blue-700 transition shadow-md"
         >
-          {loading ? "Loading..." : "Login"}
+          {loading ? (
+            <span className="inline-flex items-center justify-center gap-2" aria-live="polite">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+              Signing in...
+            </span>
+          ) : "Login"}
         </button>
 
         <button

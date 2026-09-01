@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { registerUser } from '../../api-services/apiService';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -16,6 +16,8 @@ export default function Register() {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -113,34 +115,70 @@ export default function Register() {
 
                         <div>
                             <label className="block text-xs font-bold text-gray-700 mb-1">Password</label>
-                            <input
-                                type="password"
-                                required
-                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-sm"
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    className="w-full px-3 py-2 pr-11 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-sm"
+                                    placeholder="••••••••"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((visible) => !visible)}
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                    title={showPassword ? 'Hide password' : 'Show password'}
+                                    className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-resin-blue focus:outline-none focus:ring-2 focus:ring-inset focus:ring-resin-blue rounded-r-lg"
+                                >
+                                    {showPassword ? (
+                                        <EyeSlashIcon className="w-5 h-5" aria-hidden="true" />
+                                    ) : (
+                                        <EyeIcon className="w-5 h-5" aria-hidden="true" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         <div>
                             <label className="block text-xs font-bold text-gray-700 mb-1">Confirm Password</label>
-                            <input
-                                type="password"
-                                required
-                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-sm"
-                                placeholder="••••••••"
-                                value={formData.confirmPassword}
-                                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    required
+                                    className="w-full px-3 py-2 pr-11 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-sm"
+                                    placeholder="••••••••"
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword((visible) => !visible)}
+                                    aria-label={showConfirmPassword ? 'Hide confirmation password' : 'Show confirmation password'}
+                                    title={showConfirmPassword ? 'Hide confirmation password' : 'Show confirmation password'}
+                                    className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-resin-blue focus:outline-none focus:ring-2 focus:ring-inset focus:ring-resin-blue rounded-r-lg"
+                                >
+                                    {showConfirmPassword ? (
+                                        <EyeSlashIcon className="w-5 h-5" aria-hidden="true" />
+                                    ) : (
+                                        <EyeIcon className="w-5 h-5" aria-hidden="true" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
+                            aria-busy={loading}
                             className="w-full bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold h-10 rounded-full tracking-widest uppercase text-xs transition-all shadow-md mt-4"
                         >
-                            {loading ? 'Creating Account...' : 'Register Now'}
+                            {loading ? (
+                                <span className="inline-flex items-center justify-center gap-2" aria-live="polite">
+                                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+                                    Creating account...
+                                </span>
+                            ) : 'Register Now'}
                         </button>
                     </form>
 

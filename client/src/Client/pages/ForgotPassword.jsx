@@ -85,9 +85,15 @@ export default function ForgotPassword() {
                             <button
                                 type="submit"
                                 disabled={loading}
+                                aria-busy={loading}
                                 className="w-full bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold h-12 rounded-full tracking-widest uppercase text-sm transition-all shadow-md mt-6"
                             >
-                                {loading ? 'Sending...' : 'Send Reset Link'}
+                                {loading ? (
+                                    <span className="inline-flex items-center justify-center gap-2" aria-live="polite">
+                                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+                                        Sending...
+                                    </span>
+                                ) : 'Send Reset Link'}
                             </button>
                         </form>
                     )}

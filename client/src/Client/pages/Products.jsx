@@ -15,6 +15,7 @@ import {
 } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import { toast } from 'react-toastify';
+import LogoLoader from "../../components/LogoLoader";
 
 export default function Products() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -326,16 +327,8 @@ export default function Products() {
           {/* Products Grid */}
           <div className="flex-1">
             {loading ? (
-              <div
-                className={`grid ${
-                  viewMode === "grid"
-                    ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-3"
-                    : "grid-cols-1"
-                } gap-4 md:gap-8`}
-              >
-                {[...Array(9)].map((_, i) => (
-                  <div key={i} className="bg-gray-200/50 rounded-3xl h-[300px] md:h-[400px] animate-pulse border border-gray-100" />
-                ))}
+              <div className="flex items-center justify-center py-24">
+                <LogoLoader label="Loading collection..." />
               </div>
             ) : products.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-3xl border border-[#c89666]/20 shadow-[0_4px_20px_rgba(45,84,94,0.05)]">

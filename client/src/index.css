@@ -132,6 +132,15 @@
   background-size: 32px 32px;
 }
 
+@keyframes logo-breathe {
+  0%, 100% { transform: scale(0.96); opacity: 0.82; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+.logo-loader-mark {
+  animation: logo-breathe 1.8s ease-in-out infinite;
+}
+
 @media (min-width: 768px) {
   .Toastify__toast-container {
     left: auto !important;

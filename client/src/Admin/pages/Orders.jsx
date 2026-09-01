@@ -17,6 +17,7 @@ import {
 } from "../../api-services/apiService";
 import useDebounce from "../../hooks/useDebounce";
 import { toast } from 'react-toastify';
+import LogoLoader from '../../components/LogoLoader';
 
 /* ---------------- STATUS CONFIG ---------------- */
 const statusConfig = {
@@ -191,7 +192,7 @@ export default function Orders() {
 
       {/* Loading / Error */}
       {loading && (
-        <div className="text-center py-16 text-gray-500">Loading orders...</div>
+        <div className="py-16"><LogoLoader label="Loading orders..." compact /></div>
       )}
 
       {error && !loading && (

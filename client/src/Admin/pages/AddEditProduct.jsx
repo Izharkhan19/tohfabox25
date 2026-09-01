@@ -156,6 +156,7 @@ import {
 } from "../../api-services/apiService";
 import axios from "axios";
 import { toast } from "react-toastify";
+import LogoLoader from "../../components/LogoLoader";
 
 export default function AddEditProduct() {
   const { id } = useParams();
@@ -365,7 +366,7 @@ export default function AddEditProduct() {
 
       {loadingProduct ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div>
+          <LogoLoader label="Loading product..." compact />
         </div>
       ) : error ? (
         <div className="text-center py-16 text-red-600">{error}</div>

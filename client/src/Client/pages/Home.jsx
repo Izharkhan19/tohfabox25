@@ -20,6 +20,7 @@ import {
   getCart,
 } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
+import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
 
 export default function Home() {
@@ -372,13 +373,8 @@ export default function Home() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[...Array(4)].map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-brand-dark/10 rounded-3xl h-[450px] animate-pulse"
-                />
-              ))}
+            <div className="flex items-center justify-center py-20">
+              <LogoLoader label="Curating your collection..." />
             </div>
           ) : featuredProducts.length === 0 ? (
             <div className="text-center py-24 bg-white rounded-3xl shadow-sm border border-brand-accent/20">

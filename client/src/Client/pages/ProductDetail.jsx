@@ -10,6 +10,7 @@ import {
 import { HeartIcon as HeartFilledIcon } from "@heroicons/react/24/solid";
 import { getProduct, getProductReviews, saveProductReview, addToCart, addToWishlist, removeFromWishlist } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
+import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
 
 export default function ProductDetail() {
@@ -149,11 +150,8 @@ export default function ProductDetail() {
 
     if (loading) {
         return (
-            <div className="min-h-[80vh] flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-resin-blue mx-auto"></div>
-                    <p className="mt-4 text-sm text-gray-500 uppercase tracking-widest">Preparing Art Piece...</p>
-                </div>
+            <div className="min-h-[80vh] flex items-center justify-center bg-brand-light soft-grid">
+                <LogoLoader label="Preparing art piece..." />
             </div>
         );
     }

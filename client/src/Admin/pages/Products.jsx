@@ -4,6 +4,7 @@ import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { deleteProduct, getProducts } from "../../api-services/apiService";
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import LogoLoader from '../../components/LogoLoader';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -73,9 +74,7 @@ export default function Products() {
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center py-10 text-gray-500">
-          Loading products...
-        </div>
+        <div className="py-10"><LogoLoader label="Loading products..." compact /></div>
       )}
 
       {/* Empty State */}

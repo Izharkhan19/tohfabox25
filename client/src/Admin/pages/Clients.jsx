@@ -9,6 +9,7 @@ import {
 import { getDateInFormat } from "../../utils/commonService";
 import { toast } from "react-toastify";
 import Swal from 'sweetalert2';
+import LogoLoader from '../../components/LogoLoader';
 
 export default function Clients() {
   const [users, setUsers] = useState([]);
@@ -79,7 +80,7 @@ export default function Clients() {
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center py-10 text-gray-500">Loading Users...</div>
+        <div className="py-10"><LogoLoader label="Loading users..." compact /></div>
       )}
 
       {/* Empty State */}

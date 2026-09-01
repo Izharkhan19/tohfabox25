@@ -7,7 +7,8 @@ import {
     ShoppingBagIcon,
     TruckIcon,
     ShieldCheckIcon,
-    LockClosedIcon
+    LockClosedIcon,
+    TrashIcon
 } from "@heroicons/react/24/outline";
 import {
     getCart,
@@ -16,6 +17,7 @@ import {
     clearCart,
 } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
+import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
@@ -125,11 +127,8 @@ export default function Cart() {
 
     if (loading) {
         return (
-            <div className="min-h-[70vh] flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-resin-blue mx-auto"></div>
-                    <p className="mt-4 text-sm text-gray-500 uppercase tracking-widest">Loading Cart...</p>
-                </div>
+            <div className="min-h-[70vh] flex items-center justify-center bg-brand-light soft-grid">
+                <LogoLoader label="Loading cart..." />
             </div>
         );
     }
@@ -192,29 +191,30 @@ export default function Cart() {
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen pb-24">
+        <div className="bg-brand-light min-h-screen pb-24">
             {/* Header */}
-            <div className="bg-white border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-6 py-8">
+            <div className="bg-white/90 border-b border-resin-gold/20 soft-grid">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-7 md:py-8">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h1 className="text-3xl md:text-4xl font-bold text-resin-dark font-serif flex items-center gap-4">
-                            Your Collection
-                            <span className="text-lg font-sans font-normal text-gray-400">
+                        <h1 className="text-3xl md:text-4xl font-bold text-resin-dark font-serif flex flex-wrap items-center gap-3 md:gap-4">
+                            Your Cart
+                            <span className="rounded-full bg-resin-gold/10 px-3 py-1 text-sm md:text-lg font-sans font-semibold text-resin-blue">
                                 ({totalItemsCount} {totalItemsCount === 1 ? "item" : "items"})
                             </span>
                         </h1>
                         <button
                             onClick={clearAll}
-                            className="text-sm uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors font-bold"
+                            className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95"
                         >
+                            <TrashIcon className="h-4 w-4" aria-hidden="true" />
                             Clear Cart
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 py-12">
-                <div className="grid lg:grid-cols-12 gap-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+                <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
                     {/* Cart Items List */}
                     <div className="lg:col-span-8 space-y-6">
                         {cartItems.map((item) => {
@@ -224,7 +224,7 @@ export default function Cart() {
                             return (
                                 <div
                                     key={item._id || product._id}
-                                    className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 transition-opacity ${!inStock ? "opacity-60" : ""}`}
+                                    className={`bg-white rounded-2xl shadow-sm border border-resin-gold/15 p-4 sm:p-6 flex flex-col sm:flex-row gap-5 sm:gap-6 transition-opacity ${!inStock ? "opacity-60" : ""}`}
                                 >
                                     <Link to={`/products/${product._id}`} className="w-full sm:w-32 h-32 flex-shrink-0">
                                         <img

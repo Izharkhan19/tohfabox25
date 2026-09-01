@@ -22,6 +22,7 @@ import {
 } from "react-share";
 
 import { getProducts } from "../../api-services/apiService";
+import LogoLoader from "../../components/LogoLoader";
 
 export default function Gallery() {
   const [images, setImages] = useState([]);
@@ -117,9 +118,8 @@ export default function Gallery() {
       {/* Gallery Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20 bg-[#fdfbf9]">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-12 h-12 border-4 border-[#e1b382]/30 border-t-[#e1b382] rounded-full animate-spin mb-4"></div>
-            <p className="text-[#12343b] font-bold animate-pulse">Loading gallery...</p>
+          <div className="flex items-center justify-center py-20">
+            <LogoLoader label="Loading gallery..." />
           </div>
         ) : images.length === 0 ? (
           <div className="text-center py-20">

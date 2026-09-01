@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import {
     XMarkIcon,
     HeartIcon as HeartOutline,
-    SparklesIcon
+    SparklesIcon,
+    TrashIcon
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import {
@@ -13,6 +14,7 @@ import {
     addToCart,
 } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
+import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
@@ -115,11 +117,8 @@ export default function Wishlist() {
 
     if (loading) {
         return (
-            <div className="min-h-[70vh] bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <HeartSolid className="w-16 h-16 text-resin-blue mx-auto mb-6 animate-pulse" />
-                    <p className="text-sm uppercase tracking-widest text-gray-500">Loading Collection...</p>
-                </div>
+            <div className="min-h-[70vh] bg-brand-light flex items-center justify-center soft-grid">
+                <LogoLoader label="Loading collection..." />
             </div>
         );
     }
@@ -194,8 +193,9 @@ export default function Wishlist() {
                         </h1>
                         <button
                             onClick={handleClearAll}
-                            className="text-sm uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors font-bold"
+                            className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95"
                         >
+                            <TrashIcon className="h-4 w-4" aria-hidden="true" />
                             Clear Collection
                         </button>
                     </div>

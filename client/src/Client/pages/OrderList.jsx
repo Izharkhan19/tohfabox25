@@ -13,6 +13,7 @@ import {
     ArrowRightOnRectangleIcon
 } from "@heroicons/react/24/outline";
 import { getMyOrders } from "../../api-services/apiService";
+import LogoLoader from "../../components/LogoLoader";
 
 export default function OrderList() {
     const navigate = useNavigate();
@@ -87,11 +88,8 @@ export default function OrderList() {
 
     if (loading) {
         return (
-            <div className="min-h-[70vh] bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#12343b] mx-auto"></div>
-                    <p className="mt-4 text-sm uppercase tracking-widest text-gray-500 font-bold">Loading your profile...</p>
-                </div>
+            <div className="min-h-[70vh] bg-brand-light flex items-center justify-center soft-grid">
+                <LogoLoader label="Loading your profile..." />
             </div>
         );
     }

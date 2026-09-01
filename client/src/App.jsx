@@ -141,6 +141,7 @@ import Products from "./Client/pages/Products";
 import Gallery from "./Client/pages/Gallery";
 import PrivacyPolicy from "./Client/pages/PrivacyPolicy";
 import TermsOfService from "./Client/pages/TermsOfService";
+import AppInfo from "./Client/pages/AppInfo";
 import ProductDetail from "./Client/pages/ProductDetail";
 import Cart from "./Client/pages/Cart";
 import Checkout from "./Client/pages/Checkout";
@@ -300,6 +301,7 @@ export default function App() {
           <Route path="gallery" element={<Gallery />} />
           <Route path="privacy-policy" element={<PrivacyPolicy />} />
           <Route path="terms-of-service" element={<TermsOfService />} />
+          <Route path="app-info" element={<AppInfo />} />
           <Route path="products/:id" element={<ProductDetail />} />
 
           {/* Protected Routes - Require Login */}

@@ -17,6 +17,8 @@ import {
     UserIcon as UserIconSolid
 } from "@heroicons/react/24/solid";
 import { useAppStore } from "../../stores/useAppStore";
+import confetti from "canvas-confetti";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function ClientLayout() {
     const location = useLocation();
@@ -173,8 +175,19 @@ export default function ClientLayout() {
 
                         {/* Logo: Center on Mobile, Left on Desktop */}
                         <div className="flex-1 md:flex-none flex justify-center md:justify-start">
-                            <Link to="/" className="flex items-center gap-3 group">
-                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Tohfabox25 Logo" className="w-10 h-10 md:w-11 md:h-11 rounded-lg object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)] transform group-hover:scale-105 transition-all duration-300" />
+                            <Link 
+                                to="/" 
+                                className="flex items-center gap-3 group"
+                                onClick={() => {
+                                    confetti({
+                                        particleCount: 100,
+                                        spread: 70,
+                                        origin: { y: 0.2, x: 0.1 },
+                                        colors: ['#e1b382', '#c89666', '#ffffff']
+                                    });
+                                }}
+                            >
+                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Tohfabox25 Logo" className="w-10 h-10 md:w-11 md:h-11 rounded-lg object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)] transform group-hover:scale-105 active:scale-95 transition-all duration-300" />
                                 <h1 className="text-2xl md:text-3xl font-extrabold text-[#e1b382] tracking-tight drop-shadow-md font-serif hidden sm:block">
                                     Tohfabox<span className="text-white font-light">25</span>
                                 </h1>
@@ -343,7 +356,18 @@ export default function ClientLayout() {
 
             {/* Main Content */}
             <main className="flex-1 mt-20 md:mt-24">
-                <Outlet />
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={location.pathname}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        className="h-full"
+                    >
+                        <Outlet />
+                    </motion.div>
+                </AnimatePresence>
             </main>
 
             {/* Premium Footer */}

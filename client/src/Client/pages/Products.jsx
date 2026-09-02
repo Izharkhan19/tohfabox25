@@ -16,6 +16,21 @@ import {
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import { toast } from 'react-toastify';
 import LogoLoader from "../../components/LogoLoader";
+import { motion } from "framer-motion";
+import Tilt from "react-parallax-tilt";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
 
 export default function Products() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -345,7 +360,11 @@ export default function Products() {
                 </button>
               </div>
             ) : (
-              <div
+            ) : (
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
                 className={`grid ${
                   viewMode === "grid"
                     ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-3"
@@ -353,82 +372,85 @@ export default function Products() {
                 } gap-4 md:gap-8`}
               >
                 {products.map((product) => (
-                  <div
-                    key={product._id}
-                    className={`group bg-white rounded-3xl shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all duration-300 overflow-hidden border border-[#c89666]/20 flex ${viewMode === 'list' ? 'flex-row h-48 md:h-64' : 'flex-col'}`}
-                  >
-                    <Link to={`/products/${product._id}`} className={`block overflow-hidden relative bg-gray-100 ${viewMode === 'list' ? 'w-2/5 md:w-1/3' : 'w-full aspect-square'}`}>
-                      <img referrerPolicy="no-referrer"
-                        src={
-                          product.images?.[0]?.url ||
-                          "https://via.placeholder.com/600"
-                        }
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      {!product.stock && (
-                        <div className="absolute inset-0 bg-[#12343b]/70 backdrop-blur-sm flex items-center justify-center z-20">
-                          <span className="bg-white/10 text-white border border-white/30 px-4 md:px-6 py-2 rounded-full font-black tracking-widest uppercase text-xs md:text-sm shadow-lg">
-                            Sold Out
-                          </span>
-                        </div>
-                      )}
-                    </Link>
+                  <motion.div variants={itemVariants} key={product._id} className="h-full">
+                      <Tilt tiltMaxAngleX={5} tiltMaxAngleY={5} scale={1.01} transitionSpeed={1000} className="h-full">
+                          <div
+                            className={`h-full group bg-white rounded-3xl shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all duration-300 overflow-hidden border border-[#c89666]/20 flex ${viewMode === 'list' ? 'flex-row h-48 md:h-64' : 'flex-col'}`}
+                          >
+                            <Link to={`/products/${product._id}`} className={`block overflow-hidden relative bg-gray-100 ${viewMode === 'list' ? 'w-2/5 md:w-1/3' : 'w-full aspect-square'}`}>
+                              <img referrerPolicy="no-referrer"
+                                src={
+                                  product.images?.[0]?.url ||
+                                  "https://via.placeholder.com/600"
+                                }
+                                alt={product.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                              />
+                              {!product.stock && (
+                                <div className="absolute inset-0 bg-[#12343b]/70 backdrop-blur-sm flex items-center justify-center z-20">
+                                  <span className="bg-white/10 text-white border border-white/30 px-4 md:px-6 py-2 rounded-full font-black tracking-widest uppercase text-xs md:text-sm shadow-lg">
+                                    Sold Out
+                                  </span>
+                                </div>
+                              )}
+                            </Link>
 
-                    <div className={`p-3 md:p-6 flex flex-col justify-between flex-1 relative ${viewMode === 'list' ? 'justify-center' : ''}`}>
-                      <button
-                        onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
-                        className={`absolute z-20 p-2 md:p-3 rounded-full bg-white shadow-md hover:bg-gray-50 transition-all active:scale-90 ${viewMode === 'list' ? 'top-4 right-4' : '-top-5 md:-top-6 right-3 md:right-4'}`}
-                      >
-                        {product.isWishlisted ? (
-                          <HeartSolidIcon className="w-5 h-5 md:w-6 md:h-6 text-red-500" />
-                        ) : (
-                          <HeartIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-400 hover:text-red-500" />
-                        )}
-                      </button>
+                            <div className={`p-3 md:p-6 flex flex-col justify-between flex-1 relative ${viewMode === 'list' ? 'justify-center' : ''}`}>
+                              <button
+                                onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
+                                className={`absolute z-20 p-2 md:p-3 rounded-full bg-white shadow-md hover:bg-gray-50 transition-all active:scale-90 ${viewMode === 'list' ? 'top-4 right-4' : '-top-5 md:-top-6 right-3 md:right-4'}`}
+                              >
+                                {product.isWishlisted ? (
+                                  <HeartSolidIcon className="w-5 h-5 md:w-6 md:h-6 text-red-500" />
+                                ) : (
+                                  <HeartIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-400 hover:text-red-500" />
+                                )}
+                              </button>
 
-                      <div>
-                          <Link to={`/products/${product._id}`}>
-                            <h3 className="text-xs md:text-xl font-black text-[#12343b] mb-1 md:mb-2 group-hover:text-[#2d545e] transition-colors line-clamp-2 leading-tight">
-                              {product.name}
-                            </h3>
-                          </Link>
+                              <div>
+                                  <Link to={`/products/${product._id}`}>
+                                    <h3 className="text-xs md:text-xl font-black text-[#12343b] mb-1 md:mb-2 group-hover:text-[#2d545e] transition-colors line-clamp-2 leading-tight">
+                                      {product.name}
+                                    </h3>
+                                  </Link>
 
-                          <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-4">
-                            <div className="flex text-[#e1b382]">
-                              {[...Array(5)].map((_, i) => (
-                                <svg key={i} className={`w-3.5 h-3.5 md:w-4 md:h-4 ${i < Math.round(product.rating?.average || 0) ? "fill-current" : "fill-gray-200"}`} viewBox="0 0 20 20">
-                                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                                </svg>
-                              ))}
+                                  <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-4">
+                                    <div className="flex text-[#e1b382]">
+                                      {[...Array(5)].map((_, i) => (
+                                        <svg key={i} className={`w-3.5 h-3.5 md:w-4 md:h-4 ${i < Math.round(product.rating?.average || 0) ? "fill-current" : "fill-gray-200"}`} viewBox="0 0 20 20">
+                                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                        </svg>
+                                      ))}
+                                    </div>
+                                    <span className="text-[10px] md:text-xs font-bold text-gray-500">
+                                      ({product.rating?.average?.toFixed(1) || "0.0"})
+                                    </span>
+                                  </div>
+                                  
+                                  {viewMode === 'list' && (
+                                      <p className="text-xs md:text-sm text-gray-500 line-clamp-2 md:line-clamp-3 mb-2 md:mb-4 font-medium hidden sm:block">
+                                          {product.description}
+                                      </p>
+                                  )}
+                              </div>
+
+                              <div className="mt-auto pt-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                                <span className="text-base md:text-2xl font-black text-[#12343b]">
+                                  ₹{Number(product.price).toFixed(2)}
+                                </span>
+                                <Link
+                                  to={`/products/${product._id}`}
+                                  className="w-full md:w-auto text-center bg-[#2d545e]/10 text-[#2d545e] hover:bg-[#2d545e] hover:text-white px-3 md:px-5 py-2 rounded-xl text-[10px] md:text-xs font-black tracking-widest uppercase transition-colors shrink-0"
+                                >
+                                  View
+                                </Link>
+                              </div>
                             </div>
-                            <span className="text-[10px] md:text-xs font-bold text-gray-500">
-                              ({product.rating?.average?.toFixed(1) || "0.0"})
-                            </span>
                           </div>
-                          
-                          {viewMode === 'list' && (
-                              <p className="text-xs md:text-sm text-gray-500 line-clamp-2 md:line-clamp-3 mb-2 md:mb-4 font-medium hidden sm:block">
-                                  {product.description}
-                              </p>
-                          )}
-                      </div>
-
-                      <div className="mt-auto pt-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                        <span className="text-base md:text-2xl font-black text-[#12343b]">
-                          ₹{Number(product.price).toFixed(2)}
-                        </span>
-                        <Link
-                          to={`/products/${product._id}`}
-                          className="w-full md:w-auto text-center bg-[#2d545e]/10 text-[#2d545e] hover:bg-[#2d545e] hover:text-white px-3 md:px-5 py-2 rounded-xl text-[10px] md:text-xs font-black tracking-widest uppercase transition-colors shrink-0"
-                        >
-                          View
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                      </Tilt>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </div>
         </div>

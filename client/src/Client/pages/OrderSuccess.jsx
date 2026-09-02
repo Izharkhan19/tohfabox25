@@ -1,7 +1,37 @@
 import { Link } from "react-router-dom";
 import { CheckBadgeIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
+import confetti from "canvas-confetti";
 
 export default function OrderSuccess() {
+    useEffect(() => {
+        // Trigger a nice confetti explosion when they land on the success page
+        const duration = 3000;
+        const end = Date.now() + duration;
+
+        const frame = () => {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
+            });
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        };
+        frame();
+    }, []);
+
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
             <div className="max-w-xl w-full bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100">

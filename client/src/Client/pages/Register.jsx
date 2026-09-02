@@ -4,6 +4,7 @@ import { ArrowLeftIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outlin
 import { registerUser } from '../../api-services/apiService';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import confetti from 'canvas-confetti';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -43,7 +44,20 @@ export default function Register() {
             const result = await registerUser(userData);
 
             if (result.success) {
-                navigate('/login');
+                // Save user and token to local storage to auto-login
+                localStorage.setItem('token', result.data.token);
+                localStorage.setItem('user', JSON.stringify(result.data.user));
+                window.dispatchEvent(new Event('userChanged'));
+
+                // Trigger celebratory confetti that will persist through the route transition!
+                confetti({
+                    particleCount: 150,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
+                });
+                
+                navigate('/');
             } else {
                 setError(result.message || 'Registration failed');
             }

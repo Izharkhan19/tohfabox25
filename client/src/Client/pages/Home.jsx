@@ -21,6 +21,21 @@ import { useAppStore } from "../../stores/useAppStore";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
+import { motion } from "framer-motion";
+import Tilt from "react-parallax-tilt";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+};
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -300,16 +315,24 @@ export default function Home() {
       {/* Quick Categories */}
       <section className="py-8 bg-transparent -mt-12 relative z-20 px-4 md:px-0">
         <div className="max-w-6xl mx-auto">
-            <div className="bg-[#fdfbf9] rounded-3xl shadow-[0_10px_40px_rgba(45,84,94,0.15)] border border-brand-accent/20 p-8 md:p-10 flex flex-wrap md:flex-nowrap justify-around gap-8">
+            <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="bg-[#fdfbf9] rounded-3xl shadow-[0_10px_40px_rgba(45,84,94,0.15)] border border-brand-accent/20 p-8 md:p-10 flex flex-wrap md:flex-nowrap justify-around gap-8"
+            >
                 {categories.map((cat, i) => (
-                    <Link to="/products" key={i} className="flex flex-col items-center gap-4 group">
-                        <div className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center bg-brand-dark text-brand-secondary shadow-[0_0_20px_rgba(225,179,130,0.3)] border-2 border-brand-accent/30 group-hover:scale-110 transition-all duration-300">
-                            <cat.icon className="w-10 h-10 md:w-12 md:h-12" />
-                        </div>
-                        <span className="font-extrabold text-lg md:text-xl text-brand-dark group-hover:text-brand-primary transition-colors tracking-wide">{cat.name}</span>
-                    </Link>
+                    <motion.div variants={itemVariants} key={i}>
+                        <Link to="/products" className="flex flex-col items-center gap-4 group">
+                            <Tilt tiltMaxAngleX={15} tiltMaxAngleY={15} scale={1.05} transitionSpeed={1000} className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center bg-brand-dark text-brand-secondary shadow-[0_0_20px_rgba(225,179,130,0.3)] border-2 border-brand-accent/30 group-hover:scale-110 transition-all duration-300">
+                                <cat.icon className="w-10 h-10 md:w-12 md:h-12" />
+                            </Tilt>
+                            <span className="font-extrabold text-lg md:text-xl text-brand-dark group-hover:text-brand-primary transition-colors tracking-wide">{cat.name}</span>
+                        </Link>
+                    </motion.div>
                 ))}
-            </div>
+            </motion.div>
         </div>
       </section>
 
@@ -325,17 +348,27 @@ export default function Home() {
                       View All <ChevronRightIcon className="w-5 h-5 stroke-2" />
                   </Link>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+              <motion.div 
+                  variants={containerVariants}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, margin: "-100px" }}
+                  className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8"
+              >
                   {occasions.map((occ, i) => (
-                      <Link to="/products" key={i} className="group relative rounded-3xl overflow-hidden shadow-lg aspect-square">
-                          <img referrerPolicy="no-referrer" src={occ.image} alt={occ.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/30 to-transparent"></div>
-                          <div className="absolute bottom-0 left-0 w-full p-6 md:p-8">
-                              <h3 className="text-brand-secondary font-black text-2xl md:text-3xl tracking-wide drop-shadow-md">{occ.name}</h3>
-                          </div>
-                      </Link>
+                      <motion.div variants={itemVariants} key={i}>
+                          <Link to="/products" className="group relative rounded-3xl overflow-hidden shadow-lg aspect-square block">
+                              <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10} scale={1.05} transitionSpeed={2000} className="w-full h-full">
+                                  <img referrerPolicy="no-referrer" src={occ.image} alt={occ.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/30 to-transparent"></div>
+                                  <div className="absolute bottom-0 left-0 w-full p-6 md:p-8">
+                                      <h3 className="text-brand-secondary font-black text-2xl md:text-3xl tracking-wide drop-shadow-md">{occ.name}</h3>
+                                  </div>
+                              </Tilt>
+                          </Link>
+                      </motion.div>
                   ))}
-              </div>
+              </motion.div>
           </div>
       </section>
 
@@ -346,16 +379,24 @@ export default function Home() {
                   <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-brand-dark mb-4 font-serif">Gifts by Relationship</h2>
                   <p className="text-lg md:text-xl text-brand-muted font-medium">Curated selections for the ones you love.</p>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+              <motion.div 
+                  variants={containerVariants}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, margin: "-100px" }}
+                  className="grid grid-cols-2 md:grid-cols-4 gap-10"
+              >
                   {relationships.map((rel, i) => (
-                      <Link to="/products" key={i} className="group flex flex-col items-center gap-6">
-                          <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden shadow-[0_15px_30px_rgba(45,84,94,0.2)] border-8 border-[#fdfbf9] group-hover:border-brand-primary transition-colors">
-                              <img referrerPolicy="no-referrer" src={rel.image} alt={rel.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                          </div>
-                          <h3 className="font-black text-brand-dark text-xl md:text-2xl group-hover:text-brand-primary transition-colors tracking-wide">{rel.name}</h3>
-                      </Link>
+                      <motion.div variants={itemVariants} key={i}>
+                          <Link to="/products" className="group flex flex-col items-center gap-6">
+                              <Tilt tiltMaxAngleX={15} tiltMaxAngleY={15} scale={1.05} transitionSpeed={1000} className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden shadow-[0_15px_30px_rgba(45,84,94,0.2)] border-8 border-[#fdfbf9] group-hover:border-brand-primary transition-colors">
+                                  <img referrerPolicy="no-referrer" src={rel.image} alt={rel.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                              </Tilt>
+                              <h3 className="font-black text-brand-dark text-xl md:text-2xl group-hover:text-brand-primary transition-colors tracking-wide">{rel.name}</h3>
+                          </Link>
+                      </motion.div>
                   ))}
-              </div>
+              </motion.div>
           </div>
       </section>
 
@@ -387,89 +428,104 @@ export default function Home() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: "-100px" }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
               {featuredProducts.slice(0,4).map((product) => (
-                <div
-                  key={product.id}
-                  className="group relative bg-[#fdfbf9] rounded-3xl shadow-[0_4px_20px_rgba(45,84,94,0.08)] hover:shadow-[0_20px_40px_rgba(45,84,94,0.2)] transition-all duration-300 overflow-hidden border border-brand-accent/20 flex flex-col"
-                >
-                  <Link to={`/products/${product.id}`} className="block relative aspect-square overflow-hidden bg-gray-100">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    {/* Badge */}
-                    <div className="absolute top-4 left-4 bg-brand-accent text-brand-dark text-sm font-black px-4 py-1.5 rounded-full shadow-lg">
-                        Best Seller
-                    </div>
-                  </Link>
+                <motion.div variants={itemVariants} key={product.id}>
+                    <Tilt tiltMaxAngleX={8} tiltMaxAngleY={8} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glarePosition="all">
+                        <div
+                        className="group relative bg-[#fdfbf9] rounded-3xl shadow-[0_4px_20px_rgba(45,84,94,0.08)] hover:shadow-[0_20px_40px_rgba(45,84,94,0.2)] transition-all duration-300 overflow-hidden border border-brand-accent/20 flex flex-col h-full"
+                        >
+                        <Link to={`/products/${product.id}`} className="block relative aspect-square overflow-hidden bg-gray-100">
+                            <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            {/* Badge */}
+                            <div className="absolute top-4 left-4 bg-brand-accent text-brand-dark text-sm font-black px-4 py-1.5 rounded-full shadow-lg">
+                                Best Seller
+                            </div>
+                        </Link>
 
-                  <button
-                    onClick={(e) => { e.preventDefault(); handleWishlistClick(product.id); }}
-                    disabled={wishlistLoading[product.id]}
-                    className="absolute top-4 right-4 z-20 bg-white p-3 rounded-full shadow-lg hover:bg-brand-light transition-colors disabled:opacity-50"
-                  >
-                    {wishlistLoading[product.id] ? (
-                      <div className="animate-spin rounded-full h-6 w-6 border-t-4 border-brand-primary" />
-                    ) : product.isWishlisted ? (
-                      <HeartSolid className="w-6 h-6 text-red-500" />
-                    ) : (
-                      <HeartIcon className="w-6 h-6 text-brand-muted hover:text-red-500 transition-colors" />
-                    )}
-                  </button>
+                        <button
+                            onClick={(e) => { e.preventDefault(); handleWishlistClick(product.id); }}
+                            disabled={wishlistLoading[product.id]}
+                            className="absolute top-4 right-4 z-20 bg-white p-3 rounded-full shadow-lg hover:bg-brand-light transition-colors disabled:opacity-50"
+                        >
+                            {wishlistLoading[product.id] ? (
+                            <div className="animate-spin rounded-full h-6 w-6 border-t-4 border-brand-primary" />
+                            ) : product.isWishlisted ? (
+                            <HeartSolid className="w-6 h-6 text-red-500" />
+                            ) : (
+                            <HeartIcon className="w-6 h-6 text-brand-muted hover:text-red-500 transition-colors" />
+                            )}
+                        </button>
 
-                  <div className="p-6 flex flex-col flex-1">
-                    <Link to={`/products/${product.id}`}>
-                      <h3 className="text-xl md:text-2xl font-black text-brand-dark mb-2 group-hover:text-brand-primary transition-colors line-clamp-1">
-                        {product.name}
-                      </h3>
-                    </Link>
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="flex text-brand-secondary">
-                        {[...Array(5)].map((_, i) => (
-                          <svg key={i} className={`w-5 h-5 ${i < Math.round(product.rating) ? "fill-current" : "fill-gray-300"}`} viewBox="0 0 20 20">
-                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                          </svg>
-                        ))}
-                      </div>
-                      <span className="text-sm font-bold text-brand-muted">
-                        ({product.rating.toFixed(1)})
-                      </span>
-                    </div>
-                    <div className="mt-auto flex justify-between items-center pt-4 md:pt-6 border-t border-brand-accent/20 flex-wrap gap-2">
-                      <span className="text-lg md:text-3xl font-black text-brand-dark">
-                        ₹{Number(product.price).toFixed(2)}
-                      </span>
-                      <button
-                        onClick={() => handleAddToCart(product.id, product.name)}
-                        disabled={cartLoading[product.id]}
-                        aria-label={`Add ${product.name} to cart`}
-                        className="relative text-brand-primary hover:text-brand-dark hover:bg-brand-secondary bg-brand-primary/10 p-3 rounded-xl transition-colors disabled:opacity-50"
-                      >
-                          {cartCounts[product.id] > 0 && (
-                            <span className="absolute -right-2 -top-2 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center shadow-md" aria-label={`${cartCounts[product.id]} in cart`}>
-                              {cartCounts[product.id]}
+                        <div className="p-6 flex flex-col flex-1">
+                            <Link to={`/products/${product.id}`}>
+                            <h3 className="text-xl md:text-2xl font-black text-brand-dark mb-2 group-hover:text-brand-primary transition-colors line-clamp-1">
+                                {product.name}
+                            </h3>
+                            </Link>
+                            <div className="flex items-center gap-2 mb-4">
+                            <div className="flex text-brand-secondary">
+                                {[...Array(5)].map((_, i) => (
+                                <svg key={i} className={`w-5 h-5 ${i < Math.round(product.rating) ? "fill-current" : "fill-gray-300"}`} viewBox="0 0 20 20">
+                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                </svg>
+                                ))}
+                            </div>
+                            <span className="text-sm font-bold text-brand-muted">
+                                ({product.rating.toFixed(1)})
                             </span>
-                          )}
-                          {cartLoading[product.id] ? (
-                            <span className="block h-5 w-5 md:h-6 md:w-6 animate-spin rounded-full border-2 border-brand-primary/30 border-t-brand-primary" aria-hidden="true" />
-                          ) : (
-                            <ShoppingCartIcon className="w-5 h-5 md:w-6 md:h-6 stroke-2" />
-                          )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                            </div>
+                            <div className="mt-auto flex justify-between items-center pt-4 md:pt-6 border-t border-brand-accent/20 flex-wrap gap-2">
+                            <span className="text-lg md:text-3xl font-black text-brand-dark">
+                                ₹{Number(product.price).toFixed(2)}
+                            </span>
+                            <button
+                                onClick={() => handleAddToCart(product.id, product.name)}
+                                disabled={cartLoading[product.id]}
+                                aria-label={`Add ${product.name} to cart`}
+                                className="relative text-brand-primary hover:text-brand-dark hover:bg-brand-secondary bg-brand-primary/10 p-3 rounded-xl transition-colors disabled:opacity-50"
+                            >
+                                {cartCounts[product.id] > 0 && (
+                                    <span className="absolute -right-2 -top-2 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center shadow-md" aria-label={`${cartCounts[product.id]} in cart`}>
+                                    {cartCounts[product.id]}
+                                    </span>
+                                )}
+                                {cartLoading[product.id] ? (
+                                    <span className="block h-5 w-5 md:h-6 md:w-6 animate-spin rounded-full border-2 border-brand-primary/30 border-t-brand-primary" aria-hidden="true" />
+                                ) : (
+                                    <ShoppingCartIcon className="w-5 h-5 md:w-6 md:h-6 stroke-2" />
+                                )}
+                            </button>
+                            </div>
+                        </div>
+                        </div>
+                    </Tilt>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
       </section>
 
       {/* Trust Badges */}
       <section className="py-16 bg-[#fdfbf9] border-t border-brand-accent/30 mb-16 md:mb-0">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+        <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-100px" }}
+            className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10"
+        >
           {[
             {
               icon: SparklesIcon,
@@ -492,19 +548,19 @@ export default function Home() {
               desc: "Unforgettable memories",
             },
           ].map((feature, i) => (
-            <div key={i} className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left group">
-              <div className="p-5 bg-brand-primary/10 text-brand-primary rounded-2xl group-hover:bg-brand-primary group-hover:text-white transition-colors duration-300 shadow-sm">
+            <motion.div variants={itemVariants} key={i} className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left group">
+              <Tilt tiltMaxAngleX={20} tiltMaxAngleY={20} className="p-5 bg-brand-primary/10 text-brand-primary rounded-2xl group-hover:bg-brand-primary group-hover:text-white transition-colors duration-300 shadow-sm">
                 <feature.icon className="w-10 h-10 stroke-2" />
-              </div>
+              </Tilt>
               <div>
                   <h3 className="font-black text-xl text-brand-dark mb-1">
                     {feature.title}
                   </h3>
                   <p className="text-base text-brand-muted font-medium">{feature.desc}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       <WishlistLoginModal

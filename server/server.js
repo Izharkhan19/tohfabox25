@@ -4,9 +4,22 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 // Load environment variables
 dotenv.config();
+
+// Production Environment Validation
+if (process.env.NODE_ENV === 'production') {
+    const requiredEnvs = ['JWT_SECRET', 'MONGODB_URI', 'CLIENT_URL'];
+    const missingEnvs = requiredEnvs.filter(env => !process.env[env]);
+    if (missingEnvs.length > 0) {
+        console.error(`❌ FATAL ERROR: Missing required environment variables: ${missingEnvs.join(', ')}`);
+        process.exit(1);
+    }
+}
 
 // Initialize external services
 // No external services currently running locally (Redis and RabbitMQ removed)
@@ -27,14 +40,28 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Middleware
+
+// 1. Set Security HTTP Headers
+app.use(helmet({
+    crossOriginResourcePolicy: false, // Allow local images to be loaded
+}));
+
+// 2. Data Sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// 3. Data Sanitization against XSS
+app.use(xss());
+
+// 4. CORS configuration
 app.use(cors({
-  origin: true,
+  origin: process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+app.use(express.json({ limit: '10mb' })); // Limit body size for security
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Global Rate limiting middleware applied to all API routes
 const apiLimiter = rateLimit({

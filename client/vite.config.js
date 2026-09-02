@@ -49,5 +49,11 @@ export default defineConfig({
     hmr: {
       host: '10.248.23.144',
     }
+  },
+  build: {
+    target: 'esnext',
+  },
+  esbuild: {
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
   }
 })

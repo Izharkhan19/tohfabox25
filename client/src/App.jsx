@@ -120,41 +120,42 @@ import {
   useLocation,
   Link,
 } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense, lazy } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LogoLoader from "./components/LogoLoader"; // Added fallback loader
 
-// === Admin ===
-import AdminLogin from "./Admin/pages/Login";
-import AdminDashboard from "./Admin/pages/Dashboard";
-import AdminClients from "./Admin/pages/Clients";
-import AdminProducts from "./Admin/pages/Products";
-import AddEditProduct from "./Admin/pages/AddEditProduct";
-import AdminCategories from "./Admin/pages/Categories";
-import AdminOrders from "./Admin/pages/Orders";
-import AdminPromos from "./Admin/pages/Promos";
-import AdminLayout from "./Admin/components/Layout";
+// === Admin (Lazy Loaded) ===
+const AdminLogin = lazy(() => import("./Admin/pages/Login"));
+const AdminDashboard = lazy(() => import("./Admin/pages/Dashboard"));
+const AdminClients = lazy(() => import("./Admin/pages/Clients"));
+const AdminProducts = lazy(() => import("./Admin/pages/Products"));
+const AddEditProduct = lazy(() => import("./Admin/pages/AddEditProduct"));
+const AdminCategories = lazy(() => import("./Admin/pages/Categories"));
+const AdminOrders = lazy(() => import("./Admin/pages/Orders"));
+const AdminPromos = lazy(() => import("./Admin/pages/Promos"));
+const AdminLayout = lazy(() => import("./Admin/components/Layout"));
 
-// === Client ===
-import Home from "./Client/pages/Home";
-import Products from "./Client/pages/Products";
-import Gallery from "./Client/pages/Gallery";
-import PrivacyPolicy from "./Client/pages/PrivacyPolicy";
-import TermsOfService from "./Client/pages/TermsOfService";
-import AppInfo from "./Client/pages/AppInfo";
-import ProductDetail from "./Client/pages/ProductDetail";
-import Cart from "./Client/pages/Cart";
-import Checkout from "./Client/pages/Checkout";
-import Wishlist from "./Client/pages/Wishlist";
-import OrderList from "./Client/pages/OrderList";
-import OrderSuccess from "./Client/pages/OrderSuccess";
-import ClientLayout from "./Client/components/Layout";
+// === Client (Lazy Loaded) ===
+const Home = lazy(() => import("./Client/pages/Home"));
+const Products = lazy(() => import("./Client/pages/Products"));
+const Gallery = lazy(() => import("./Client/pages/Gallery"));
+const PrivacyPolicy = lazy(() => import("./Client/pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./Client/pages/TermsOfService"));
+const AppInfo = lazy(() => import("./Client/pages/AppInfo"));
+const ProductDetail = lazy(() => import("./Client/pages/ProductDetail"));
+const Cart = lazy(() => import("./Client/pages/Cart"));
+const Checkout = lazy(() => import("./Client/pages/Checkout"));
+const Wishlist = lazy(() => import("./Client/pages/Wishlist"));
+const OrderList = lazy(() => import("./Client/pages/OrderList"));
+const OrderSuccess = lazy(() => import("./Client/pages/OrderSuccess"));
+const ClientLayout = lazy(() => import("./Client/components/Layout"));
 
-// === Auth ===
-import Login from "./Client/pages/Login"; // Your client login page
-import Register from "./Client/pages/Register";
-import ForgotPassword from "./Client/pages/ForgotPassword";
-import ResetPassword from "./Client/pages/ResetPassword";
+// === Auth (Lazy Loaded) ===
+const Login = lazy(() => import("./Client/pages/Login"));
+const Register = lazy(() => import("./Client/pages/Register"));
+const ForgotPassword = lazy(() => import("./Client/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./Client/pages/ResetPassword"));
 
 // ==================== AUTH HELPERS ====================
 
@@ -264,108 +265,110 @@ export default function App() {
           transform: "translateX(-50%)",
         }}
       />
-      <Routes>
-        {/* ==================== ADMIN PORTAL ==================== */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+      <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-gray-50"><LogoLoader /></div>}>
+        <Routes>
+          {/* ==================== ADMIN PORTAL ==================== */}
+          <Route path="/admin/login" element={<AdminLogin />} />
 
-        <Route
-          path="/admin"
-          element={
-            <AdminProtected>
-              <AdminLayout />
-            </AdminProtected>
-          }
-        >
-          <Route index element={<AdminDashboard />} />
-          <Route path="clients" element={<AdminClients />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="products/add" element={<AddEditProduct />} />
-          <Route path="products/edit/:id" element={<AddEditProduct />} />
-          <Route path="categories" element={<AdminCategories />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="promos" element={<AdminPromos />} />
-          <Route path="*" element={<Navigate to="/admin" replace />} />
-        </Route>
-
-        {/* ==================== CLIENT AUTH ==================== */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-
-        {/* ==================== CLIENT PUBLIC + PROTECTED ==================== */}
-        <Route path="/" element={<ClientLayout user={user} />}>
-          {/* Public Routes */}
-          <Route index element={<Home />} />
-          <Route path="products" element={<Products />} />
-          <Route path="gallery" element={<Gallery />} />
-          <Route path="privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="terms-of-service" element={<TermsOfService />} />
-          <Route path="app-info" element={<AppInfo />} />
-          <Route path="products/:id" element={<ProductDetail />} />
-
-          {/* Protected Routes - Require Login */}
           <Route
-            path="cart"
+            path="/admin"
             element={
-              <PrivateRoute>
-                <Cart />
-              </PrivateRoute>
+              <AdminProtected>
+                <AdminLayout />
+              </AdminProtected>
             }
-          />
-          <Route
-            path="wishlist"
-            element={
-              <PrivateRoute>
-                <Wishlist />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="checkout"
-            element={
-              <PrivateRoute>
-                <Checkout />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="orders"
-            element={
-              <PrivateRoute>
-                <OrderList />
-              </PrivateRoute>
-            }
-          />
-          <Route path="order-success" element={<OrderSuccess />} />
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="clients" element={<AdminClients />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="products/add" element={<AddEditProduct />} />
+            <Route path="products/edit/:id" element={<AddEditProduct />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="promos" element={<AdminPromos />} />
+            <Route path="*" element={<Navigate to="/admin" replace />} />
+          </Route>
 
-          {/* 404 / Under Construction */}
-          <Route
-            path="*"
-            element={
-              <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-                <div className="max-w-lg w-full bg-white rounded-3xl shadow-xl p-10 text-center border border-gray-100">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
-                    <svg className="w-12 h-12 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
+          {/* ==================== CLIENT AUTH ==================== */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+          {/* ==================== CLIENT PUBLIC + PROTECTED ==================== */}
+          <Route path="/" element={<ClientLayout user={user} />}>
+            {/* Public Routes */}
+            <Route index element={<Home />} />
+            <Route path="products" element={<Products />} />
+            <Route path="gallery" element={<Gallery />} />
+            <Route path="privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="terms-of-service" element={<TermsOfService />} />
+            <Route path="app-info" element={<AppInfo />} />
+            <Route path="products/:id" element={<ProductDetail />} />
+
+            {/* Protected Routes - Require Login */}
+            <Route
+              path="cart"
+              element={
+                <PrivateRoute>
+                  <Cart />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="wishlist"
+              element={
+                <PrivateRoute>
+                  <Wishlist />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="checkout"
+              element={
+                <PrivateRoute>
+                  <Checkout />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="orders"
+              element={
+                <PrivateRoute>
+                  <OrderList />
+                </PrivateRoute>
+              }
+            />
+            <Route path="order-success" element={<OrderSuccess />} />
+
+            {/* 404 / Under Construction */}
+            <Route
+              path="*"
+              element={
+                <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+                  <div className="max-w-lg w-full bg-white rounded-3xl shadow-xl p-10 text-center border border-gray-100">
+                    <div className="w-24 h-24 mx-auto mb-6 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                      <svg className="w-12 h-12 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    <h1 className="text-3xl font-serif font-bold text-gray-800 mb-4">Work in Progress</h1>
+                    <p className="text-gray-600 mb-8 leading-relaxed">
+                      We are currently crafting this section of the web application. Please check back soon as we put the finishing touches on our masterpiece!
+                    </p>
+                    <Link
+                      to="/"
+                      className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-sm font-bold rounded-full text-white bg-gray-900 hover:bg-gray-800 transition-all shadow-md uppercase tracking-widest"
+                    >
+                      Return to Home
+                    </Link>
                   </div>
-                  <h1 className="text-3xl font-serif font-bold text-gray-800 mb-4">Work in Progress</h1>
-                  <p className="text-gray-600 mb-8 leading-relaxed">
-                    We are currently crafting this section of the web application. Please check back soon as we put the finishing touches on our masterpiece!
-                  </p>
-                  <Link
-                    to="/"
-                    className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-sm font-bold rounded-full text-white bg-gray-900 hover:bg-gray-800 transition-all shadow-md uppercase tracking-widest"
-                  >
-                    Return to Home
-                  </Link>
                 </div>
-              </div>
-            }
-          />
-        </Route>
-      </Routes>
+              }
+            />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

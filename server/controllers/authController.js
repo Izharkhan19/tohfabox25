@@ -1,7 +1,9 @@
 const User = require('../models/User');
+const PromoCode = require('../models/PromoCode');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
+const { getWelcomeEmailTemplate } = require('../emailTemplates/welcomeEmail');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -41,6 +43,32 @@ exports.register = async (req, res) => {
             password,
             phone: phone || undefined
         });
+
+        // Generate unique welcome promo code (10% off, 1 time use, valid 30 days)
+        const promoCodeString = `WELCOME10-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+        const promo = await PromoCode.create({
+            code: promoCodeString,
+            discountType: 'percentage',
+            discountValue: 10,
+            minimumOrderValue: 0,
+            startsAt: new Date(),
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+            usageLimit: 1,
+            isActive: true
+        });
+
+        // Send Welcome Email
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: 'Welcome to Tohfabox25! Here is your 10% discount',
+                message: `Hi ${user.name}, welcome to Tohfabox25! Use promo code ${promo.code} for 10% off your first order.`,
+                html: getWelcomeEmailTemplate(user.name, promo.code)
+            });
+        } catch (emailError) {
+            console.error('Failed to send welcome email:', emailError);
+            // We do not return an error here so the registration process continues successfully
+        }
 
         // Generate token
         const token = generateToken(user._id);
@@ -301,7 +329,7 @@ exports.forgotPassword = async (req, res) => {
         await user.save({ validateBeforeSave: false });
 
         // Create reset URL
-        const frontendUrl = process.env.FRONTEND_URL || 'https://tohfabox25.vercel.app' || "http://localhost:5173";
+        const frontendUrl = process.env.CLIENT_URL || 'https://tohfabox25.vercel.app' || "http://localhost:5173";
         const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
         const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;

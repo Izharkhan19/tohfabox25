@@ -360,7 +360,6 @@ export default function Products() {
                 </button>
               </div>
             ) : (
-            ) : (
               <motion.div
                 variants={containerVariants}
                 initial="hidden"

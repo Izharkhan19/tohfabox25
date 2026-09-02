@@ -175,8 +175,8 @@ export default function ProductDetail() {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid lg:grid-cols-2 gap-16">
                     {/* Image Gallery */}
-                    <div className="flex flex-col gap-4">
-                        <div className="aspect-[4/5] rounded-3xl overflow-hidden bg-white shadow-md border border-gray-100 relative group">
+                    <div className="flex flex-col gap-4 min-w-0 w-full">
+                        <div className="aspect-[4/5] sm:aspect-square md:aspect-[4/5] rounded-3xl overflow-hidden bg-white shadow-md border border-gray-100 relative group">
                             <img
                                 src={product.images[activeImage]?.url}
                                 alt={product.name}
@@ -186,12 +186,12 @@ export default function ProductDetail() {
                         </div>
 
                         {product.images.length > 1 && (
-                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide w-full">
                                 {product.images.map((img, i) => (
                                     <button
                                         key={i}
                                         onClick={() => setActiveImage(i)}
-                                        className={`flex-shrink-0 w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all ${
+                                        className={`flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 transition-all ${
                                             activeImage === i ? "border-resin-blue shadow-md opacity-100" : "border-transparent opacity-60 hover:opacity-100"
                                         }`}
                                     >
@@ -203,10 +203,10 @@ export default function ProductDetail() {
                     </div>
 
                     {/* Product Info */}
-                    <div className="flex flex-col">
+                    <div className="flex flex-col min-w-0">
                         <div className="mb-8">
-                            <div className="flex justify-between items-start mb-4">
-                                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 font-serif leading-tight">
+                            <div className="flex justify-between items-start mb-4 gap-4">
+                                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 font-serif leading-tight break-words">
                                     {product.name}
                                 </h1>
                                 <button

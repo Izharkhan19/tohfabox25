@@ -43,10 +43,13 @@ export default function Register() {
             
             const result = await registerUser(userData);
 
-            if (result.success) {
+            if (result.success && result.data?.data?.token) {
+                const userObj = result.data?.data?.user;
+                const token = result.data?.data?.token;
+
                 // Save user and token to local storage to auto-login
-                localStorage.setItem('token', result.data.token);
-                localStorage.setItem('user', JSON.stringify(result.data.user));
+                localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(userObj));
                 window.dispatchEvent(new Event('userChanged'));
 
                 // Trigger celebratory confetti that will persist through the route transition!

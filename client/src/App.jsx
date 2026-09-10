@@ -133,6 +133,7 @@ const AdminProducts = lazy(() => import("./Admin/pages/Products"));
 const AddEditProduct = lazy(() => import("./Admin/pages/AddEditProduct"));
 const AdminCategories = lazy(() => import("./Admin/pages/Categories"));
 const AdminOrders = lazy(() => import("./Admin/pages/Orders"));
+const AdminTransactions = lazy(() => import("./Admin/pages/Transactions"));
 const AdminPromos = lazy(() => import("./Admin/pages/Promos"));
 const AdminLayout = lazy(() => import("./Admin/components/Layout"));
 
@@ -285,6 +286,7 @@ export default function App() {
             <Route path="products/edit/:id" element={<AddEditProduct />} />
             <Route path="categories" element={<AdminCategories />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="transactions" element={<AdminTransactions />} />
             <Route path="promos" element={<AdminPromos />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Route>

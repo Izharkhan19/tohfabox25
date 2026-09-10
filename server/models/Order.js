@@ -66,7 +66,7 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['credit_card', 'debit_card', 'paypal', 'cash_on_delivery', 'bank_transfer'],
+        enum: ['credit_card', 'debit_card', 'paypal', 'cash_on_delivery', 'bank_transfer', 'razorpay'],
         required: true
     },
     paymentStatus: {
@@ -76,7 +76,10 @@ const orderSchema = new mongoose.Schema({
     },
     paymentDetails: {
         transactionId: String,
-        paidAt: Date
+        paidAt: Date,
+        razorpayOrderId: String,
+        razorpayPaymentId: String,
+        razorpaySignature: String
     },
     subtotal: {
         type: Number,

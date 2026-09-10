@@ -12,6 +12,7 @@ import {
 import { toast } from "react-toastify";
 import {
   createOrder,
+  confirmOrder,
   getCurrentUser,
   validatePromo,
 } from "../../api-services/apiService";
@@ -97,6 +98,39 @@ export default function Checkout() {
   const discount = appliedPromo?.discount || 0;
   const total = subtotal + shippingCost - discount;
 
+  const handleWhatsAppOrder = () => {
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER || "919000000000"; // Fallback number
+    let message = "Hello! I would like to place an order for the following items:\n\n";
+    
+    cartItems.forEach((item, index) => {
+      const product = item.product;
+      message += `${index + 1}. *${product.name}* (x${item.quantity}) - ₹${(product.price * item.quantity).toFixed(2)}\n`;
+    });
+    
+    message += `\n*Subtotal:* ₹${subtotal.toFixed(2)}`;
+    if (shippingCost > 0) {
+      message += `\n*Shipping:* ₹${shippingCost.toFixed(2)}`;
+    }
+    if (discount > 0) {
+      message += `\n*Discount:* -₹${discount.toFixed(2)}`;
+    }
+    message += `\n*Total Amount:* ₹${total.toFixed(2)}\n\n`;
+    
+    // Add customer details if available
+    if (formData.firstName || formData.phone) {
+      message += `*Customer Details:*\n`;
+      if (formData.firstName) message += `Name: ${formData.firstName} ${formData.lastName}\n`;
+      if (formData.phone) message += `Phone: ${formData.phone}\n`;
+      if (formData.address) message += `Address: ${formData.address}, ${formData.apartment ? formData.apartment + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pincode}\n`;
+      message += `\n`;
+    }
+
+    message += `Please guide me with the UPI / Cash on Delivery (COD) payment options.`;
+    
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
+  };
+
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) {
       toast.info("Enter a promo code first");
@@ -120,6 +154,19 @@ export default function Checkout() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        return resolve(true);
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
 
@@ -130,6 +177,15 @@ export default function Checkout() {
 
     setPlacingOrder(true);
     setError(null);
+
+    if (paymentMethod === "razorpay") {
+      const res = await loadRazorpayScript();
+      if (!res) {
+        toast.error("Razorpay SDK failed to load. Are you online?");
+        setPlacingOrder(false);
+        return;
+      }
+    }
 
     try {
       const orderData = {
@@ -159,6 +215,48 @@ export default function Checkout() {
       const result = await createOrder(orderData);
 
       if (result.success) {
+        if (paymentMethod === "razorpay" && result.data?.razorpayOrderId) {
+          const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: result.data.amount,
+            currency: result.data.currency,
+            name: "Tohfabox25",
+            description: "Order Payment",
+            order_id: result.data.razorpayOrderId,
+            handler: async function (response) {
+              try {
+                const confirmResult = await confirmOrder({
+                  orderData: result.data.orderData,
+                  razorpayResponse: response
+                });
+                if (confirmResult.success) {
+                  toast.success("Payment successful! Your order is placed.");
+                  navigate("/orders");
+                } else {
+                  toast.error(confirmResult.message || "Failed to confirm order.");
+                }
+              } catch (err) {
+                 toast.error("Error confirming payment.");
+              }
+            },
+            prefill: {
+              name: `${formData.firstName} ${formData.lastName}`.trim(),
+              email: formData.email,
+              contact: formData.phone,
+            },
+            theme: {
+              color: "#12343b",
+            },
+          };
+          const rzp = new window.Razorpay(options);
+          rzp.on('payment.failed', function (response){
+            toast.error("Payment failed. Please try again.");
+          });
+          rzp.open();
+          setPlacingOrder(false);
+          return;
+        }
+
         toast.success("Your order has been placed successfully!");
         navigate("/orders");
       } else {
@@ -374,6 +472,32 @@ export default function Checkout() {
 
                 <label
                   className={`flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all ${
+                    paymentMethod === "razorpay"
+                      ? "border-resin-blue bg-resin-blue/5"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="razorpay"
+                    checked={paymentMethod === "razorpay"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-5 h-5 text-resin-blue"
+                  />
+                  <ShieldCheckIcon className="w-8 h-8 text-resin-dark" />
+                  <div>
+                    <p className="font-bold text-gray-900">
+                      Razorpay (UPI / Cards / NetBanking)
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Secure payments via Razorpay
+                    </p>
+                  </div>
+                </label>
+
+                <label
+                  className={`flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all ${
                     paymentMethod === "cash_on_delivery"
                       ? "border-resin-blue bg-resin-blue/5"
                       : "border-gray-200 hover:border-gray-300"
@@ -546,6 +670,23 @@ export default function Checkout() {
                     Place Order
                   </>
                 )}
+              </button>
+
+              <div className="relative my-6 flex items-center py-2">
+                <div className="flex-grow border-t border-gray-200"></div>
+                <span className="flex-shrink-0 mx-4 text-gray-400 text-xs font-bold uppercase tracking-wider">Or</span>
+                <div className="flex-grow border-t border-gray-200"></div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleWhatsAppOrder}
+                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold h-14 rounded-full tracking-widest uppercase text-sm transition-all shadow-md flex items-center justify-center gap-3"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                </svg>
+                Order via WhatsApp
               </button>
 
               <div className="mt-6 text-center">

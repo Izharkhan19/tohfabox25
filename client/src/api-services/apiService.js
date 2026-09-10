@@ -267,7 +267,10 @@ export const clearWishlist = async () => {
 
 // ==================== ORDERS ====================
 export const createOrder = (orderData) =>
-    handleApiCall(() => api.post("/orders", orderData), "Order placed successfully!");
+    handleApiCall(() => api.post("/orders", orderData));
+
+export const confirmOrder = (data) =>
+    handleApiCall(() => api.post("/orders/confirm", data), "Order placed successfully!");
 
 export const getMyOrders = () =>
     handleApiCall(() => api.get("/orders"));

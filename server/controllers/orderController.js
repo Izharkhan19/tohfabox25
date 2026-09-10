@@ -40,6 +40,13 @@ const { findValidPromo, incrementPromoUsage } = require('./promoController');
 
 // controllers/orderController.js
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
+
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 // const Product = require('../models/Product');
 // const Order = require('../models/Order');
 
@@ -138,6 +145,32 @@ exports.createOrder = async (req, res) => {
                     notes,
                 },
             });
+        } else if (paymentMethod === 'razorpay') {
+            const razorpayOrder = await razorpay.orders.create({
+                amount: Math.round(total * 100), // paise
+                currency: "INR",
+                receipt: `receipt_${new Date().getTime()}`,
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: 'Razorpay order created',
+                razorpayOrderId: razorpayOrder.id,
+                amount: Math.round(total * 100),
+                currency: "INR",
+                orderData: {
+                    items: orderItems,
+                    shippingAddress,
+                    paymentMethod,
+                    subtotal: calculatedSubtotal,
+                    tax,
+                    shippingCost,
+                    discount: appliedDiscount,
+                    promoCode: promoCode?.trim().toUpperCase(),
+                    total,
+                    notes,
+                },
+            });
         } else {
             // COD: Create order directly
             const order = await Order.create({
@@ -167,19 +200,36 @@ exports.createOrder = async (req, res) => {
 
 exports.confirmOrder = async (req, res) => {
     try {
-        const { clientSecret, orderData } = req.body;
+        const { clientSecret, orderData, razorpayResponse } = req.body;
+        
+        let paymentIntent = null;
 
-        // Extract PaymentIntent ID from clientSecret (format: pi_xxx_secret_yyy)
-        const paymentIntentId = clientSecret.split('_secret_')[0];
+        if (orderData.paymentMethod === 'razorpay') {
+            const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = razorpayResponse;
+            const body = razorpay_order_id + "|" + razorpay_payment_id;
+            
+            const expectedSignature = crypto
+                .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+                .update(body.toString())
+                .digest("hex");
 
-        // Verify payment succeeded
-        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+            if (expectedSignature !== razorpay_signature) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid payment signature",
+                });
+            }
+        } else {
+            // Stripe logic
+            const paymentIntentId = clientSecret.split('_secret_')[0];
+            paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
-        if (paymentIntent.status !== 'succeeded') {
-            return res.status(400).json({
-                success: false,
-                message: 'Payment not completed',
-            });
+            if (paymentIntent.status !== 'succeeded') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Payment not completed',
+                });
+            }
         }
 
         let confirmedDiscount = 0;
@@ -205,7 +255,13 @@ exports.confirmOrder = async (req, res) => {
             total: Number(orderData.subtotal) + Number(orderData.tax || 0) + Number(orderData.shippingCost || 0) - confirmedDiscount,
             notes: orderData.notes || '',
             paymentStatus: 'paid',
-            paymentDetails: {
+            paymentDetails: orderData.paymentMethod === 'razorpay' ? {
+                transactionId: razorpayResponse.razorpay_payment_id,
+                paidAt: new Date(),
+                razorpayOrderId: razorpayResponse.razorpay_order_id,
+                razorpayPaymentId: razorpayResponse.razorpay_payment_id,
+                razorpaySignature: razorpayResponse.razorpay_signature
+            } : {
                 transactionId: paymentIntent.id,
                 paidAt: new Date(paymentIntent.created * 1000),
             },

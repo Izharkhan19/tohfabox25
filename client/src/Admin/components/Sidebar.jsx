@@ -69,7 +69,8 @@ import {
   TicketIcon,
   ChartBarIcon,
   ArrowRightOnRectangleIcon,
-  XMarkIcon
+  XMarkIcon,
+  CurrencyDollarIcon
 } from "@heroicons/react/24/outline";
 
 const menu = [
@@ -78,6 +79,7 @@ const menu = [
   { name: "Products", icon: ShoppingBagIcon, path: "/admin/products" },
   { name: "Categories", icon: TagIcon, path: "/admin/categories" },
   { name: "Orders", icon: InboxIcon, path: "/admin/orders" },
+  { name: "Transactions", icon: CurrencyDollarIcon, path: "/admin/transactions" },
   { name: "Promo Codes", icon: TicketIcon, path: "/admin/promos" },
 ];
 

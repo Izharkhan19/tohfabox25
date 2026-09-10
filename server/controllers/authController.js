@@ -27,13 +27,24 @@ exports.register = async (req, res) => {
             });
         }
 
-        // Check if user exists
+        // Check if user exists (by email)
         const userExists = await User.findOne({ email: email.toLowerCase().trim() });
         if (userExists) {
             return res.status(400).json({
                 success: false,
                 message: 'User with this email already exists'
             });
+        }
+
+        // Check if user exists (by phone)
+        if (phone) {
+            const phoneExists = await User.findOne({ phone: phone.trim() });
+            if (phoneExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'This phone number is already registered'
+                });
+            }
         }
 
         // Create user

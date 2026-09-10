@@ -6,11 +6,11 @@ const sendEmail = async (options) => {
     let transporter;
 
     if (process.env.SENDER_EMAIL && process.env.SENDER_PASSWORD) {
-        // If SMTP_SERVICE is defined (e.g. 'gmail'), use the service shorthand.
-        // This is much more reliable on cloud providers like Render.
-        if (process.env.SMTP_SERVICE) {
+        // If SMTP_SERVICE is defined or if the sender email is a gmail address, use the service shorthand.
+        const isGmail = process.env.SENDER_EMAIL.toLowerCase().includes('@gmail.com');
+        if (process.env.SMTP_SERVICE || isGmail) {
             transporter = nodemailer.createTransport({
-                service: process.env.SMTP_SERVICE, // e.g. 'gmail'
+                service: process.env.SMTP_SERVICE || 'gmail',
                 auth: {
                     user: process.env.SENDER_EMAIL,
                     pass: process.env.SENDER_PASSWORD,

@@ -186,7 +186,7 @@ const wait = (milliseconds) => new Promise((resolve) => {
 
 const api = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 10000,
+    timeout: 60000, // Increased to 60s to accommodate Render's cold start (can take ~50s)
     headers: {
         "Content-Type": "application/json",
     },

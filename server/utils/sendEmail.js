@@ -8,9 +8,19 @@ const sendEmail = async (options) => {
     if (process.env.SENDER_EMAIL && process.env.SENDER_PASSWORD) {
         // If SMTP_SERVICE is defined or if the sender email is a gmail address, use the service shorthand.
         const isGmail = process.env.SENDER_EMAIL.toLowerCase().includes('@gmail.com');
-        if (process.env.SMTP_SERVICE || isGmail) {
+        if (process.env.SMTP_SERVICE === 'gmail' || (!process.env.SMTP_SERVICE && isGmail)) {
             transporter = nodemailer.createTransport({
-                service: process.env.SMTP_SERVICE || 'gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
+                auth: {
+                    user: process.env.SENDER_EMAIL,
+                    pass: process.env.SENDER_PASSWORD,
+                },
+            });
+        } else if (process.env.SMTP_SERVICE) {
+            transporter = nodemailer.createTransport({
+                service: process.env.SMTP_SERVICE,
                 auth: {
                     user: process.env.SENDER_EMAIL,
                     pass: process.env.SENDER_PASSWORD,

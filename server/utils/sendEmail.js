@@ -13,6 +13,7 @@ const sendEmail = async (options) => {
                 host: 'smtp.gmail.com',
                 port: 465,
                 secure: true,
+                family: 4, // Force IPv4 to prevent ENETUNREACH in production
                 auth: {
                     user: process.env.SENDER_EMAIL,
                     pass: process.env.SENDER_PASSWORD,

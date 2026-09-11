@@ -32,7 +32,7 @@ export default function Checkout() {
   const cachedCartItems = useAppStore((state) => state.cartItems);
   const fetchSharedCart = useAppStore((state) => state.fetchCart);
 
-  const [paymentMethod, setPaymentMethod] = useState("credit_card");
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
 
   const [formData, setFormData] = useState({
     email: "",
@@ -444,7 +444,7 @@ export default function Checkout() {
               </h2>
 
               <div className="space-y-4">
-                <label
+                {/* <label
                   className={`flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all ${
                     paymentMethod === "credit_card"
                       ? "border-resin-blue bg-resin-blue/5"
@@ -468,7 +468,7 @@ export default function Checkout() {
                       Secure transaction via Stripe
                     </p>
                   </div>
-                </label>
+                </label> */}
 
                 <label
                   className={`flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all ${

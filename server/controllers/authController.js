@@ -69,17 +69,17 @@ exports.register = async (req, res) => {
         });
 
         // Send Welcome Email
-        // try {
-        //     await sendEmail({
-        //         email: user.email,
-        //         subject: 'Welcome to Tohfabox25! Here is your 10% discount',
-        //         message: `Hi ${user.name}, welcome to Tohfabox25! Use promo code ${promo.code} for 10% off your first order.`,
-        //         html: getWelcomeEmailTemplate(user.name, promo.code)
-        //     });
-        // } catch (emailError) {
-        //     console.error('Failed to send welcome email:', emailError);
-        //     // We do not return an error here so the registration process continues successfully
-        // }
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: 'Welcome to Tohfabox25! Here is your 10% discount',
+                message: `Hi ${user.name}, welcome to Tohfabox25! Use promo code ${promo.code} for 10% off your first order.`,
+                html: getWelcomeEmailTemplate(user.name, promo.code)
+            });
+        } catch (emailError) {
+            console.error('Failed to send welcome email:', emailError);
+            // We do not return an error here so the registration process continues successfully
+        }
 
         // Generate token
         const token = generateToken(user._id);

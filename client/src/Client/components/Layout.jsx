@@ -31,7 +31,7 @@ export default function ClientLayout() {
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
     const isLoggedIn = !!localStorage.getItem("token");
-    const isAdminLoggedIn = !!localStorage.getItem("adminToken");
+    const isAdminLoggedIn = user?.role === "admin" ? true : false  //|| !!localStorage.getItem("adminToken");
 
     const cartItems = useAppStore((state) => state.cartItems) || [];
     const wishlistItems = useAppStore((state) => state.wishlistItems) || [];

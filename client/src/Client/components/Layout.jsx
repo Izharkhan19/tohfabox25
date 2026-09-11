@@ -31,6 +31,7 @@ export default function ClientLayout() {
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
     const isLoggedIn = !!localStorage.getItem("token");
+    const isAdminLoggedIn = !!localStorage.getItem("adminToken");
 
     const cartItems = useAppStore((state) => state.cartItems) || [];
     const wishlistItems = useAppStore((state) => state.wishlistItems) || [];
@@ -245,6 +246,16 @@ export default function ClientLayout() {
                                         Sign In
                                     </Link>
                                 )}
+
+                                {/* Admin Panel Button */}
+                                {isAdminLoggedIn && (
+                                    <Link
+                                        to="/admin"
+                                        className="ml-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 px-5 py-2.5 rounded-full transition-all shadow-[0_0_15px_rgba(220,38,38,0.4)]"
+                                    >
+                                        Admin Panel
+                                    </Link>
+                                )}
                             </div>
 
                             {/* Mobile: Quick Cart Icon */}
@@ -337,6 +348,16 @@ export default function ClientLayout() {
                             <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors">Our Story</Link>
                             <Link to="/custom-orders" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors">Custom Orders</Link>
                             <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors">Support & FAQ</Link>
+                            
+                            {isAdminLoggedIn && (
+                                <Link 
+                                    to="/admin" 
+                                    onClick={() => setMobileMenuOpen(false)} 
+                                    className="block px-4 py-3 mt-2 text-white bg-red-600/90 rounded-xl font-bold transition-colors"
+                                >
+                                    Go to Admin Panel
+                                </Link>
+                            )}
                         </nav>
 
                         {/* Logout at bottom if logged in */}

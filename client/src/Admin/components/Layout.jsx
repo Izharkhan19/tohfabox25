@@ -1,7 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AdminSidebar from "./Sidebar";
-import { ArrowRightOnRectangleIcon, Bars3Icon } from "@heroicons/react/24/outline";
+import { ArrowRightOnRectangleIcon, Bars3Icon, GlobeAltIcon } from "@heroicons/react/24/outline";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -70,14 +70,22 @@ export default function AdminLayout() {
                 : "Dashboard"}
             </h2>
           </div>
-          
-          <button
-            onClick={handleLogout}
-            className="text-red-600 hover:text-red-800 flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-red-50 text-sm font-semibold"
-          >
-            <span className="hidden sm:inline">Logout</span>
-            <ArrowRightOnRectangleIcon className="w-6 h-6" />
-          </button>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <button
+              onClick={() => navigate("/")}
+              className="text-blue-600 hover:text-blue-800 flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-blue-50 text-sm font-semibold"
+            >
+              <GlobeAltIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span className="hidden sm:inline">Storefront</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="text-red-600 hover:text-red-800 flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-red-50 text-sm font-semibold"
+            >
+              <span className="hidden sm:inline">Logout</span>
+              <ArrowRightOnRectangleIcon className="w-6 h-6" />
+            </button>
+          </div>
         </header>
 
         {/* Page Content */}

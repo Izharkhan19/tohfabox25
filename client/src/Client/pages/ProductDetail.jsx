@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
     HeartIcon,
     TruckIcon,
     ShieldCheckIcon,
     ArrowPathIcon,
-    SparklesIcon
+    SparklesIcon,
+    ArrowLeftIcon
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartFilledIcon } from "@heroicons/react/24/solid";
 import { getProduct, getProductReviews, saveProductReview, addToCart, addToWishlist, removeFromWishlist } from "../../api-services/apiService";
@@ -15,6 +16,7 @@ import { toast } from 'react-toastify';
 
 export default function ProductDetail() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
@@ -25,6 +27,7 @@ export default function ProductDetail() {
     const [selectedRating, setSelectedRating] = useState(0);
     const [reviewLoading, setReviewLoading] = useState(false);
     const [cartLoading, setCartLoading] = useState(false);
+    const [isDescExpanded, setIsDescExpanded] = useState(false);
 
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
@@ -41,17 +44,13 @@ export default function ProductDetail() {
                     name: p.name,
                     price: p.price,
                     stock: p.stock,
-                    description: p.description || "No description available.",
+                    description: p.description || "",
                     images: p.images?.length > 0 ? p.images : [{ url: "https://via.placeholder.com/800" }],
                     rating: p.rating?.average || 0,
                     reviews: p.rating?.count || 0,
-                    artist: p.artist || "Master Resin Artist",
-                    location: p.location || "Global Artisan Studio",
-                    materials: p.materials || "High-Gloss Epoxy Resin, Pigments",
-                    dimensions: p.dimensions?.value
-                        ? `${p.dimensions.value} ${p.dimensions.unit || "cm"}`
-                        : "Custom Dimensions",
-                    features: p.tags?.length > 0 ? p.tags : ["Hand-Poured", "Crystal Clear", "Unique Pattern"],
+                    category: p.category?.name || "Uncategorized",
+                    weight: p.weight?.value ? `${p.weight.value} ${p.weight.unit}` : "N/A",
+                    dimensions: p.dimensions?.length ? `${p.dimensions.length} x ${p.dimensions.width} x ${p.dimensions.height} ${p.dimensions.unit}` : "N/A",
                 });
                 setIsWishlisted(user?.wishlist?.includes(p._id) || false);
             } else {
@@ -171,12 +170,19 @@ export default function ProductDetail() {
     }
 
     return (
-        <div className="bg-gray-50 pb-20 pt-8">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="grid lg:grid-cols-2 gap-16">
+        <div className="bg-gray-100 pb-28 lg:pb-20 pt-0 lg:pt-8 min-h-screen relative">
+            {/* Mobile Back Button */}
+            <button 
+                onClick={() => navigate(-1)}
+                className="lg:hidden absolute top-4 left-4 z-10 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full shadow-sm flex items-center justify-center border border-gray-100 text-gray-700 hover:bg-white transition-colors"
+            >
+                <ArrowLeftIcon className="w-5 h-5" />
+            </button>
+            <div className="max-w-7xl mx-auto px-0 lg:px-6">
+                <div className="grid lg:grid-cols-2 gap-0 lg:gap-16">
                     {/* Image Gallery */}
-                    <div className="flex flex-col gap-4 min-w-0 w-full">
-                        <div className="aspect-[4/5] sm:aspect-square md:aspect-[4/5] rounded-3xl overflow-hidden bg-white shadow-md border border-gray-100 relative group">
+                    <div className="flex flex-col gap-2 min-w-0 w-full bg-white pb-4 lg:pb-0 lg:bg-transparent">
+                        <div className="aspect-square md:aspect-[4/5] lg:rounded-3xl overflow-hidden bg-white shadow-sm lg:border lg:border-gray-100 relative group">
                             <img
                                 src={product.images[activeImage]?.url}
                                 alt={product.name}
@@ -186,12 +192,12 @@ export default function ProductDetail() {
                         </div>
 
                         {product.images.length > 1 && (
-                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide w-full">
+                            <div className="flex gap-3 overflow-x-auto px-4 lg:px-0 pb-2 pt-2 scrollbar-hide w-full">
                                 {product.images.map((img, i) => (
                                     <button
                                         key={i}
                                         onClick={() => setActiveImage(i)}
-                                        className={`flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 transition-all ${
+                                        className={`flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 rounded-xl lg:rounded-2xl overflow-hidden border-2 transition-all ${
                                             activeImage === i ? "border-resin-blue shadow-md opacity-100" : "border-transparent opacity-60 hover:opacity-100"
                                         }`}
                                     >
@@ -204,150 +210,186 @@ export default function ProductDetail() {
 
                     {/* Product Info */}
                     <div className="flex flex-col min-w-0">
-                        <div className="mb-8">
-                            <div className="flex justify-between items-start mb-4 gap-4">
-                                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 font-serif leading-tight break-words">
+                        {/* Title & Price Card */}
+                        <div className="bg-white p-4 lg:p-0 lg:bg-transparent mb-2 lg:mb-8 shadow-sm lg:shadow-none">
+                            <div className="flex justify-between items-start mb-2 gap-4">
+                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 font-serif leading-tight break-words">
                                     {product.name}
                                 </h1>
                                 <button
                                     onClick={handleWishlistToggle}
-                                    className="p-3 bg-white rounded-full shadow-sm border border-gray-100 text-gray-400 hover:text-red-500 transition-all hover:shadow-md"
+                                    className="p-2 lg:p-3 bg-gray-50 lg:bg-white rounded-full shadow-sm border border-gray-100 text-gray-400 hover:text-red-500 transition-all hover:shadow-md"
                                 >
                                     {isWishlisted ? (
-                                        <HeartFilledIcon className="w-7 h-7 text-red-500" />
+                                        <HeartFilledIcon className="w-6 h-6 lg:w-7 lg:h-7 text-red-500" />
                                     ) : (
-                                        <HeartIcon className="w-7 h-7" />
+                                        <HeartIcon className="w-6 h-6 lg:w-7 lg:h-7" />
                                     )}
                                 </button>
                             </div>
 
-                            <div className="flex items-center gap-6 mb-6">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex text-resin-gold">
-                                        {[...Array(5)].map((_, i) => (
-                                            <svg key={i} className={`w-5 h-5 ${i < Math.round(product.rating) ? "fill-current" : "fill-gray-200"}`} viewBox="0 0 20 20">
-                                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                                            </svg>
-                                        ))}
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="flex items-center gap-2 bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                                    <span className="text-sm font-bold text-green-700">{product.rating.toFixed(1)}</span>
+                                    <div className="flex text-green-600">
+                                        <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                        </svg>
                                     </div>
-                                    <span className="text-sm text-gray-500">
-                                        ({product.rating.toFixed(1)} / {reviews.length || product.reviews} reviews)
-                                    </span>
                                 </div>
+                                <span className="text-sm text-gray-500 underline decoration-dotted cursor-pointer">
+                                    {reviews.length || product.reviews} ratings
+                                </span>
                             </div>
 
-                            <div className="mb-8 rounded-2xl border border-gray-100 bg-white p-5">
-                                <p className="text-sm font-bold text-gray-700 mb-3">Rate this piece</p>
-                                <div className="flex flex-wrap items-center gap-3">
-                                    <div className="flex items-center" role="radiogroup" aria-label="Product rating">
-                                        {[1, 2, 3, 4, 5].map((rating) => (
-                                            <button
-                                                key={rating}
-                                                type="button"
-                                                onClick={() => setSelectedRating(rating)}
-                                                role="radio"
-                                                aria-checked={selectedRating === rating}
-                                                aria-label={`${rating} star${rating > 1 ? 's' : ''}`}
-                                                className="cursor-pointer p-1 text-resin-gold transition-transform hover:scale-110"
-                                            >
-                                                <svg className={`w-6 h-6 ${rating <= selectedRating ? "fill-current" : "fill-gray-200"}`} viewBox="0 0 20 20" aria-hidden="true">
-                                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                                                </svg>
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={handleRatingSubmit}
-                                        disabled={reviewLoading}
-                                        className="rounded-full bg-resin-dark px-5 py-2 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-resin-blue disabled:bg-gray-400"
-                                    >
-                                        {reviewLoading ? "Saving..." : "Submit Rating"}
-                                    </button>
-                                </div>
-                                {!isLoggedIn && <p className="mt-2 text-xs text-gray-500">Sign in to submit your rating.</p>}
-                            </div>
-
-                            <div className="text-3xl sm:text-4xl font-bold text-resin-dark mb-8">
+                            <div className="text-3xl sm:text-4xl font-bold text-resin-dark mb-1">
                                 ₹{Number(product.price).toFixed(2)}
                             </div>
-                            
-                            <p className="text-gray-600 font-light leading-relaxed mb-8">
-                                {product.description}
-                            </p>
+                            <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-widest">Inclusive of all taxes</p>
                         </div>
 
-                        <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm mb-10">
-                            <h3 className="text-xs uppercase tracking-widest text-gray-400 mb-6 font-bold">Artisan Details</h3>
-                            <div className="grid grid-cols-2 gap-8">
-                                <div>
-                                    <p className="text-sm text-gray-500 mb-1">Created By</p>
-                                    <p className="font-serif font-bold text-resin-dark text-xl">{product.artist}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500 mb-1">Studio Location</p>
-                                    <p className="font-serif font-bold text-resin-dark text-xl">{product.location}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500 mb-1">Primary Materials</p>
-                                    <p className="text-gray-800">{product.materials}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500 mb-1">Dimensions</p>
-                                    <p className="text-gray-800">{product.dimensions}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Add to Cart Actions */}
-                        <div className="mb-10">
-                            {product.stock === 0 ? (
-                                <div className="bg-red-50 border border-red-100 text-red-600 p-6 rounded-2xl text-center font-bold uppercase tracking-widest">
-                                    Currently Out of Stock
+                        {/* Description Card */}
+                        <div className="bg-white p-4 lg:p-0 lg:bg-transparent mb-2 lg:mb-8 shadow-sm lg:shadow-none">
+                            <h3 className="text-sm lg:hidden font-bold text-gray-800 mb-2 uppercase tracking-wide">Product Details</h3>
+                            {product.description ? (
+                                <div className={`relative ${!isDescExpanded ? 'max-h-32 overflow-hidden' : ''}`}>
+                                    <div 
+                                        className="text-sm lg:text-base text-gray-600 font-light leading-relaxed prose prose-sm max-w-none break-words"
+                                        dangerouslySetInnerHTML={{ __html: product.description.replace(/&nbsp;/g, ' ') }}
+                                    />
+                                    {!isDescExpanded && (
+                                        <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                                    )}
                                 </div>
                             ) : (
-                                <div className="flex flex-col sm:flex-row items-center gap-4">
-                                    <div className="flex items-center bg-white border border-gray-200 rounded-full overflow-hidden w-full sm:w-auto h-14">
-                                        <button
-                                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                            className="px-6 h-full hover:bg-gray-50 transition-colors text-xl text-gray-500"
-                                        >−</button>
-                                        <span className="w-12 text-center font-bold text-lg text-resin-dark">{quantity}</span>
-                                        <button
-                                            onClick={() => setQuantity(quantity + 1)}
-                                            className="px-6 h-full hover:bg-gray-50 transition-colors text-xl text-gray-500"
-                                        >+</button>
-                                    </div>
-
-                                    <button
-                                        onClick={handleAddToCart}
-                                        disabled={cartLoading}
-                                        className="w-full bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold tracking-widest uppercase text-sm h-14 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
-                                    >
-                                        {cartLoading ? "Adding..." : "Add to Cart"}
-                                    </button>
-                                </div>
+                                <p className="text-gray-400 italic text-sm">No description available.</p>
+                            )}
+                            {product.description && product.description.length > 150 && (
+                                <button 
+                                    onClick={() => setIsDescExpanded(!isDescExpanded)}
+                                    className="text-resin-blue font-semibold text-sm mt-2 hover:underline focus:outline-none"
+                                >
+                                    {isDescExpanded ? "Read Less" : "Read More"}
+                                </button>
                             )}
                         </div>
 
-                        {/* Trust Badges */}
-                        <div className="grid grid-cols-3 gap-4 pt-8 border-t border-gray-200">
-                            <div className="flex flex-col items-center text-center">
-                                <SparklesIcon className="w-8 h-8 text-resin-gold mb-3" />
-                                <p className="text-xs uppercase tracking-wider font-bold text-gray-800 mb-1">Authentic</p>
-                                <p className="text-xs text-gray-500">Handcrafted</p>
+                        {/* Rating Card */}
+                        <div className="bg-white p-4 lg:p-5 lg:rounded-2xl border-y lg:border border-gray-100 mb-2 lg:mb-8 shadow-sm lg:shadow-none">
+                            <p className="text-sm font-bold text-gray-800 mb-3 uppercase tracking-wide lg:tracking-normal lg:capitalize">Rate this piece</p>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                <div className="flex items-center" role="radiogroup" aria-label="Product rating">
+                                    {[1, 2, 3, 4, 5].map((rating) => (
+                                        <button
+                                            key={rating}
+                                            type="button"
+                                            onClick={() => setSelectedRating(rating)}
+                                            role="radio"
+                                            aria-checked={selectedRating === rating}
+                                            aria-label={`${rating} star${rating > 1 ? 's' : ''}`}
+                                            className="cursor-pointer p-1 text-resin-gold transition-transform hover:scale-110"
+                                        >
+                                            <svg className={`w-7 h-7 lg:w-6 lg:h-6 ${rating <= selectedRating ? "fill-current" : "fill-gray-200"}`} viewBox="0 0 20 20" aria-hidden="true">
+                                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                            </svg>
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleRatingSubmit}
+                                    disabled={reviewLoading}
+                                    className="w-full sm:w-auto rounded-full bg-resin-dark px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-resin-blue disabled:bg-gray-400"
+                                >
+                                    {reviewLoading ? "Saving..." : "Submit Rating"}
+                                </button>
                             </div>
-                            <div className="flex flex-col items-center text-center">
-                                <TruckIcon className="w-8 h-8 text-resin-gold mb-3" />
-                                <p className="text-xs uppercase tracking-wider font-bold text-gray-800 mb-1">Shipping</p>
-                                <p className="text-xs text-gray-500">Carefully Packed</p>
-                            </div>
-                            <div className="flex flex-col items-center text-center">
-                                <ShieldCheckIcon className="w-8 h-8 text-resin-gold mb-3" />
-                                <p className="text-xs uppercase tracking-wider font-bold text-gray-800 mb-1">Secure</p>
-                                <p className="text-xs text-gray-500">SSL Encrypted</p>
+                            {!isLoggedIn && <p className="mt-3 text-xs text-gray-500">Sign in to submit your rating.</p>}
+                        </div>
+
+                        {/* Product Specifications Card */}
+                        <div className="bg-white p-4 lg:p-8 lg:rounded-3xl border-y lg:border border-gray-100 shadow-sm lg:shadow-sm mb-2 lg:mb-10">
+                            <h3 className="text-sm lg:text-xs uppercase tracking-widest text-gray-800 lg:text-gray-400 mb-4 lg:mb-6 font-bold">Product Specifications</h3>
+                            <div className="grid grid-cols-2 gap-y-6 gap-x-4 lg:gap-8">
+                                <div>
+                                    <p className="text-xs text-gray-500 mb-1">Category</p>
+                                    <p className="font-serif font-bold text-resin-dark text-lg lg:text-xl">{product.category}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 mb-1">Availability</p>
+                                    <p className={`font-serif font-bold text-lg lg:text-xl ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}>
+                                        {product.stock > 0 ? "In Stock" : "Out of Stock"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 mb-1">Weight</p>
+                                    <p className="text-sm lg:text-base text-gray-800">{product.weight}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 mb-1">Dimensions (L x W x H)</p>
+                                    <p className="text-sm lg:text-base text-gray-800">{product.dimensions}</p>
+                                </div>
                             </div>
                         </div>
+
+                        {/* Trust Badges */}
+                        <div className="bg-white lg:bg-transparent p-6 lg:p-0 lg:pt-8 lg:border-t border-gray-200 grid grid-cols-3 gap-2 lg:gap-4 mb-4 lg:mb-0">
+                            <div className="flex flex-col items-center text-center">
+                                <SparklesIcon className="w-6 h-6 lg:w-8 lg:h-8 text-resin-gold mb-2 lg:mb-3" />
+                                <p className="text-[10px] lg:text-xs uppercase tracking-wider font-bold text-gray-800 mb-0.5">Authentic</p>
+                                <p className="text-[10px] lg:text-xs text-gray-500 hidden lg:block">Handcrafted</p>
+                            </div>
+                            <div className="flex flex-col items-center text-center">
+                                <TruckIcon className="w-6 h-6 lg:w-8 lg:h-8 text-resin-gold mb-2 lg:mb-3" />
+                                <p className="text-[10px] lg:text-xs uppercase tracking-wider font-bold text-gray-800 mb-0.5">Shipping</p>
+                                <p className="text-[10px] lg:text-xs text-gray-500 hidden lg:block">Carefully Packed</p>
+                            </div>
+                            <div className="flex flex-col items-center text-center">
+                                <ShieldCheckIcon className="w-6 h-6 lg:w-8 lg:h-8 text-resin-gold mb-2 lg:mb-3" />
+                                <p className="text-[10px] lg:text-xs uppercase tracking-wider font-bold text-gray-800 mb-0.5">Secure</p>
+                                <p className="text-[10px] lg:text-xs text-gray-500 hidden lg:block">SSL Encrypted</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {/* Sticky Bottom Bar for Mobile & Desktop Action */}
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 lg:p-0 lg:static lg:bg-transparent lg:border-none lg:mt-6 z-50 lg:z-auto shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] lg:shadow-none">
+                <div className="max-w-7xl mx-auto lg:px-6">
+                    <div className="flex justify-end lg:justify-start">
+                        {product.stock === 0 ? (
+                            <div className="w-full lg:w-auto bg-red-50 border border-red-100 text-red-600 p-4 lg:p-6 rounded-xl lg:rounded-2xl text-center font-bold uppercase tracking-widest text-sm">
+                                Currently Out of Stock
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-3 w-full lg:w-auto">
+                                <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl lg:rounded-full overflow-hidden h-12 lg:h-14">
+                                    <button
+                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                        className="px-4 lg:px-6 h-full hover:bg-gray-100 transition-colors text-lg text-gray-500"
+                                    >−</button>
+                                    <span className="w-8 lg:w-12 text-center font-bold text-base lg:text-lg text-resin-dark">{quantity}</span>
+                                    <button
+                                        onClick={() => setQuantity(quantity + 1)}
+                                        className="px-4 lg:px-6 h-full hover:bg-gray-100 transition-colors text-lg text-gray-500"
+                                    >+</button>
+                                </div>
+
+                                <button
+                                    onClick={handleAddToCart}
+                                    disabled={cartLoading}
+                                    className="flex-1 lg:flex-none lg:px-12 bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold tracking-widest uppercase text-sm h-12 lg:h-14 rounded-xl lg:rounded-full transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 disabled:transform-none flex items-center justify-center gap-2"
+                                >
+                                    {cartLoading ? (
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    ) : (
+                                        "Add to Cart"
+                                    )}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

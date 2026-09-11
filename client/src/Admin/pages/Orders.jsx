@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 import {
   EyeIcon,
   InboxIcon,
@@ -144,14 +146,6 @@ export default function Orders() {
   /* ---------------- UI ---------------- */
   return (
     <div className="p-4 sm:p-6">
-      {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Orders Management</h1>
-        <p className="text-gray-600 mt-1 text-sm sm:text-base">
-          Track and manage all customer orders
-        </p>
-      </div>
-
       {/* Search */}
       <div className="mb-6 max-w-md relative">
         <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -200,78 +194,113 @@ export default function Orders() {
       )}
 
       {/* Orders Table */}
+      {/* Orders Table & Mobile Cards */}
       {!loading && filteredOrders.length > 0 && (
-        <div className="bg-white rounded-2xl shadow border overflow-x-auto w-full">
-          <table className="w-full min-w-[800px]">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                {[
-                  "Order ID",
-                  "Customer",
-                  "Date",
-                  "Items",
-                  "Total",
-                  "Status",
-                  "Actions",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOrders.map((order) => {
-                const cfg = statusConfig[order.status];
-                const StatusIcon = cfg?.icon || ClockIcon;
-
+        <>
+          {/* Desktop Table */}
+          <div className="hidden lg:block bg-white rounded-2xl shadow border overflow-hidden w-full">
+            <DataTable 
+              value={filteredOrders} 
+              paginator 
+              rows={10} 
+              rowsPerPageOptions={[5, 10, 25, 50]} 
+              tableStyle={{ minWidth: '60rem' }}
+              className="p-datatable-sm"
+              rowHover
+              stripedRows
+            >
+              <Column field="orderNumber" header="Order ID" body={(rowData) => (
+                <span className="font-mono text-blue-600">
+                  {rowData.orderNumber || `#${rowData._id.slice(-8)}`}
+                </span>
+              )} sortable></Column>
+              <Column header="Customer" body={(rowData) => (
+                <div>
+                  <div className="font-medium">{rowData.user?.name || "Guest"}</div>
+                  <div className="text-sm text-gray-500">{rowData.user?.email}</div>
+                </div>
+              )} sortable sortField="user.name"></Column>
+              <Column header="Date" body={(rowData) => new Date(rowData.createdAt).toLocaleDateString()} sortable sortField="createdAt"></Column>
+              <Column header="Items" body={(rowData) => rowData.items?.length || 0} sortable sortField="items.length"></Column>
+              <Column field="total" header="Total" body={(rowData) => <span className="font-bold">₹{rowData.total.toFixed(2)}</span>} sortable></Column>
+              <Column header="Status" body={(rowData) => {
+                const cfg = statusConfig[rowData.status] || { icon: ClockIcon, color: "bg-gray-100 text-gray-800", label: "Unknown" };
+                const StatusIcon = cfg.icon;
                 return (
-                  <tr key={order._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 font-mono text-blue-600">
-                      {order.orderNumber || `#${order._id.slice(-8)}`}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-medium">
-                        {order.user?.name || "Guest"}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {order.user?.email}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      {order.items?.length || 0}
-                    </td>
-                    <td className="px-6 py-4 font-bold">
-                      ₹{order.total.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${cfg.color}`}
-                      >
-                        <StatusIcon className="w-5 h-5" />
-                        {cfg.label}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => fetchOrderDetail(order._id)}
-                        className="text-blue-600"
-                      >
-                        <EyeIcon className="w-6 h-6" />
-                      </button>
-                    </td>
-                  </tr>
+                  <span className={`inline-flex items-center gap-2 px-3 py-1.5 text-sm font-bold rounded-full ${cfg.color}`}>
+                    <StatusIcon className="w-4 h-4" />
+                    {cfg.label}
+                  </span>
                 );
-              })}
-            </tbody>
-          </table>
-        </div>
+              }} sortable sortField="status"></Column>
+              <Column header="Actions" body={(rowData) => (
+                <button
+                  onClick={() => fetchOrderDetail(rowData._id)}
+                  className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition"
+                  title="View Details"
+                >
+                  <EyeIcon className="w-5 h-5" />
+                </button>
+              )}></Column>
+            </DataTable>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="lg:hidden flex flex-col gap-4">
+            {filteredOrders.map((order) => {
+              const cfg = statusConfig[order.status];
+              const StatusIcon = cfg?.icon || ClockIcon;
+
+              return (
+                <div key={order._id} className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-4 flex flex-col gap-3 transition hover:shadow-md">
+                  <div className="flex justify-between items-start">
+                    <div className="font-mono text-blue-600 font-semibold">
+                      {order.orderNumber || `#${order._id.slice(-8)}`}
+                    </div>
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${cfg.color}`}
+                    >
+                      <StatusIcon className="w-4 h-4" />
+                      {cfg.label}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <div className="text-gray-800 font-medium">
+                      {order.user?.name || "Guest"}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {order.user?.email}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 mt-2">
+                    <div>
+                      <span className="font-medium">Date:</span> <br/>
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </div>
+                    <div>
+                      <span className="font-medium">Items:</span> <br/>
+                      {order.items?.length || 0}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                    <div className="font-bold text-lg text-gray-900">
+                      ₹{order.total.toFixed(2)}
+                    </div>
+                    <button
+                      onClick={() => fetchOrderDetail(order._id)}
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm transition"
+                    >
+                      <EyeIcon className="w-5 h-5" /> View Details
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
 
       {/* Empty */}

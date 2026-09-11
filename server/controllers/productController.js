@@ -181,8 +181,8 @@ exports.createProduct = async (req, res) => {
             stock: stock || 0,
             sku,
             barcode,
-            weight,
-            dimensions,
+            weight: typeof weight === 'string' ? JSON.parse(weight) : weight,
+            dimensions: typeof dimensions === 'string' ? JSON.parse(dimensions) : dimensions,
             tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim())) : [],
             isFeatured,
             isActive,
@@ -265,8 +265,8 @@ exports.updateProduct = async (req, res) => {
         if (stock !== undefined) product.stock = stock;
         if (sku) product.sku = sku;
         if (barcode !== undefined) product.barcode = barcode;
-        if (weight) product.weight = weight;
-        if (dimensions) product.dimensions = dimensions;
+        if (weight) product.weight = typeof weight === 'string' ? JSON.parse(weight) : weight;
+        if (dimensions) product.dimensions = typeof dimensions === 'string' ? JSON.parse(dimensions) : dimensions;
         if (isFeatured !== undefined) product.isFeatured = isFeatured;
         if (isActive !== undefined) product.isActive = isActive;
         if (metaTitle !== undefined) product.metaTitle = metaTitle;
@@ -425,6 +425,60 @@ exports.getFeaturedProducts = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error fetching featured products',
+            error: error.message
+        });
+    }
+};
+
+// @desc    Delete multiple products
+// @route   POST /api/products/bulk-delete
+// @access  Private/Admin
+exports.deleteMultipleProducts = async (req, res) => {
+    try {
+        const { productIds } = req.body;
+
+        if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No product IDs provided for deletion'
+            });
+        }
+
+        const products = await Product.find({ _id: { $in: productIds } });
+
+        if (products.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No matching products found'
+            });
+        }
+
+        // Delete all images from Google Drive for these products
+        const deleteImagePromises = [];
+        products.forEach(product => {
+            if (product.images && product.images.length > 0) {
+                product.images.forEach(img => {
+                    deleteImagePromises.push(deleteFromGoogleDrive(img.publicId));
+                });
+            }
+        });
+        
+        if (deleteImagePromises.length > 0) {
+            await Promise.allSettled(deleteImagePromises); // Use allSettled so if one fails, others still delete
+        }
+
+        // Delete products from database
+        await Product.deleteMany({ _id: { $in: productIds } });
+
+        res.status(200).json({
+            success: true,
+            message: `${products.length} products deleted successfully`
+        });
+    } catch (error) {
+        console.error('Bulk delete products error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error deleting products',
             error: error.message
         });
     }

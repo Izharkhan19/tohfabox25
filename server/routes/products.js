@@ -6,6 +6,7 @@ const {
     createProduct,
     updateProduct,
     deleteProduct,
+    deleteMultipleProducts,
     deleteProductImage,
     getFeaturedProducts
 } = require('../controllers/productController');
@@ -22,6 +23,7 @@ router.post('/:productId/reviews', protect, createOrUpdateReview);
 router.get('/:identifier', getProduct);
 
 // Protected/Admin routes
+router.post('/bulk-delete', protect, isAdmin, deleteMultipleProducts);
 router.post('/', protect, isAdmin, upload.array('images', 5), createProduct);
 router.put('/:id', protect, isAdmin, upload.array('images', 5), updateProduct);
 router.delete('/:id', protect, isAdmin, deleteProduct);

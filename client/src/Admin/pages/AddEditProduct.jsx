@@ -147,7 +147,10 @@
 // src/Admin/pages/AddEditProduct.jsx
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Dialog } from 'primereact/dialog';
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import {
   createProduct,
   updateProduct,
@@ -170,10 +173,17 @@ export default function AddEditProduct() {
     category: "",
     description: "",
     isFeatured: false,
+    weightValue: "",
+    weightUnit: "kg",
+    dimLength: "",
+    dimWidth: "",
+    dimHeight: "",
+    dimUnit: "cm",
   });
 
   const [images, setImages] = useState([]); // New files to upload
   const [existingImages, setExistingImages] = useState([]); // Existing images from backend
+  const [previewImage, setPreviewImage] = useState(null);
 
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
@@ -218,6 +228,12 @@ export default function AddEditProduct() {
               category: product.category?._id || product.category || "",
               description: product.description || "",
               isFeatured: product.isFeatured || false,
+              weightValue: product.weight?.value || "",
+              weightUnit: product.weight?.unit || "kg",
+              dimLength: product.dimensions?.length || "",
+              dimWidth: product.dimensions?.width || "",
+              dimHeight: product.dimensions?.height || "",
+              dimUnit: product.dimensions?.unit || "cm",
             });
             setExistingImages(product.images || []);
           } else {
@@ -277,6 +293,9 @@ export default function AddEditProduct() {
     formDataToSend.append("category", formData.category);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("isFeatured", formData.isFeatured);
+    
+    formDataToSend.append("weight", JSON.stringify({ value: formData.weightValue, unit: formData.weightUnit }));
+    formDataToSend.append("dimensions", JSON.stringify({ length: formData.dimLength, width: formData.dimWidth, height: formData.dimHeight, unit: formData.dimUnit }));
 
     // Append new images
     images.forEach((image) => {
@@ -471,18 +490,49 @@ export default function AddEditProduct() {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
+              {/* Weight */}
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">Weight</label>
+                <div className="flex gap-2">
+                  <input type="number" name="weightValue" value={formData.weightValue} onChange={handleInputChange} min="0" step="0.01" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="e.g. 1.5" />
+                  <select name="weightUnit" value={formData.weightUnit} onChange={handleInputChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-white">
+                    <option value="kg">kg</option>
+                    <option value="g">g</option>
+                    <option value="lb">lb</option>
+                    <option value="oz">oz</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Dimensions */}
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">Dimensions (L x W x H)</label>
+                <div className="flex gap-2">
+                  <input type="number" name="dimLength" value={formData.dimLength} onChange={handleInputChange} min="0" step="0.1" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="L" />
+                  <input type="number" name="dimWidth" value={formData.dimWidth} onChange={handleInputChange} min="0" step="0.1" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="W" />
+                  <input type="number" name="dimHeight" value={formData.dimHeight} onChange={handleInputChange} min="0" step="0.1" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="H" />
+                  <select name="dimUnit" value={formData.dimUnit} onChange={handleInputChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-white">
+                    <option value="cm">cm</option>
+                    <option value="in">in</option>
+                    <option value="m">m</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div className="mt-6">
               <label className="block mb-2 font-semibold text-gray-700">
                 Description
               </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows="5"
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                required
-              />
+              <div className="bg-white rounded-lg overflow-hidden">
+                <ReactQuill 
+                    theme="snow" 
+                    value={formData.description} 
+                    onChange={(value) => setFormData(prev => ({...prev, description: value}))}
+                    className="h-64 mb-12"
+                />
+              </div>
             </div>
 
             {/* Image Upload */}
@@ -501,12 +551,13 @@ export default function AddEditProduct() {
                         <img
                           src={getImageUrl(img)}
                           alt="product"
-                          className="w-32 h-32 object-cover rounded-lg border"
+                          className="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
+                          onClick={() => setPreviewImage(getImageUrl(img))}
                         />
                         <button
                           type="button"
                           onClick={() => removeExistingImage(getImageId(img))}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
                         >
                           ×
                         </button>
@@ -538,12 +589,13 @@ export default function AddEditProduct() {
                       <img
                         src={URL.createObjectURL(file)}
                         alt="preview"
-                        className="w-32 h-32 object-cover rounded-lg border"
+                        className="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
+                        onClick={() => setPreviewImage(URL.createObjectURL(file))}
                       />
                       <button
                         type="button"
                         onClick={() => removeNewImage(i)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
                       >
                         ×
                       </button>
@@ -580,6 +632,19 @@ export default function AddEditProduct() {
           </form>
         </div>
       )}
+
+      {/* Image Preview Modal */}
+      <Dialog 
+        header="Image Preview" 
+        visible={!!previewImage} 
+        style={{ width: '90vw', maxWidth: '600px' }} 
+        onHide={() => setPreviewImage(null)} 
+        dismissableMask
+      >
+        <div className="flex justify-center p-2 bg-gray-50 rounded-lg">
+          <img src={previewImage} alt="Preview" className="max-w-full h-auto max-h-[70vh] object-contain rounded shadow-sm" />
+        </div>
+      </Dialog>
     </div>
   );
 }

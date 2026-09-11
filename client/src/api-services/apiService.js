@@ -171,6 +171,9 @@ export const updateProduct = (id, formData) =>
 export const deleteProduct = (id) =>
     handleApiCall(() => api.delete(`/products/${id}`), "Product deleted!");
 
+export const deleteMultipleProducts = (productIds) =>
+    handleApiCall(() => api.post(`/products/bulk-delete`, { productIds }), "Products deleted successfully!");
+
 export const deleteProductImage = (productId, imageId) =>
     handleApiCall(() => api.delete(`/products/${productId}/images/${imageId}`));
 

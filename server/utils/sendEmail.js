@@ -1,32 +1,71 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
+    let transporter;
+
+    if (process.env.SENDER_EMAIL && process.env.SENDER_PASSWORD) {
+        const isGmail = process.env.SENDER_EMAIL.toLowerCase().includes('@gmail.com');
+        if (process.env.SMTP_SERVICE === 'gmail' || (!process.env.SMTP_SERVICE && isGmail)) {
+            transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
+                auth: {
+                    user: process.env.SENDER_EMAIL,
+                    pass: process.env.SENDER_PASSWORD,
+                },
+            });
+        } else if (process.env.SMTP_SERVICE) {
+            transporter = nodemailer.createTransport({
+                service: process.env.SMTP_SERVICE,
+                auth: {
+                    user: process.env.SENDER_EMAIL,
+                    pass: process.env.SENDER_PASSWORD,
+                },
+            });
+        } else {
+            const port = parseInt(process.env.SMTP_PORT || 587);
+            transporter = nodemailer.createTransport({
+                host: process.env.SMTP_HOST || "smtp.ethereal.email",
+                port: port,
+                secure: port === 465,
+                auth: {
+                    user: process.env.SENDER_EMAIL,
+                    pass: process.env.SENDER_PASSWORD,
+                },
+            });
+        }
+    } else {
+        let testAccount = await nodemailer.createTestAccount();
+        transporter = nodemailer.createTransport({
+            host: "smtp.ethereal.email",
+            port: 587,
+            secure: false,
+            auth: {
+                user: testAccount.user,
+                pass: testAccount.pass,
+            },
+        });
+        console.log('⚠️  No SENDER_EMAIL found in .env. Using auto-generated Ethereal test account.');
+    }
+
+    const message = {
+        from: `${process.env.SENDER_NAME || 'Tohfabox25'} <${process.env.SENDER_EMAIL || "test@ethereal.email"}>`,
+        to: options.email,
+        subject: options.subject,
+        text: options.message,
+        html: options.html,
+    };
+
     try {
-        if (!process.env.RESEND_API_KEY) {
-            console.warn('⚠️  RESEND_API_KEY is not defined. Email will not be sent.');
-            return;
+        const info = await transporter.sendMail(message);
+        console.log('✅ Email sent successfully via Nodemailer: %s', info.messageId);
+        if (!process.env.SENDER_EMAIL) {
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
         }
-
-        const resend = new Resend(process.env.RESEND_API_KEY);
-
-        const payload = {
-            from: process.env.SENDER_EMAIL || 'tohfabox25@gmail.com',
-            to: options.email,
-            subject: options.subject,
-        };
-
-        if (options.html) {
-            payload.html = options.html;
-        } else if (options.message) {
-            payload.text = options.message;
-        }
-
-        const data = await resend.emails.send(payload);
-
-        console.log('✅ Email sent successfully via Resend:', data.id);
-        return data;
+        return info;
     } catch (error) {
-        console.error('❌ Error sending email via Resend:', error.message);
+        console.error('❌ Error sending email via Nodemailer:', error.message);
         throw error;
     }
 };

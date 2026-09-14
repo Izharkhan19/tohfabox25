@@ -11,6 +11,10 @@ const xss = require('xss-clean');
 // Load environment variables
 dotenv.config();
 
+// Force Node.js to use IPv4 first, solving ENETUNREACH errors on platforms like Render
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
+
 // Production Environment Validation
 if (process.env.NODE_ENV === 'production') {
     const requiredEnvs = ['JWT_SECRET', 'MONGODB_URI', 'CLIENT_URL'];

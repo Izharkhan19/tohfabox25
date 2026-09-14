@@ -3,6 +3,7 @@ const PromoCode = require('../models/PromoCode');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
+const { sendWhatsAppMessage } = require('../utils/whatsappClient');
 const { getWelcomeEmailTemplate } = require('../emailTemplates/welcomeEmail');
 
 // Generate JWT Token
@@ -68,16 +69,21 @@ exports.register = async (req, res) => {
             isActive: true
         });
 
-        // Send Welcome Email
+        // Send Welcome Message
         try {
-            await sendEmail({
-                email: user.email,
-                subject: 'Welcome to Tohfabox25! Here is your 10% discount',
-                message: `Hi ${user.name}, welcome to Tohfabox25! Use promo code ${promo.code} for 10% off your first order.`,
-                html: getWelcomeEmailTemplate(user.name, promo.code)
-            });
-        } catch (emailError) {
-            console.error('Failed to send welcome email:', emailError);
+            if (user.phone) {
+                const message = `Hi ${user.name}, welcome to Tohfabox25! 🎉\n\nUse promo code *${promo.code}* for 10% off your first order!`;
+                await sendWhatsAppMessage(user.phone, message);
+            } else {
+                await sendEmail({
+                    email: user.email,
+                    subject: 'Welcome to Tohfabox25! Here is your 10% discount',
+                    message: `Hi ${user.name}, welcome to Tohfabox25! Use promo code ${promo.code} for 10% off your first order.`,
+                    html: getWelcomeEmailTemplate(user.name, promo.code)
+                });
+            }
+        } catch (messagingError) {
+            console.error('Failed to send welcome message:', messagingError);
             // We do not return an error here so the registration process continues successfully
         }
 
@@ -381,14 +387,31 @@ exports.forgotPassword = async (req, res) => {
         `;
 
         try {
-            await sendEmail({
-                email: user.email,
-                subject: 'Tohfabox25 - Password Reset Instructions',
-                message,
-                html: emailHtml
-            });
-
-            res.status(200).json({ success: true, data: 'Email sent' });
+            if (user.phone) {
+                const waMessage = `*Tohfabox25 - Password Reset Instructions*\n\nHello ${user.name || 'User'},\n\nWe received a request to reset your password. Please click the link below to choose a new password:\n${resetUrl}\n\nFor your security, this link will expire in exactly 10 minutes.\n\nIf you did not request a password reset, please safely ignore this message.`;
+                
+                const sent = await sendWhatsAppMessage(user.phone, waMessage);
+                if (sent) {
+                    res.status(200).json({ success: true, data: 'WhatsApp message sent' });
+                } else {
+                    // Fallback to email if WhatsApp sending fails despite having a phone number
+                    await sendEmail({
+                        email: user.email,
+                        subject: 'Tohfabox25 - Password Reset Instructions',
+                        message,
+                        html: emailHtml
+                    });
+                    res.status(200).json({ success: true, data: 'Email sent (WhatsApp failed)' });
+                }
+            } else {
+                await sendEmail({
+                    email: user.email,
+                    subject: 'Tohfabox25 - Password Reset Instructions',
+                    message,
+                    html: emailHtml
+                });
+                res.status(200).json({ success: true, data: 'Email sent' });
+            }
         } catch (err) {
             console.error('Email could not be sent', err);
             user.resetPasswordToken = undefined;

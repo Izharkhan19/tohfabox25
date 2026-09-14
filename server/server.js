@@ -36,6 +36,7 @@ const orderRoutes = require('./routes/orders');
 const wishlistRoutes = require('./routes/wishlist')
 const cartRoutes = require('./routes/cart')
 const promoRoutes = require('./routes/promos');
+const { initWhatsAppClient } = require('./utils/whatsappClient');
 
 const app = express();
 
@@ -220,6 +221,9 @@ const pingKeepAliveUrl = async () => {
         console.warn(`Keep-alive ping failed: ${error.message}`);
     }
 };
+
+// Initialize WhatsApp Client (Async, non-blocking)
+initWhatsAppClient();
 
 app.listen(PORT, HOST, () => {
     console.log(`🚀 Server running on ${HOST}:${PORT}`);

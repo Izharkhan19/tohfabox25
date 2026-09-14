@@ -40,6 +40,24 @@ const { initWhatsAppClient } = require('./utils/whatsappClient');
 
 const app = express();
 
+// Middleware
+
+// 1. CORS configuration (Must be first to handle Preflight properly)
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'https://tohfabox25.vercel.app',
+  'http://localhost:5173'
+].filter(Boolean);
+
+app.use(cors({
+    origin: (origin, callback) => {
+        callback(null, origin || true);
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    credentials: true
+}));
+
 // Trust proxy if you are behind a reverse proxy (e.g. Render, Heroku, AWS, Nginx)
 // This is important for the Rate Limiter to get the correct IP address of the client
 app.set('trust proxy', 1);
@@ -56,37 +74,6 @@ app.use(mongoSanitize());
 
 // 3. Data Sanitization against XSS
 app.use(xss());
-
-// 4. CORS configuration
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'https://tohfabox25.vercel.app',
-  'http://localhost:5173'
-].filter(Boolean);
-
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-//   credentials: true
-// }));
-
-// 4. CORS configuration (Allow all origins with credentials support)
-app.use(cors({
-    origin: (origin, callback) => {
-        // Allows any incoming origin or requests with no origin (like mobile apps/Postman)
-        callback(null, true);
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-    credentials: true
-}));
 
 app.use(express.json({ limit: '10mb' })); // Limit body size for security
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -112,7 +99,11 @@ mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-    .then(() => console.log('✅ MongoDB Connected'))
+    .then(() => {
+        console.log('✅ MongoDB Connected');
+        // Initialize WhatsApp Client (Async, non-blocking) only after DB connects
+        initWhatsAppClient();
+    })
     .catch((err) => {
         console.error('❌ MongoDB Connection Error:', err.message);
         process.exit(1);
@@ -222,8 +213,7 @@ const pingKeepAliveUrl = async () => {
     }
 };
 
-// Initialize WhatsApp Client (Async, non-blocking)
-initWhatsAppClient();
+// WhatsApp client is now initialized in the MongoDB connection callback
 
 app.listen(PORT, HOST, () => {
     console.log(`🚀 Server running on ${HOST}:${PORT}`);

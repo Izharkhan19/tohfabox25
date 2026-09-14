@@ -1,17 +1,28 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, RemoteAuth } = require('whatsapp-web.js');
+const { MongoStore } = require('wwebjs-mongo');
+const mongoose = require('mongoose');
 const qrcode = require('qrcode-terminal');
 
 let client;
 let isReady = false;
 
 const initWhatsAppClient = () => {
-    console.log('Initializing WhatsApp Client...');
+    console.log('Initializing WhatsApp Client with MongoDB store...');
+
+    const store = new MongoStore({ mongoose: mongoose });
 
     client = new Client({
-        authStrategy: new LocalAuth(),
+        authStrategy: new RemoteAuth({
+            store: store,
+            backupSyncIntervalMs: 300000 // Saves session to DB every 5 minutes
+        }),
         puppeteer: {
             args: ['--no-sandbox', '--disable-setuid-sandbox']
         }
+    });
+
+    client.on('remote_session_saved', () => {
+        console.log('✅ WhatsApp session saved to MongoDB successfully!');
     });
 
     client.on('qr', (qr) => {

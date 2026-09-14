@@ -61,7 +61,7 @@ const sendEmail = async (options) => {
         text: options.message, // Fallback plain text
         html: options.html,    // Professional HTML template
     };
-
+    console.log('Message : ', message);
     const info = await transporter.sendMail(message);
 
     console.log('Message sent: %s', info.messageId);

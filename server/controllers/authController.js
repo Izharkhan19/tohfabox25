@@ -70,13 +70,6 @@ exports.register = async (req, res) => {
 
         // Send Welcome Email
         try {
-            console.log("object A ENV :", process.env)
-            console.log("object A :", {
-                email: user.email,
-                subject: 'Welcome to Tohfabox25! Here is your 10% discount',
-                message: `Hi ${user.name}, welcome to Tohfabox25! Use promo code ${promo.code} for 10% off your first order.`,
-                html: getWelcomeEmailTemplate(user.name, promo.code)
-            })
             await sendEmail({
                 email: user.email,
                 subject: 'Welcome to Tohfabox25! Here is your 10% discount',
@@ -388,13 +381,6 @@ exports.forgotPassword = async (req, res) => {
         `;
 
         try {
-                        console.log("object B ENV :", process.env)
-                        console.log("object B :", {
-                email: user.email,
-                subject: 'Tohfabox25 - Password Reset Instructions',
-                message,
-                html: emailHtml
-            })
             await sendEmail({
                 email: user.email,
                 subject: 'Tohfabox25 - Password Reset Instructions',

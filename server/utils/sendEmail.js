@@ -1,72 +1,34 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 const sendEmail = async (options) => {
-    // For development/testing: Automatically generate an ethereal test account
-    // if SENDER_EMAIL and SENDER_PASSWORD are not provided in .env
-    let transporter;
-
-    if (process.env.SENDER_EMAIL && process.env.SENDER_PASSWORD) {
-        // If SMTP_SERVICE is defined or if the sender email is a gmail address, use the service shorthand.
-        const isGmail = process.env.SENDER_EMAIL.toLowerCase().includes('@gmail.com');
-        if (process.env.SMTP_SERVICE === 'gmail' || (!process.env.SMTP_SERVICE && isGmail)) {
-            transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 465,
-                secure: true,
-                family: 4, // Force IPv4 to prevent ENETUNREACH in production
-                auth: {
-                    user: process.env.SENDER_EMAIL,
-                    pass: process.env.SENDER_PASSWORD,
-                },
-            });
-        } else if (process.env.SMTP_SERVICE) {
-            transporter = nodemailer.createTransport({
-                service: process.env.SMTP_SERVICE,
-                auth: {
-                    user: process.env.SENDER_EMAIL,
-                    pass: process.env.SENDER_PASSWORD,
-                },
-            });
-        } else {
-            const port = parseInt(process.env.SMTP_PORT || 587);
-            transporter = nodemailer.createTransport({
-                host: process.env.SMTP_HOST || "smtp.ethereal.email",
-                port: port,
-                secure: port === 465, // Must be true for 465, false for 587
-                auth: {
-                    user: process.env.SENDER_EMAIL,
-                    pass: process.env.SENDER_PASSWORD,
-                },
-            });
+    try {
+        if (!process.env.RESEND_API_KEY) {
+            console.warn('⚠️  RESEND_API_KEY is not defined. Email will not be sent.');
+            return;
         }
-    } else {
-        // Automatically generate a test account if no credentials are provided
-        let testAccount = await nodemailer.createTestAccount();
-        transporter = nodemailer.createTransport({
-            host: "smtp.ethereal.email",
-            port: 587,
-            secure: false, // true for 465, false for other ports
-            auth: {
-                user: testAccount.user, // generated ethereal user
-                pass: testAccount.pass, // generated ethereal password
-            },
-        });
-        console.log('⚠️  No SENDER_EMAIL found in .env. Using auto-generated Ethereal test account.');
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
+
+        const payload = {
+            from: process.env.SENDER_EMAIL || 'tohfabox25@gmail.com',
+            to: options.email,
+            subject: options.subject,
+        };
+
+        if (options.html) {
+            payload.html = options.html;
+        } else if (options.message) {
+            payload.text = options.message;
+        }
+
+        const data = await resend.emails.send(payload);
+
+        console.log('✅ Email sent successfully via Resend:', data.id);
+        return data;
+    } catch (error) {
+        console.error('❌ Error sending email via Resend:', error.message);
+        throw error;
     }
-
-    const message = {
-        from: `${process.env.SENDER_NAME || 'Tohfabox25'} <${process.env.SENDER_EMAIL || "test@ethereal.email"}>`,
-        to: options.email,
-        subject: options.subject,
-        text: options.message, // Fallback plain text
-        html: options.html,    // Professional HTML template
-    };
-
-    const info = await transporter.sendMail(message);
-
-    console.log('Message sent: %s', info.messageId);
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    // The Preview URL is incredibly helpful for local testing
 };
 
 module.exports = sendEmail;

@@ -112,7 +112,11 @@ mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-    .then(() => console.log('✅ MongoDB Connected'))
+    .then(() => {
+        console.log('✅ MongoDB Connected');
+        // Initialize WhatsApp Client (Async, non-blocking) only after DB connects
+        initWhatsAppClient();
+    })
     .catch((err) => {
         console.error('❌ MongoDB Connection Error:', err.message);
         process.exit(1);
@@ -222,8 +226,7 @@ const pingKeepAliveUrl = async () => {
     }
 };
 
-// Initialize WhatsApp Client (Async, non-blocking)
-initWhatsAppClient();
+// WhatsApp client is now initialized in the MongoDB connection callback
 
 app.listen(PORT, HOST, () => {
     console.log(`🚀 Server running on ${HOST}:${PORT}`);

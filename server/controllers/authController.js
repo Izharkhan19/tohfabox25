@@ -166,37 +166,9 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Check if first login
-        const isFirstLogin = !user.lastLogin;
-
         // Update last login
         user.lastLogin = Date.now();
         await user.save();
-
-        // Send First Login Email
-        if (isFirstLogin) {
-            try {
-                const frontendUrl = process.env.CLIENT_URL || 'https://tohfabox25.vercel.app';
-                await sendEmail({
-                    email: user.email,
-                    subject: 'Welcome to Tohfabox25!',
-                    message: `Hi ${user.name}, thank you for logging in to your account!`,
-                    html: `
-                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaec; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                            <h2 style="color: #4f46e5; text-align: center;">Welcome to Tohfabox25!</h2>
-                            <p style="color: #4b5563; font-size: 16px;">Hi <strong>${user.name}</strong>,</p>
-                            <p style="color: #4b5563; font-size: 16px;">Thank you for logging in to your account! We are excited to have you on board.</p>
-                            <p style="color: #4b5563; font-size: 16px;">Explore our latest collections and let us know if you need any help.</p>
-                            <div style="text-align: center; margin: 30px 0;">
-                                <a href="${frontendUrl}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold;">Explore Now</a>
-                            </div>
-                        </div>
-                    `
-                });
-            } catch (emailError) {
-                console.error('Failed to send first login email:', emailError);
-            }
-        }
 
         // Generate token
         const token = generateToken(user._id);
@@ -368,7 +340,7 @@ exports.forgotPassword = async (req, res) => {
         await user.save({ validateBeforeSave: false });
 
         // Create reset URL
-        const frontendUrl = process.env.CLIENT_URL || 'https://tohfabox25.vercel.app';
+        const frontendUrl = process.env.CLIENT_URL || 'https://tohfabox25.vercel.app' || "http://localhost:5173";
         const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
         const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;

@@ -69,19 +69,14 @@ exports.register = async (req, res) => {
             isActive: true
         });
 
-        // Send Welcome Message
+        // Send Welcome Email
         try {
-            if (user.phone) {
-                const message = `Hi ${user.name}, welcome to Tohfabox25! 🎉\n\nUse promo code *${promo.code}* for 10% off your first order!`;
-                await sendWhatsAppMessage(user.phone, message);
-            } else {
-                await sendEmail({
-                    email: user.email,
-                    subject: 'Welcome to Tohfabox25! Here is your 10% discount',
-                    message: `Hi ${user.name}, welcome to Tohfabox25! Use promo code ${promo.code} for 10% off your first order.`,
-                    html: getWelcomeEmailTemplate(user.name, promo.code)
-                });
-            }
+            await sendEmail({
+                email: user.email,
+                subject: 'Welcome to Tohfabox25! Here is your 10% discount',
+                message: `Hi ${user.name}, welcome to Tohfabox25! Use promo code ${promo.code} for 10% off your first order.`,
+                html: getWelcomeEmailTemplate(user.name, promo.code)
+            });
         } catch (messagingError) {
             console.error('Failed to send welcome message:', messagingError);
             // We do not return an error here so the registration process continues successfully

@@ -36,7 +36,7 @@ const orderRoutes = require('./routes/orders');
 const wishlistRoutes = require('./routes/wishlist')
 const cartRoutes = require('./routes/cart')
 const promoRoutes = require('./routes/promos');
-const { initWhatsAppClient } = require('./utils/whatsappClient');
+
 
 const app = express();
 
@@ -99,8 +99,6 @@ mongoose.connect(process.env.MONGODB_URI, {
 })
     .then(() => {
         console.log('✅ MongoDB Connected');
-        // Initialize WhatsApp Client (Async, non-blocking) only after DB connects
-        initWhatsAppClient();
     })
     .catch((err) => {
         console.error('❌ MongoDB Connection Error:', err.message);

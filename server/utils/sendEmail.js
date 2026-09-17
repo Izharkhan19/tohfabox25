@@ -1,71 +1,43 @@
-const nodemailer = require('nodemailer');
-
 const sendEmail = async (options) => {
-    let transporter;
+    // We are routing the email request to the Vercel frontend API.
+    // This bypasses the Render Free Tier SMTP port block (Ports 25, 465, 587)
+    // by making a standard HTTP POST request (Port 443) to Vercel, 
+    // which then securely uses Nodemailer + Gmail to send the email.
 
-    if (process.env.SENDER_EMAIL && process.env.SENDER_PASSWORD) {
-        const isGmail = process.env.SENDER_EMAIL.toLowerCase().includes('@gmail.com');
-        if (process.env.SMTP_SERVICE === 'gmail' || (!process.env.SMTP_SERVICE && isGmail)) {
-            transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 465,
-                secure: true,
-                auth: {
-                    user: process.env.SENDER_EMAIL,
-                    pass: process.env.SENDER_PASSWORD,
-                },
-            });
-        } else if (process.env.SMTP_SERVICE) {
-            transporter = nodemailer.createTransport({
-                service: process.env.SMTP_SERVICE,
-                auth: {
-                    user: process.env.SENDER_EMAIL,
-                    pass: process.env.SENDER_PASSWORD,
-                },
-            });
-        } else {
-            const port = parseInt(process.env.SMTP_PORT || 587);
-            transporter = nodemailer.createTransport({
-                host: process.env.SMTP_HOST || "smtp.ethereal.email",
-                port: port,
-                secure: port === 465,
-                auth: {
-                    user: process.env.SENDER_EMAIL,
-                    pass: process.env.SENDER_PASSWORD,
-                },
-            });
-        }
-    } else {
-        let testAccount = await nodemailer.createTestAccount();
-        transporter = nodemailer.createTransport({
-            host: "smtp.ethereal.email",
-            port: 587,
-            secure: false,
-            auth: {
-                user: testAccount.user,
-                pass: testAccount.pass,
-            },
-        });
-        console.log('⚠️  No SENDER_EMAIL found in .env. Using auto-generated Ethereal test account.');
-    }
-
-    const message = {
-        from: `${process.env.SENDER_NAME || 'Tohfabox25'} <${process.env.SENDER_EMAIL || "test@ethereal.email"}>`,
-        to: options.email,
-        subject: options.subject,
-        text: options.message,
-        html: options.html,
-    };
+    const clientUrl = process.env.CLIENT_URL || 'https://tohfabox25.vercel.app';
+    const emailApiUrl = `${clientUrl}/api/email`;
 
     try {
-        const info = await transporter.sendMail(message);
-        console.log('✅ Email sent successfully via Nodemailer: %s', info.messageId);
-        if (!process.env.SENDER_EMAIL) {
-            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        console.log(`🔄 Relaying email request to Vercel API: ${emailApiUrl}`);
+        
+        const response = await fetch(emailApiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // We pass the JWT_SECRET as an API key to securely authenticate the request 
+                // between Render and Vercel, preventing unauthorized access.
+                'x-api-key': process.env.JWT_SECRET,
+            },
+            body: JSON.stringify({
+                recipient: options.email,
+                subject: options.subject,
+                message: options.message || options.text || '',
+                html: options.html || ''
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('❌ Vercel API Relay Error:', data.message || 'Unknown Error');
+            throw new Error(data.message || 'Failed to send email via Vercel Relay');
         }
-        return info;
+
+        console.log('✅ Email successfully relayed and sent via Vercel:', data.messageId);
+        return data;
+
     } catch (error) {
-        console.error('❌ Error sending email via Nodemailer:', error.message);
+        console.error('❌ Error during Vercel Email Relay:', error.message);
         throw error;
     }
 };

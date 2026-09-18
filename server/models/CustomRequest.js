@@ -32,6 +32,10 @@ const customRequestSchema = new mongoose.Schema({
     enum: ['Pending', 'Reviewed', 'Closed'],
     default: 'Pending',
   },
+  referenceImage: {
+    url: String,
+    publicId: String
+  },
 }, {
   timestamps: true,
 });

@@ -12,17 +12,42 @@ export default function CustomRequest() {
     type: 'Custom Order',
     message: ''
   });
+  const [referenceImage, setReferenceImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setReferenceImage(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    setReferenceImage(null);
+    setPreviewImage(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const res = await createCustomRequest(formData);
+    const submitData = new FormData();
+    submitData.append('name', formData.name);
+    submitData.append('email', formData.email);
+    submitData.append('phone', formData.phone);
+    submitData.append('type', formData.type);
+    submitData.append('message', formData.message);
+    if (referenceImage) {
+      submitData.append('referenceImage', referenceImage);
+    }
+
+    const res = await createCustomRequest(submitData);
     
     if (res?.success) {
       setFormData({
@@ -32,6 +57,7 @@ export default function CustomRequest() {
         type: 'Custom Order',
         message: ''
       });
+      removeImage();
       toast.success(res.message || 'Request submitted successfully!');
     } else {
       toast.error(res.message || 'Failed to submit request.');
@@ -180,6 +206,50 @@ export default function CustomRequest() {
                     className="shadow-sm focus:ring-gray-900 focus:border-gray-900 block w-full sm:text-sm border border-gray-300 rounded-lg p-3 outline-none transition"
                     placeholder={formData.type === 'Custom Order' ? "Describe your custom product requirements in detail..." : "Write your inquiry here..."}
                   />
+                </div>
+              </div>
+
+              {/* Reference Image */}
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Reference Image (Optional)
+                </label>
+                <div className="mt-1">
+                  {previewImage ? (
+                    <div className="relative inline-block mt-2">
+                      <img src={previewImage} alt="Reference Preview" className="w-48 h-48 object-cover rounded-xl border border-gray-200 shadow-sm" />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 shadow-md transition"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl bg-gray-50 hover:bg-gray-100 transition cursor-pointer relative">
+                      <div className="space-y-1 text-center pointer-events-none">
+                        <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <div className="flex text-sm text-gray-600">
+                          <span className="relative font-medium text-gray-900">
+                            Upload a file
+                          </span>
+                          <p className="pl-1">or drag and drop</p>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          PNG, JPG, GIF up to 5MB
+                        </p>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

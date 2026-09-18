@@ -3,6 +3,7 @@ import { getCustomRequests, updateCustomRequestStatus, deleteCustomRequest } fro
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
+import { Dialog } from 'primereact/dialog';
 import {
   EnvelopeIcon,
   PhoneIcon,
@@ -14,6 +15,7 @@ import { toast } from 'react-toastify';
 export default function CustomRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -116,6 +118,16 @@ export default function CustomRequests() {
                   {r.type}
                 </span>
               )}></Column>
+              <Column header="Image" body={(r) => (
+                r.referenceImage?.url ? (
+                  <img 
+                    src={r.referenceImage.url} 
+                    alt="Reference" 
+                    className="w-10 h-10 object-cover rounded shadow-sm cursor-pointer hover:opacity-80 transition"
+                    onClick={() => setPreviewImage(r.referenceImage.url)}
+                  />
+                ) : <span className="text-gray-400 text-xs italic">None</span>
+              )}></Column>
               <Column field="name" header="Name" sortable></Column>
               <Column field="email" header="Email" sortable></Column>
               <Column field="phone" header="Phone" sortable></Column>
@@ -181,6 +193,18 @@ export default function CustomRequests() {
                   </p>
                 </div>
 
+                {r.referenceImage?.url && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Reference Image</p>
+                    <img 
+                      src={r.referenceImage.url} 
+                      alt="Reference" 
+                      className="w-full h-32 object-cover rounded-xl border border-gray-100 cursor-pointer shadow-sm hover:opacity-80 transition"
+                      onClick={() => setPreviewImage(r.referenceImage.url)}
+                    />
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-2 mt-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</span>
@@ -221,6 +245,19 @@ export default function CustomRequests() {
           </div>
         </>
       )}
+
+      {/* Image Preview Modal */}
+      <Dialog 
+        header="Reference Image" 
+        visible={!!previewImage} 
+        style={{ width: '90vw', maxWidth: '600px' }} 
+        onHide={() => setPreviewImage(null)} 
+        dismissableMask
+      >
+        <div className="flex justify-center p-2 bg-gray-50 rounded-lg">
+          <img src={previewImage} alt="Preview" className="max-w-full h-auto max-h-[70vh] object-contain rounded shadow-sm" />
+        </div>
+      </Dialog>
     </div>
   );
 }

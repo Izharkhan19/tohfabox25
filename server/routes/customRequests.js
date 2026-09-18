@@ -1,18 +1,32 @@
 const express = require('express');
 const router = express.Router();
 const CustomRequest = require('../models/CustomRequest');
+const { upload, uploadToGoogleDrive, deleteFromGoogleDrive } = require('../config/googleDrive');
+const fs = require('fs');
 
 // POST /api/custom-requests - Create a new request
-router.post('/', async (req, res) => {
+router.post('/', upload.single('referenceImage'), async (req, res) => {
     try {
         const { name, email, phone, type, message } = req.body;
+        
+        let referenceImage = null;
+
+        if (req.file) {
+            try {
+                referenceImage = await uploadToGoogleDrive(req.file.path);
+            } catch (uploadError) {
+                console.error("Error uploading reference image:", uploadError);
+                return res.status(500).json({ success: false, message: 'Failed to upload image' });
+            }
+        }
         
         const newRequest = new CustomRequest({
             name,
             email,
             phone,
             type,
-            message
+            message,
+            referenceImage
         });
         
         await newRequest.save();
@@ -81,11 +95,18 @@ router.put('/:id/status', async (req, res) => {
 // DELETE /api/custom-requests/:id - Delete a request
 router.delete('/:id', async (req, res) => {
     try {
-        const request = await CustomRequest.findByIdAndDelete(req.params.id);
+        const request = await CustomRequest.findById(req.params.id);
         
         if (!request) {
             return res.status(404).json({ success: false, message: 'Request not found' });
         }
+
+        // Delete image from Google Drive if it exists
+        if (request.referenceImage && request.referenceImage.publicId) {
+            await deleteFromGoogleDrive(request.referenceImage.publicId);
+        }
+
+        await CustomRequest.findByIdAndDelete(req.params.id);
 
         res.status(200).json({ success: true, message: 'Request deleted successfully' });
     } catch (error) {

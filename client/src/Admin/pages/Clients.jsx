@@ -118,7 +118,7 @@ export default function Clients() {
                       </a>
                     )}
                     {phone && (
-                      <a href={`https://wa.me/${phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition shadow-sm border border-green-200" title="WhatsApp">
+                      <a href={`https://wa.me/${String(phone).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition shadow-sm border border-green-200" title="WhatsApp">
                         <WhatsAppIcon className="w-4 h-4" />
                       </a>
                     )}
@@ -182,7 +182,7 @@ export default function Clients() {
                     </a>
                   )}
                   {product.phone && (
-                    <a href={`https://wa.me/${product.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex justify-center items-center gap-2 py-2 bg-green-50 text-green-700 font-medium text-xs sm:text-sm rounded-xl border border-green-100 active:bg-green-100 shadow-sm transition">
+                    <a href={`https://wa.me/${String(product.phone).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex justify-center items-center gap-2 py-2 bg-green-50 text-green-700 font-medium text-xs sm:text-sm rounded-xl border border-green-100 active:bg-green-100 shadow-sm transition">
                       <WhatsAppIcon className="w-4 h-4" /> Chat
                     </a>
                   )}

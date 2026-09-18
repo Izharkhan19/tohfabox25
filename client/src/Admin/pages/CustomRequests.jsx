@@ -134,7 +134,7 @@ export default function CustomRequests() {
               <Column header="Status" body={statusBodyTemplate}></Column>
               <Column field="createdAt" header="Date" body={(r) => getDateInFormat(r.createdAt)} sortable></Column>
               <Column header="Actions" body={(rowData) => {
-                const phoneStr = rowData.phone ? rowData.phone.replace(/[^0-9]/g, '') : null;
+                const phoneStr = rowData.phone ? String(rowData.phone).replace(/[^0-9]/g, '') : null;
                 return (
                   <div className="flex gap-2">
                     <a href={`mailto:${rowData.email}`} className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-lg transition shadow-sm border border-gray-200" title="Email">
@@ -162,7 +162,7 @@ export default function CustomRequests() {
           {/* Mobile Card View */}
           <div className="lg:hidden flex flex-col gap-4">
             {requests.map((r) => {
-              const phoneStr = r.phone ? r.phone.replace(/[^0-9]/g, '') : null;
+              const phoneStr = r.phone ? String(r.phone).replace(/[^0-9]/g, '') : null;
               return (
               <div key={r._id} className="bg-white p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col gap-3">
                 <div className="flex justify-between items-start">

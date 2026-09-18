@@ -446,7 +446,7 @@ export default function AddEditProduct() {
       ) : error ? (
         <div className="text-center py-16 text-red-600">{error}</div>
       ) : (
-        <div className="bg-white p-5 sm:p-8 rounded-2xl shadow-md border border-gray-100 mt-6 sm:mt-0">
+        <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-md border border-gray-100 mt-4 sm:mt-0">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
@@ -551,8 +551,8 @@ export default function AddEditProduct() {
               <div>
                 <label className="block mb-1 font-semibold text-gray-700">Weight</label>
                 <div className="flex gap-2">
-                  <input type="number" name="weightValue" value={formData.weightValue} onChange={handleInputChange} min="0" step="0.01" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="e.g. 1.5" />
-                  <select name="weightUnit" value={formData.weightUnit} onChange={handleInputChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-white">
+                  <input type="number" name="weightValue" value={formData.weightValue} onChange={handleInputChange} min="0" step="0.01" className="w-full p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="e.g. 1.5" />
+                  <select name="weightUnit" value={formData.weightUnit} onChange={handleInputChange} className="p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-white">
                     <option value="kg">kg</option>
                     <option value="g">g</option>
                     <option value="lb">lb</option>
@@ -565,10 +565,10 @@ export default function AddEditProduct() {
               <div>
                 <label className="block mb-1 font-semibold text-gray-700">Dimensions (L x W x H)</label>
                 <div className="flex gap-2">
-                  <input type="number" name="dimLength" value={formData.dimLength} onChange={handleInputChange} min="0" step="0.1" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="L" />
-                  <input type="number" name="dimWidth" value={formData.dimWidth} onChange={handleInputChange} min="0" step="0.1" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="W" />
-                  <input type="number" name="dimHeight" value={formData.dimHeight} onChange={handleInputChange} min="0" step="0.1" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="H" />
-                  <select name="dimUnit" value={formData.dimUnit} onChange={handleInputChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-white">
+                  <input type="number" name="dimLength" value={formData.dimLength} onChange={handleInputChange} min="0" step="0.1" className="w-full p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="L" />
+                  <input type="number" name="dimWidth" value={formData.dimWidth} onChange={handleInputChange} min="0" step="0.1" className="w-full p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="W" />
+                  <input type="number" name="dimHeight" value={formData.dimHeight} onChange={handleInputChange} min="0" step="0.1" className="w-full p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="H" />
+                  <select name="dimUnit" value={formData.dimUnit} onChange={handleInputChange} className="p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-white">
                     <option value="cm">cm</option>
                     <option value="in">in</option>
                     <option value="m">m</option>
@@ -616,7 +616,7 @@ export default function AddEditProduct() {
                   <div className="absolute bottom-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded shadow">Primary</div>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-gray-300 p-8 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
+                <div className="border-2 border-dashed border-gray-300 p-5 sm:p-8 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
                   <input
                     type="file"
                     accept="image/*"
@@ -624,7 +624,7 @@ export default function AddEditProduct() {
                     className="absolute inset-0 w-full opacity-0 cursor-pointer"
                     required={!isEditMode}
                   />
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 text-sm sm:text-base">
                     Drop your main image here or click to upload
                   </p>
                 </div>
@@ -637,7 +637,7 @@ export default function AddEditProduct() {
                 Sub Images (Gallery)
               </label>
               
-              <div className="border-2 border-dashed border-gray-300 p-6 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
+              <div className="border-2 border-dashed border-gray-300 p-4 sm:p-6 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
                 <input
                   type="file"
                   multiple
@@ -645,7 +645,7 @@ export default function AddEditProduct() {
                   onChange={handleSubImagesChange}
                   className="absolute inset-0 w-full opacity-0 cursor-pointer"
                 />
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm sm:text-base">
                   Drop up to 4 additional images here
                 </p>
               </div>
@@ -693,26 +693,26 @@ export default function AddEditProduct() {
 
             {error && <p className="text-red-600 mt-4 text-center">{error}</p>}
 
-            <div className="mt-8 sm:mt-10 flex flex-col-reverse sm:flex-row gap-4 sm:justify-end">
+            <div className="mt-8 sm:mt-10 flex flex-row gap-3 sm:gap-4 justify-end">
               <button
                 type="button"
                 onClick={() => navigate("/admin/products")}
-                className="w-full sm:w-auto px-8 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-xl"
+                className="w-1/2 sm:w-auto px-4 py-2.5 sm:px-8 sm:py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-xl shadow-sm font-medium"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saving || loadingProduct}
-                className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md disabled:opacity-70"
+                className="w-1/2 sm:w-auto px-4 py-2.5 sm:px-8 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md disabled:opacity-70 font-medium"
               >
                 {saving
                   ? isEditMode
                     ? "Updating..."
                     : "Saving..."
                   : isEditMode
-                    ? "Update Product"
-                    : "Save Product"}
+                    ? "Update"
+                    : "Save"}
               </button>
             </div>
           </form>

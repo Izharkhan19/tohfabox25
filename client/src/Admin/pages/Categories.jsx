@@ -423,20 +423,20 @@ export default function Categories() {
   return (
     <div className="p-4 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Categories</h1>
-          <p className="text-gray-600 mt-1 text-sm sm:text-base">
-            Organize your products effectively
-          </p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            Product Categories
+          </h1>
+          <p className="text-gray-500 mt-1">Organize your products into logical collections</p>
         </div>
 
         <button
           onClick={() => openModal()}
-          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center justify-center gap-3 shadow-lg"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg font-medium"
         >
           <PlusIcon className="w-5 h-5" />
-          Add Category
+          <span>Add Category</span>
         </button>
       </div>
 
@@ -474,9 +474,9 @@ export default function Categories() {
           {categories.map((category) => (
             <div
               key={category._id}
-              className="bg-white rounded-2xl shadow-md border p-6 hover:shadow-xl transition"
+              className="bg-white rounded-xl sm:rounded-2xl shadow-md border p-4 sm:p-6 hover:shadow-xl transition"
             >
-              <div className="flex justify-between mb-5">
+              <div className="flex justify-between mb-4 sm:mb-5">
                 <div>
                   <h3 className="text-xl font-bold">{category.name}</h3>
                   <p className="text-sm text-gray-500">
@@ -508,9 +508,9 @@ export default function Categories() {
                 </div>
               </div>
 
-              <div className="border-t pt-4 flex justify-between">
+              <div className="border-t pt-3 sm:pt-4 flex justify-between">
                 <div>
-                  <p className="text-3xl font-bold">
+                  <p className="text-2xl sm:text-3xl font-bold">
                     {category.productCount || 0}
                   </p>
                   <p className="text-sm text-gray-500">products</p>
@@ -546,19 +546,19 @@ export default function Categories() {
           role="presentation"
         >
           <div className="w-full max-w-md overflow-hidden rounded-2xl border border-white/60 bg-white shadow-[0_24px_70px_rgba(18,52,59,0.28)]" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
-            <div className="flex items-start justify-between border-b border-gray-100 bg-[#f8fbfa] px-6 py-5">
+            <div className="flex items-start justify-between border-b border-gray-100 bg-[#f8fbfa] px-4 py-4 sm:px-6 sm:py-5">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#2d545e]">Catalog</p>
-                <h2 id="category-modal-title" className="mt-1 text-2xl font-bold text-[#12343b]">
+                <h2 id="category-modal-title" className="mt-1 text-xl sm:text-2xl font-bold text-[#12343b]">
                   {editingCategory ? "Edit Category" : "Create Category"}
                 </h2>
               </div>
-              <button type="button" onClick={closeModal} aria-label="Close category dialog" className="rounded-full p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-500">
+              <button type="button" onClick={closeModal} aria-label="Close category dialog" className="rounded-full p-1.5 sm:p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-500">
                 <XMarkIcon className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6">
               <label className="block text-xs font-black uppercase tracking-wider text-gray-600">
                 Category name
                 <input

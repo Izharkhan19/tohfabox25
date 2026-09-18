@@ -170,15 +170,15 @@ export default function Orders() {
             <button
               key={status}
               onClick={() => setFilter(status)}
-              className={`p-3 sm:p-5 rounded-xl border-2 transition ${
+              className={`p-2 sm:p-5 rounded-xl border-2 transition ${
                 filter === status
                   ? "bg-blue-600 text-white border-blue-600"
                   : "bg-white border-gray-200 hover:border-blue-400"
               }`}
             >
-              <Icon className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-2 sm:mb-3" />
-              <div className="text-xl sm:text-2xl font-bold">{statusCounts[status]}</div>
-              <div className="text-xs sm:text-sm mt-1">{config.label}</div>
+              <Icon className="w-6 h-6 sm:w-10 sm:h-10 mx-auto mb-1 sm:mb-3" />
+              <div className="text-lg sm:text-2xl font-bold">{statusCounts[status]}</div>
+              <div className="text-[10px] sm:text-sm mt-0.5 sm:mt-1">{config.label}</div>
             </button>
           );
         })}
@@ -252,29 +252,29 @@ export default function Orders() {
               const StatusIcon = cfg?.icon || ClockIcon;
 
               return (
-                <div key={order._id} className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-4 flex flex-col gap-3 transition hover:shadow-md">
+                <div key={order._id} className="bg-white rounded-xl sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-3 sm:p-4 flex flex-col gap-2 sm:gap-3 transition hover:shadow-md">
                   <div className="flex justify-between items-start">
-                    <div className="font-mono text-blue-600 font-semibold">
+                    <div className="font-mono text-blue-600 text-sm sm:text-base font-semibold">
                       {order.orderNumber || `#${order._id.slice(-8)}`}
                     </div>
                     <span
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${cfg.color}`}
+                      className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${cfg.color}`}
                     >
-                      <StatusIcon className="w-4 h-4" />
+                      <StatusIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                       {cfg.label}
                     </span>
                   </div>
 
-                  <div className="flex flex-col gap-1">
-                    <div className="text-gray-800 font-medium">
+                  <div className="flex flex-col gap-0.5 sm:gap-1">
+                    <div className="text-gray-800 text-sm sm:text-base font-medium leading-tight">
                       {order.user?.name || "Guest"}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-xs sm:text-sm text-gray-500">
                       {order.user?.email}
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 mt-2">
+                  <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
                     <div>
                       <span className="font-medium">Date:</span> <br/>
                       {new Date(order.createdAt).toLocaleDateString()}
@@ -285,15 +285,16 @@ export default function Orders() {
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
-                    <div className="font-bold text-lg text-gray-900">
+                  <div className="flex justify-between items-center mt-2 pt-2 sm:mt-3 sm:pt-3 border-t border-gray-100">
+                    <div className="font-bold text-base sm:text-lg text-gray-900">
                       ₹{order.total.toFixed(2)}
                     </div>
                     <button
                       onClick={() => fetchOrderDetail(order._id)}
-                      className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm transition"
+                      className="flex items-center gap-1 sm:gap-2 text-blue-600 hover:text-blue-800 font-medium text-xs sm:text-sm transition bg-blue-50 sm:bg-transparent px-2 py-1.5 sm:p-0 rounded-lg sm:rounded-none"
                     >
-                      <EyeIcon className="w-5 h-5" /> View Details
+                      <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" /> 
+                      <span>Details</span>
                     </button>
                   </div>
                 </div>

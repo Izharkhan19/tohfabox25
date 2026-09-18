@@ -104,22 +104,22 @@ export default function Products() {
   return (
     <div className="p-4 sm:p-6">
       {/* Top Actions */}
-      <div className="flex flex-col sm:flex-row justify-end items-end sm:items-center gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row justify-end items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
         {selectedProducts.length > 0 && (
           <button
             onClick={deleteSelectedProducts}
-            className="bg-red-500 text-white px-5 py-2.5 rounded-xl shadow-sm hover:bg-red-600 transition-all flex items-center justify-center gap-2 font-medium w-full sm:w-auto"
+            className="w-full sm:w-auto bg-red-500 text-white px-4 py-3 sm:px-5 sm:py-2.5 rounded-xl shadow-sm hover:bg-red-600 transition-all flex items-center justify-center gap-2 font-medium"
           >
             <TrashIcon className="w-5 h-5" />
-            Delete Selected ({selectedProducts.length})
+            <span>Delete Selected ({selectedProducts.length})</span>
           </button>
         )}
         <Link
           to="/admin/products/add"
-          className="bg-gray-900 text-white px-5 py-2.5 rounded-xl shadow-md hover:bg-gray-800 hover:shadow-lg transition-all flex items-center justify-center gap-2 font-medium w-full sm:w-auto"
+          className="w-full sm:w-auto bg-gray-900 text-white px-4 py-3 sm:px-5 sm:py-2.5 rounded-xl shadow-md hover:bg-gray-800 hover:shadow-lg transition-all flex items-center justify-center gap-2 font-medium"
         >
           <PlusIcon className="w-5 h-5" />
-          Add Product
+          <span>Add Product</span>
         </Link>
       </div>
 
@@ -204,8 +204,8 @@ export default function Products() {
             {products.map((product) => {
               const isSelected = selectedProducts.some(p => p._id === product._id);
               return (
-                <div key={product._id} className={`bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border ${isSelected ? 'border-blue-500' : 'border-gray-100'} overflow-hidden flex flex-col transition hover:shadow-md`}>
-                  <div className="flex p-4 gap-3 items-start">
+                <div key={product._id} className={`bg-white rounded-xl sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border ${isSelected ? 'border-blue-500' : 'border-gray-100'} overflow-hidden flex flex-col transition hover:shadow-md`}>
+                  <div className="flex p-3 sm:p-4 gap-3 items-start">
                     {/* Checkbox */}
                     <div className="pt-1">
                       <Checkbox checked={isSelected} onChange={(e) => onMobileSelect(e, product)} />
@@ -217,45 +217,45 @@ export default function Products() {
                       <img 
                         src={product.images[0].url} 
                         alt={product.name} 
-                        className="w-24 h-24 object-cover rounded-xl shadow-sm cursor-pointer border border-gray-100"
+                        className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-lg sm:rounded-xl shadow-sm cursor-pointer border border-gray-100"
                         onClick={() => setPreviewImage(product.images[0].url)}
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 text-xs font-medium border border-gray-100">No Img</div>
+                      <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gray-50 rounded-lg sm:rounded-xl flex items-center justify-center text-gray-400 text-[10px] sm:text-xs font-medium border border-gray-100">No Img</div>
                     )}
                   </div>
                   
                   {/* Info */}
-                  <div className="flex flex-col flex-1 py-1 min-w-0">
-                    <span className="font-bold text-gray-800 text-lg leading-tight line-clamp-2 mb-1">{product.name}</span>
-                    <span className="text-gray-500 text-sm font-medium mb-2">{product.category?.name || "Uncategorized"}</span>
+                  <div className="flex flex-col flex-1 py-0 min-w-0">
+                    <span className="font-bold text-gray-800 text-sm sm:text-lg leading-tight line-clamp-2 mb-0.5">{product.name}</span>
+                    <span className="text-gray-500 text-xs sm:text-sm font-medium mb-1.5">{product.category?.name || "Uncategorized"}</span>
                     
                     <div className="flex justify-between items-center mt-auto">
-                      <span className="font-bold text-blue-600 text-lg">₹{product.price}</span>
-                      <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+                      <span className="font-bold text-blue-600 text-base sm:text-lg">₹{product.price}</span>
+                      <span className={`text-[10px] sm:text-sm font-medium px-2 py-0.5 rounded-full ${
                         product.stock > 10 ? "bg-green-100 text-green-700" :
                         product.stock > 0 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"
                       }`}>
-                        {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+                        {product.stock > 0 ? `${product.stock} in stock` : "Out"}
                       </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="bg-gray-50/50 px-4 py-3 border-t border-gray-100 flex justify-end gap-2">
+                <div className="bg-gray-50/50 px-3 py-2 sm:px-4 sm:py-3 border-t border-gray-100 flex justify-end gap-2">
                   <Link
                     to={`/admin/products/edit/${product._id}`}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition shadow-sm"
+                    className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 bg-white border border-gray-200 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition shadow-sm"
                   >
-                    <PencilIcon className="w-4 h-4" /> Edit
+                    <PencilIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span className="hidden sm:inline">Edit</span>
                   </Link>
                   <button
                     onClick={() => deleteProductById(product._id)}
                     disabled={deletingId === product._id}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition shadow-sm disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 bg-white border border-gray-200 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-red-600 hover:bg-red-50 transition shadow-sm disabled:opacity-50"
                   >
-                    {deletingId === product._id ? "..." : <><TrashIcon className="w-4 h-4" /> Delete</>}
+                    {deletingId === product._id ? "..." : <><TrashIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span className="hidden sm:inline">Delete</span></>}
                   </button>
                 </div>
                 </div>

@@ -438,57 +438,57 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {/* Total Products */}
-        <div className="bg-white rounded-xl p-6 shadow-md border">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-gray-500 text-sm">Total Products</p>
-              <p className="text-3xl font-bold">
+              <p className="text-gray-500 text-xs sm:text-sm">Total Products</p>
+              <p className="text-2xl sm:text-3xl font-bold">
                 {loadingProducts ? "..." : totalProductsCount}
               </p>
               <p className="text-xs text-gray-500 mt-2">
                 {activeProducts} active • {lowStockProducts} low stock
               </p>
             </div>
-            <CubeIcon className="w-14 h-14 text-blue-500 bg-blue-100 p-3 rounded-xl" />
+            <CubeIcon className="w-10 h-10 sm:w-14 sm:h-14 text-blue-500 bg-blue-100 p-2 sm:p-3 rounded-lg sm:rounded-xl" />
           </div>
         </div>
 
         {/* Orders */}
-        <div className="bg-white rounded-xl p-6 shadow-md border">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-gray-500 text-sm">Total Orders</p>
-              <p className="text-3xl font-bold">
+              <p className="text-gray-500 text-xs sm:text-sm">Total Orders</p>
+              <p className="text-2xl sm:text-3xl font-bold">
                 {loadingStats ? "..." : totalOrders}
               </p>
             </div>
-            <ShoppingCartIcon className="w-14 h-14 text-green-600 bg-green-100 p-3 rounded-xl" />
+            <ShoppingCartIcon className="w-10 h-10 sm:w-14 sm:h-14 text-green-600 bg-green-100 p-2 sm:p-3 rounded-lg sm:rounded-xl" />
           </div>
         </div>
 
         {/* Revenue */}
-        <div className="bg-white rounded-xl p-6 shadow-md border">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-gray-500 text-sm">Revenue</p>
-              <p className="text-3xl font-bold">
+              <p className="text-gray-500 text-xs sm:text-sm">Revenue</p>
+              <p className="text-2xl sm:text-3xl font-bold">
                 {loadingStats ? "..." : `₹${(totalRevenue / 1000).toFixed(1)}k`}
               </p>
             </div>
-            <CurrencyDollarIcon className="w-14 h-14 text-purple-600 bg-purple-100 p-3 rounded-xl" />
+            <CurrencyDollarIcon className="w-10 h-10 sm:w-14 sm:h-14 text-purple-600 bg-purple-100 p-2 sm:p-3 rounded-lg sm:rounded-xl" />
           </div>
         </div>
 
         {/* Customers */}
-        <div className="bg-white rounded-xl p-6 shadow-md border">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-gray-500 text-sm">Customers</p>
-              <p className="text-3xl font-bold">
+              <p className="text-gray-500 text-xs sm:text-sm">Customers</p>
+              <p className="text-2xl sm:text-3xl font-bold">
                 {loadingStats ? "..." : totalCustomers}
               </p>
             </div>
-            <UserGroupIcon className="w-14 h-14 text-orange-600 bg-orange-100 p-3 rounded-xl" />
+            <UserGroupIcon className="w-10 h-10 sm:w-14 sm:h-14 text-orange-600 bg-orange-100 p-2 sm:p-3 rounded-lg sm:rounded-xl" />
           </div>
         </div>
       </div>

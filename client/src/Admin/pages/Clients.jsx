@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon, PlusIcon, PhoneIcon, CalendarDaysIcon, ClockIcon } from "@heroicons/react/24/outline";
 import {
   deleteProduct,
   getAllUser,
@@ -102,31 +102,51 @@ export default function Clients() {
             </DataTable>
           </div>
 
-          {/* Mobile Card View */}
           <div className="lg:hidden flex flex-col gap-4">
-            {users?.map((product) => (
+            {users?.map((product) => {
+              const initial = product.name ? product.name.charAt(0).toUpperCase() : "U";
+              return (
               <div key={product._id} className="bg-white p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col gap-3 transition hover:shadow-md">
-                <div className="flex flex-col border-b border-gray-100 pb-3">
-                  <span className="font-bold text-gray-800 text-lg">{product.name}</span>
-                  <span className="text-gray-500 text-sm">{product.email}</span>
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                  <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xl shrink-0 border border-blue-100">
+                    {initial}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-bold text-gray-900 text-lg leading-tight">{product.name}</span>
+                    <span className="text-gray-500 text-sm mt-0.5 break-all">{product.email}</span>
+                  </div>
                 </div>
                 
-                <div className="flex flex-col gap-1 text-sm text-gray-600">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Phone:</span>
-                    <span>{product?.phone || "—"}</span>
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <div className="flex flex-col gap-1 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                    <div className="flex items-center gap-1.5 text-gray-500 text-xs font-medium">
+                      <PhoneIcon className="w-3.5 h-3.5" />
+                      <span>Phone</span>
+                    </div>
+                    <div className="text-sm font-semibold text-gray-800 truncate">
+                      {product?.phone || "—"}
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Created:</span>
-                    <span>{getDateInFormat(product.createdAt)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Last Login:</span>
-                    <span>{getDateInFormat(product.lastLogin)}</span>
+                  <div className="flex flex-col gap-1 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                    <div className="flex items-center gap-1.5 text-gray-500 text-xs font-medium">
+                      <CalendarDaysIcon className="w-3.5 h-3.5" />
+                      <span>Joined</span>
+                    </div>
+                    <div className="text-sm font-semibold text-gray-800 truncate">
+                      {getDateInFormat(product.createdAt)}
+                    </div>
                   </div>
                 </div>
+
+                <div className="flex items-center justify-between mt-1 pt-3 border-t border-gray-50 text-xs text-gray-500">
+                  <div className="flex items-center gap-1.5">
+                    <ClockIcon className="w-4 h-4 text-gray-400" />
+                    <span>Last Login:</span>
+                  </div>
+                  <span className="font-medium text-gray-700">{getDateInFormat(product.lastLogin)}</span>
+                </div>
               </div>
-            ))}
+            )})}
           </div>
         </>
       )}

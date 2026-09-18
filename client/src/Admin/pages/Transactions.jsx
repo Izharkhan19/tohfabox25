@@ -75,26 +75,26 @@ export default function Transactions() {
       </div>
 
       {/* Stats Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="p-5 rounded-xl border border-gray-200 bg-white flex items-center gap-4">
-          <div className="p-3 bg-blue-100 rounded-lg text-blue-600">
-             <CurrencyDollarIcon className="w-8 h-8" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-8">
+        <div className="p-4 sm:p-5 rounded-xl border border-gray-200 bg-white flex items-center gap-3 sm:gap-4">
+          <div className="p-2 sm:p-3 bg-blue-100 rounded-lg text-blue-600">
+             <CurrencyDollarIcon className="w-6 h-6 sm:w-8 sm:h-8" />
           </div>
           <div>
-            <div className="text-sm text-gray-500">Total Revenue (Paid)</div>
-            <div className="text-2xl font-bold">
+            <div className="text-xs sm:text-sm text-gray-500">Total Revenue (Paid)</div>
+            <div className="text-xl sm:text-2xl font-bold">
               ₹{transactions.reduce((sum, t) => sum + (t.total || 0), 0).toFixed(2)}
             </div>
           </div>
         </div>
         
-        <div className="p-5 rounded-xl border border-gray-200 bg-white flex items-center gap-4">
-          <div className="p-3 bg-green-100 rounded-lg text-green-600">
-             <CheckCircleIcon className="w-8 h-8" />
+        <div className="p-4 sm:p-5 rounded-xl border border-gray-200 bg-white flex items-center gap-3 sm:gap-4">
+          <div className="p-2 sm:p-3 bg-green-100 rounded-lg text-green-600">
+             <CheckCircleIcon className="w-6 h-6 sm:w-8 sm:h-8" />
           </div>
           <div>
-            <div className="text-sm text-gray-500">Successful Transactions</div>
-            <div className="text-2xl font-bold">{transactions.length}</div>
+            <div className="text-xs sm:text-sm text-gray-500">Successful Transactions</div>
+            <div className="text-xl sm:text-2xl font-bold">{transactions.length}</div>
           </div>
         </div>
       </div>
@@ -166,47 +166,47 @@ export default function Transactions() {
           </div>
 
           {/* Mobile Card View */}
-          <div className="lg:hidden flex flex-col gap-4">
+          <div className="lg:hidden flex flex-col gap-3 sm:gap-4">
             {filteredTransactions.map((t) => {
               const txnId = t.paymentDetails?.transactionId || "N/A";
               const date = t.paymentDetails?.paidAt ? new Date(t.paymentDetails.paidAt).toLocaleString() : "N/A";
 
               return (
-                <div key={t._id} className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-4 flex flex-col gap-3 transition hover:shadow-md">
+                <div key={t._id} className="bg-white rounded-xl sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-3 sm:p-4 flex flex-col gap-2 sm:gap-3 transition hover:shadow-md">
                   <div className="flex justify-between items-start gap-2">
-                    <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 break-all">
+                    <span className="font-mono text-[10px] sm:text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 break-all">
                       {txnId}
                     </span>
-                    <span className="inline-flex shrink-0 items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      <CheckCircleIcon className="w-3.5 h-3.5" />
+                    <span className="inline-flex shrink-0 items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-green-100 text-green-800">
+                      <CheckCircleIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       Success
                     </span>
                   </div>
 
                   <div className="flex flex-col gap-1 mt-1">
                     <div className="flex justify-between items-center">
-                      <span className="font-medium text-gray-500 text-sm">Order ID:</span>
-                      <span className="font-mono text-blue-600 font-semibold">{t.orderNumber || `#${t._id.slice(-8)}`}</span>
+                      <span className="font-medium text-gray-500 text-xs sm:text-sm">Order ID:</span>
+                      <span className="font-mono text-blue-600 text-sm font-semibold">{t.orderNumber || `#${t._id.slice(-8)}`}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="font-medium text-gray-500 text-sm">Date:</span>
-                      <span className="text-gray-700 text-sm text-right">{date}</span>
+                      <span className="font-medium text-gray-500 text-xs sm:text-sm">Date:</span>
+                      <span className="text-gray-700 text-xs sm:text-sm text-right">{date}</span>
                     </div>
                   </div>
 
-                  <div className="p-3 bg-gray-50 rounded-lg flex flex-col gap-1">
-                    <div className="font-medium text-gray-900">{t.user?.name || "Guest"}</div>
-                    <div className="text-sm text-gray-500 break-all">{t.user?.email}</div>
+                  <div className="p-2.5 sm:p-3 bg-gray-50 rounded-lg flex flex-col gap-0.5 sm:gap-1">
+                    <div className="font-medium text-sm text-gray-900">{t.user?.name || "Guest"}</div>
+                    <div className="text-xs sm:text-sm text-gray-500 break-all">{t.user?.email}</div>
                   </div>
 
-                  <div className="flex justify-between items-center mt-2 pt-3 border-t border-gray-100">
+                  <div className="flex justify-between items-center mt-1 sm:mt-2 pt-2 sm:pt-3 border-t border-gray-100">
                     <div className="flex items-center gap-2">
                       {getPaymentMethodIcon(t.paymentMethod)}
-                      <span className="text-sm font-medium text-gray-700 capitalize">
+                      <span className="text-xs sm:text-sm font-medium text-gray-700 capitalize">
                          {t.paymentMethod?.replace('_', ' ')}
                       </span>
                     </div>
-                    <div className="font-bold text-lg text-gray-900">
+                    <div className="font-bold text-base sm:text-lg text-gray-900">
                       ₹{t.total?.toFixed(2)}
                     </div>
                   </div>

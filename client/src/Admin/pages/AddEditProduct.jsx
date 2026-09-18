@@ -157,6 +157,7 @@ import {
   getProduct,
   getCategories,
 } from "../../api-services/apiService";
+import imageCompression from 'browser-image-compression';
 import axios from "axios";
 import { toast } from "react-toastify";
 import LogoLoader from "../../components/LogoLoader";
@@ -181,8 +182,12 @@ export default function AddEditProduct() {
     dimUnit: "cm",
   });
 
-  const [images, setImages] = useState([]); // New files to upload
-  const [existingImages, setExistingImages] = useState([]); // Existing images from backend
+  const [mainImage, setMainImage] = useState(null);
+  const [existingMainImage, setExistingMainImage] = useState(null);
+
+  const [subImages, setSubImages] = useState([]);
+  const [existingSubImages, setExistingSubImages] = useState([]);
+  
   const [previewImage, setPreviewImage] = useState(null);
 
   const [categories, setCategories] = useState([]);
@@ -235,7 +240,11 @@ export default function AddEditProduct() {
               dimHeight: product.dimensions?.height || "",
               dimUnit: product.dimensions?.unit || "cm",
             });
-            setExistingImages(product.images || []);
+            const primaryImg = product.images?.find(img => img.isPrimary);
+            const secondaryImgs = product.images?.filter(img => !img.isPrimary) || [];
+            
+            setExistingMainImage(primaryImg || null);
+            setExistingSubImages(secondaryImgs);
           } else {
             setError("Product not found");
           }
@@ -256,27 +265,68 @@ export default function AddEditProduct() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    const maxImages = 5;
-    const totalImages = existingImages.length + images.length + files.length;
+  const handleMainImageChange = async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+      };
+      try {
+        const compressedFile = await imageCompression(file, options);
+        setMainImage(compressedFile);
+      } catch (error) {
+        console.error("Error compressing main image:", error);
+        setMainImage(file);
+      }
+    }
+    e.target.value = null;
+  };
 
-    if (totalImages > maxImages) {
-      toast.info(`Maximum ${maxImages} images allowed.`);
+  const handleSubImagesChange = async (e) => {
+    const files = Array.from(e.target.files);
+    const maxSubImages = 4;
+    const totalSubImages = existingSubImages.length + subImages.length + files.length;
+
+    if (totalSubImages > maxSubImages) {
+      toast.info(`Maximum ${maxSubImages} sub-images allowed.`);
       e.target.value = null;
       return;
     }
 
-    setImages((prev) => [...prev, ...files]);
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1200,
+      useWebWorker: true,
+    };
+
+    const compressedFiles = await Promise.all(
+      files.map(async (file) => {
+        try {
+          return await imageCompression(file, options);
+        } catch (error) {
+          console.error("Error compressing sub image:", error);
+          return file;
+        }
+      })
+    );
+
+    setSubImages((prev) => [...prev, ...compressedFiles]);
     e.target.value = null;
   };
 
-  const removeNewImage = (index) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+  const removeMainImage = () => {
+    setMainImage(null);
+    setExistingMainImage(null);
   };
 
-  const removeExistingImage = (imageId) => {
-    setExistingImages((prev) =>
+  const removeNewSubImage = (index) => {
+    setSubImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingSubImage = (imageId) => {
+    setExistingSubImages((prev) =>
       prev.filter((img) => (img._id || img.public_id) !== imageId),
     );
   };
@@ -298,14 +348,20 @@ export default function AddEditProduct() {
     formDataToSend.append("dimensions", JSON.stringify({ length: formData.dimLength, width: formData.dimWidth, height: formData.dimHeight, unit: formData.dimUnit }));
 
     // Append new images
-    images.forEach((image) => {
-      formDataToSend.append("images", image);
+    if (mainImage) {
+      formDataToSend.append("mainImage", mainImage);
+    }
+    subImages.forEach((image) => {
+      formDataToSend.append("subImages", image);
     });
 
     // Append existing images to keep (edit mode only)
     if (isEditMode) {
-      existingImages.forEach((img) => {
-        formDataToSend.append("existingImages", img._id || img.public_id);
+      if (existingMainImage) {
+        formDataToSend.append("retainedImages", existingMainImage._id || existingMainImage.public_id || existingMainImage.publicId);
+      }
+      existingSubImages.forEach((img) => {
+        formDataToSend.append("retainedImages", img._id || img.public_id || img.publicId);
       });
     }
 
@@ -535,74 +591,104 @@ export default function AddEditProduct() {
               </div>
             </div>
 
-            {/* Image Upload */}
+            {/* Main Image Upload */}
             <div className="mt-8">
               <label className="block mb-2 font-semibold text-gray-700">
-                Product Images
+                Main Product Image <span className="text-red-500">*</span>
               </label>
 
-              {/* Existing Images (Edit Mode) */}
-              {isEditMode && existingImages.length > 0 && (
-                <div className="mb-6">
-                  <p className="text-sm text-gray-600 mb-3">Current Images</p>
-                  <div className="flex gap-4 flex-wrap">
-                    {existingImages.map((img) => (
-                      <div key={getImageId(img)} className="relative group">
-                        <img
-                          src={getImageUrl(img)}
-                          alt="product"
-                          className="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
-                          onClick={() => setPreviewImage(getImageUrl(img))}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeExistingImage(getImageId(img))}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+              {(mainImage || existingMainImage) ? (
+                <div className="relative group w-48 h-48 mb-4">
+                  <img
+                    src={mainImage ? URL.createObjectURL(mainImage) : getImageUrl(existingMainImage)}
+                    alt="Main product"
+                    className="w-full h-full object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
+                    onClick={() => setPreviewImage(mainImage ? URL.createObjectURL(mainImage) : getImageUrl(existingMainImage))}
+                  />
+                  <button
+                    type="button"
+                    onClick={removeMainImage}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
+                    title="Remove Main Image"
+                  >
+                    ×
+                  </button>
+                  <div className="absolute bottom-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded shadow">Primary</div>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-gray-300 p-8 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleMainImageChange}
+                    className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                    required={!isEditMode}
+                  />
+                  <p className="text-gray-600">
+                    Drop your main image here or click to upload
+                  </p>
                 </div>
               )}
+            </div>
 
-              {/* New Images Upload */}
-              <div className="border-2 border-dashed border-gray-300 p-8 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative">
+            {/* Sub Images Upload */}
+            <div className="mt-6 border-t pt-6">
+              <label className="block mb-2 font-semibold text-gray-700">
+                Sub Images (Gallery)
+              </label>
+              
+              <div className="border-2 border-dashed border-gray-300 p-6 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
                 <input
                   type="file"
                   multiple
                   accept="image/*"
-                  onChange={handleFileChange}
+                  onChange={handleSubImagesChange}
                   className="absolute inset-0 w-full opacity-0 cursor-pointer"
                 />
                 <p className="text-gray-600">
-                  Drop images here or click to upload
+                  Drop up to 4 additional images here
                 </p>
               </div>
 
-              {/* New Image Previews */}
-              {images.length > 0 && (
-                <div className="mt-4 flex gap-4 flex-wrap">
-                  {images.map((file, i) => (
-                    <div key={i} className="relative group">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt="preview"
-                        className="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
-                        onClick={() => setPreviewImage(URL.createObjectURL(file))}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeNewImage(i)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="flex gap-4 flex-wrap">
+                {/* Existing Sub Images (Edit Mode) */}
+                {isEditMode && existingSubImages.map((img) => (
+                  <div key={getImageId(img)} className="relative group">
+                    <img
+                      src={getImageUrl(img)}
+                      alt="Sub product"
+                      className="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
+                      onClick={() => setPreviewImage(getImageUrl(img))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeExistingSubImage(getImageId(img))}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+
+                {/* New Sub Image Previews */}
+                {subImages.map((file, i) => (
+                  <div key={i} className="relative group">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="preview"
+                      className="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
+                      onClick={() => setPreviewImage(URL.createObjectURL(file))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeNewSubImage(i)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {error && <p className="text-red-600 mt-4 text-center">{error}</p>}

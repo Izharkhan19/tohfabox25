@@ -24,8 +24,8 @@ router.get('/:identifier', getProduct);
 
 // Protected/Admin routes
 router.post('/bulk-delete', protect, isAdmin, deleteMultipleProducts);
-router.post('/', protect, isAdmin, upload.array('images', 5), createProduct);
-router.put('/:id', protect, isAdmin, upload.array('images', 5), updateProduct);
+router.post('/', protect, isAdmin, upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'subImages', maxCount: 4 }]), createProduct);
+router.put('/:id', protect, isAdmin, upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'subImages', maxCount: 4 }]), updateProduct);
 router.delete('/:id', protect, isAdmin, deleteProduct);
 router.delete('/:id/images/:imageId', protect, isAdmin, deleteProductImage);
 

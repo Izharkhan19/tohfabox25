@@ -16,6 +16,7 @@
     "@stripe/stripe-js": "^8.6.0",
     "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.13.2",
+    "browser-image-compression": "^2.0.2",
     "canvas-confetti": "^1.9.4",
     "crypto-js": "^4.2.0",
     "express-validator": "^7.3.2",

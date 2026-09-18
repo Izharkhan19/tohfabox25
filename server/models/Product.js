@@ -143,6 +143,14 @@ productSchema.pre('save', function (next) {
     next();
 });
 
+// Ensure primary image is always first in the array
+productSchema.pre('save', function (next) {
+    if (this.images && this.images.length > 0) {
+        this.images.sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
+    }
+    next();
+});
+
 // Add index for search optimization
 productSchema.index({ name: 'text', description: 'text', tags: 'text' });
 productSchema.index({ category: 1, isActive: 1 });

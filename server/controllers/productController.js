@@ -191,16 +191,31 @@ exports.createProduct = async (req, res) => {
             metaKeywords: metaKeywords ? (Array.isArray(metaKeywords) ? metaKeywords : metaKeywords.split(',').map(k => k.trim())) : []
         };
 
-        // Handle multiple image uploads
-        if (req.files && req.files.length > 0) {
-            const imageUploads = req.files.map(file => uploadToGoogleDrive(file.path));
-            const uploadedImages = await Promise.all(imageUploads);
+        // Handle distinct mainImage and subImages uploads
+        productData.images = [];
+        if (req.files) {
+            // Upload main image
+            if (req.files.mainImage && req.files.mainImage.length > 0) {
+                const mainImageUpload = await uploadToGoogleDrive(req.files.mainImage[0].path);
+                productData.images.push({
+                    url: mainImageUpload.url,
+                    publicId: mainImageUpload.publicId,
+                    isPrimary: true
+                });
+            }
 
-            productData.images = uploadedImages.map((result, index) => ({
-                url: result.url,
-                publicId: result.publicId,
-                isPrimary: index === 0
-            }));
+            // Upload sub images
+            if (req.files.subImages && req.files.subImages.length > 0) {
+                const subImageUploads = req.files.subImages.map(file => uploadToGoogleDrive(file.path));
+                const uploadedSubImages = await Promise.all(subImageUploads);
+
+                const subImagesData = uploadedSubImages.map(result => ({
+                    url: result.url,
+                    publicId: result.publicId,
+                    isPrimary: false
+                }));
+                productData.images.push(...subImagesData);
+            }
         }
         const product = await Product.create(productData);
         await product.populate('category', 'name slug');
@@ -252,7 +267,8 @@ exports.updateProduct = async (req, res) => {
             isActive,
             metaTitle,
             metaDescription,
-            metaKeywords
+            metaKeywords,
+            retainedImages
         } = req.body;
 
         // Update fields
@@ -291,18 +307,58 @@ exports.updateProduct = async (req, res) => {
             product.category = category;
         }
 
-        // Handle new image uploads
-        if (req.files && req.files.length > 0) {
-            const imageUploads = req.files.map(file => uploadToGoogleDrive(file.path));
-            const uploadedImages = await Promise.all(imageUploads);
+        // Handle deletion of removed images
+        let retainedImageIds = [];
+        if (retainedImages) {
+            retainedImageIds = Array.isArray(retainedImages) ? retainedImages : [retainedImages];
+        }
 
-            const newImages = uploadedImages.map(result => ({
-                url: result.url,
-                publicId: result.publicId,
-                isPrimary: product.images.length === 0
-            }));
+        const imagesToDelete = product.images.filter(img => 
+            !retainedImageIds.includes(img.publicId) && 
+            !retainedImageIds.includes(img._id.toString())
+        );
 
-            product.images.push(...newImages);
+        if (imagesToDelete.length > 0) {
+            const deletePromises = imagesToDelete.map(img => deleteFromGoogleDrive(img.publicId));
+            await Promise.allSettled(deletePromises);
+            
+            // Remove deleted images from array
+            imagesToDelete.forEach(img => product.images.pull(img._id));
+        }
+
+        const hasRetainedPrimary = product.images.some(img => img.isPrimary);
+
+        // Handle new distinct mainImage and subImages uploads
+        if (req.files) {
+            // Main image
+            if (req.files.mainImage && req.files.mainImage.length > 0) {
+                // Unmark existing primary
+                product.images.forEach(img => img.isPrimary = false);
+
+                const mainImageUpload = await uploadToGoogleDrive(req.files.mainImage[0].path);
+                product.images.push({
+                    url: mainImageUpload.url,
+                    publicId: mainImageUpload.publicId,
+                    isPrimary: true
+                });
+            } else if (!hasRetainedPrimary && product.images.length > 0) {
+                // Fallback: If no new main image, and old main was deleted, make first retained one primary
+                product.images[0].isPrimary = true;
+            }
+
+            // Sub images
+            if (req.files.subImages && req.files.subImages.length > 0) {
+                const subImageUploads = req.files.subImages.map(file => uploadToGoogleDrive(file.path));
+                const uploadedSubImages = await Promise.all(subImageUploads);
+
+                const newSubImages = uploadedSubImages.map(result => ({
+                    url: result.url,
+                    publicId: result.publicId,
+                    isPrimary: false
+                }));
+
+                product.images.push(...newSubImages);
+            }
         }
         console.log("productData product", product)
 

@@ -15,6 +15,8 @@ exports.getProducts = async (req, res) => {
             inStock,
             isFeatured,
             isActive,
+            occasion,
+            relationship,
             sort = '-createdAt',
             page = 1,
             limit = 12
@@ -34,6 +36,14 @@ exports.getProducts = async (req, res) => {
 
         if (category) {
             filter.category = category;
+        }
+
+        if (occasion) {
+            filter.occasions = occasion;
+        }
+
+        if (relationship) {
+            filter.relationships = relationship;
         }
 
         if (minPrice || maxPrice) {
@@ -140,6 +150,8 @@ exports.createProduct = async (req, res) => {
             comparePrice,
             cost,
             category,
+            occasions,
+            relationships,
             stock,
             sku,
             barcode,
@@ -178,6 +190,8 @@ exports.createProduct = async (req, res) => {
             comparePrice,
             cost,
             category,
+            occasions: occasions ? (Array.isArray(occasions) ? occasions : [occasions]) : [],
+            relationships: relationships ? (Array.isArray(relationships) ? relationships : [relationships]) : [],
             stock: stock || 0,
             sku,
             barcode,
@@ -257,6 +271,8 @@ exports.updateProduct = async (req, res) => {
             comparePrice,
             cost,
             category,
+            occasions,
+            relationships,
             stock,
             sku,
             barcode,
@@ -305,6 +321,14 @@ exports.updateProduct = async (req, res) => {
                 });
             }
             product.category = category;
+        }
+
+        if (occasions !== undefined) {
+            product.occasions = Array.isArray(occasions) ? occasions : (occasions ? [occasions] : []);
+        }
+
+        if (relationships !== undefined) {
+            product.relationships = Array.isArray(relationships) ? relationships : (relationships ? [relationships] : []);
         }
 
         // Handle deletion of removed images

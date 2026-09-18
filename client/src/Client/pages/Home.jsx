@@ -16,6 +16,7 @@ import {
   addToWishlist,
   removeFromWishlist,
   addToCart,
+  getCategories
 } from "../../api-services/apiService";
 import { useAppStore } from "../../stores/useAppStore";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
@@ -42,6 +43,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [dbOccasions, setDbOccasions] = useState([]);
+  const [dbRelationships, setDbRelationships] = useState([]);
   const [wishlistLoading, setWishlistLoading] = useState({});
   const [cartLoading, setCartLoading] = useState({});
   const [cartCounts, setCartCounts] = useState({});
@@ -107,19 +110,32 @@ export default function Home() {
     { name: "Custom Art", icon: SparklesIcon },
   ];
 
-  const occasions = [
-    { name: "Birthdays", image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500&q=80" },
-    { name: "Anniversaries", image: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=500&q=80" },
-    { name: "Weddings", image: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=500&q=80" },
-    { name: "Housewarming", image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&q=80" },
+  // Fallback images for dynamic categories if they don't have images
+  const defaultOccasionImages = [
+    "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500&q=80",
+    "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=500&q=80",
+    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=500&q=80",
+    "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&q=80"
   ];
 
-  const relationships = [
-    { name: "For Him", image: "https://images.unsplash.com/photo-1480455624313-e29b44bbfde1?w=500&q=80" },
-    { name: "For Her", image: "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?w=500&q=80" },
-    { name: "For Couples", image: "https://images.unsplash.com/photo-1522098635833-216c03d81fbe?w=500&q=80" },
-    { name: "For Parents", image: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=500&q=80" },
+  const defaultRelationshipImages = [
+    "https://images.unsplash.com/photo-1480455624313-e29b44bbfde1?w=500&q=80",
+    "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?w=500&q=80",
+    "https://images.unsplash.com/photo-1522098635833-216c03d81fbe?w=500&q=80",
+    "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=500&q=80"
   ];
+
+  useEffect(() => {
+    const fetchDynamicCategories = async () => {
+      const result = await getCategories();
+      if (result?.success) {
+        const allCats = result.data?.data || [];
+        setDbOccasions(allCats.filter(c => c.type === 'Occasion'));
+        setDbRelationships(allCats.filter(c => c.type === 'Relationship'));
+      }
+    };
+    fetchDynamicCategories();
+  }, []);
 
   // Fallback product images
   const productImages = [
@@ -355,11 +371,11 @@ export default function Home() {
                   viewport={{ once: true, margin: "-100px" }}
                   className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8"
               >
-                  {occasions.map((occ, i) => (
-                      <motion.div variants={itemVariants} key={i}>
-                          <Link to="/products" className="group relative rounded-3xl overflow-hidden shadow-lg aspect-square block">
+                  {dbOccasions.length > 0 ? dbOccasions.map((occ, i) => (
+                      <motion.div variants={itemVariants} key={occ._id}>
+                          <Link to={`/products?occasion=${occ._id}`} className="group relative rounded-3xl overflow-hidden shadow-lg aspect-square block">
                               <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10} scale={1.05} transitionSpeed={2000} className="w-full h-full">
-                                  <img referrerPolicy="no-referrer" src={occ.image} alt={occ.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                  <img referrerPolicy="no-referrer" src={occ.image?.url || defaultOccasionImages[i % defaultOccasionImages.length]} alt={occ.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                   <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/30 to-transparent"></div>
                                   <div className="absolute bottom-0 left-0 w-full p-6 md:p-8">
                                       <h3 className="text-brand-secondary font-black text-2xl md:text-3xl tracking-wide drop-shadow-md">{occ.name}</h3>
@@ -367,7 +383,9 @@ export default function Home() {
                               </Tilt>
                           </Link>
                       </motion.div>
-                  ))}
+                  )) : (
+                      <div className="col-span-full text-center text-gray-500 py-10 font-medium">No occasions defined yet.</div>
+                  )}
               </motion.div>
           </div>
       </section>
@@ -386,16 +404,18 @@ export default function Home() {
                   viewport={{ once: true, margin: "-100px" }}
                   className="grid grid-cols-2 md:grid-cols-4 gap-10"
               >
-                  {relationships.map((rel, i) => (
-                      <motion.div variants={itemVariants} key={i}>
-                          <Link to="/products" className="group flex flex-col items-center gap-6">
+                  {dbRelationships.length > 0 ? dbRelationships.map((rel, i) => (
+                      <motion.div variants={itemVariants} key={rel._id}>
+                          <Link to={`/products?relationship=${rel._id}`} className="group flex flex-col items-center gap-6">
                               <Tilt tiltMaxAngleX={15} tiltMaxAngleY={15} scale={1.05} transitionSpeed={1000} className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden shadow-[0_15px_30px_rgba(45,84,94,0.2)] border-8 border-[#fdfbf9] group-hover:border-brand-primary transition-colors">
-                                  <img referrerPolicy="no-referrer" src={rel.image} alt={rel.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                  <img referrerPolicy="no-referrer" src={rel.image?.url || defaultRelationshipImages[i % defaultRelationshipImages.length]} alt={rel.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                               </Tilt>
                               <h3 className="font-black text-brand-dark text-xl md:text-2xl group-hover:text-brand-primary transition-colors tracking-wide">{rel.name}</h3>
                           </Link>
                       </motion.div>
-                  ))}
+                  )) : (
+                      <div className="col-span-full text-center text-gray-500 py-10 font-medium">No relationships defined yet.</div>
+                  )}
               </motion.div>
           </div>
       </section>

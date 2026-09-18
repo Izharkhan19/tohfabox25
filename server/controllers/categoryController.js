@@ -41,6 +41,9 @@ exports.getCategories = async (req, res) => {
         if (req.query.parent !== undefined) {
             filter.parent = req.query.parent === 'null' ? null : req.query.parent;
         }
+        if (req.query.type) {
+            filter.type = req.query.type;
+        }
 
         const categories = await Category.find(filter)
             .populate('parent', 'name slug')  // This fixes parent = null
@@ -109,7 +112,7 @@ exports.getCategory = async (req, res) => {
 // @access  Private/Admin
 exports.createCategory = async (req, res) => {
     try {
-        const { name, description, parent, isActive, order } = req.body;
+        const { name, description, parent, isActive, order, type } = req.body;
 
         if (!name) {
             return res.status(400).json({
@@ -123,7 +126,8 @@ exports.createCategory = async (req, res) => {
             description,
             parent: parent || null,
             isActive,
-            order
+            order,
+            type: type || 'Product'
         };
 
         // Handle image upload
@@ -166,13 +170,14 @@ exports.updateCategory = async (req, res) => {
             });
         }
 
-        const { name, description, parent, isActive, order } = req.body;
+        const { name, description, parent, isActive, order, type } = req.body;
 
         if (name) category.name = name;
         if (description !== undefined) category.description = description;
         if (parent !== undefined) category.parent = parent || null;
         if (isActive !== undefined) category.isActive = isActive;
         if (order !== undefined) category.order = order;
+        if (type !== undefined) category.type = type;
 
         // Handle image upload
         if (req.file) {

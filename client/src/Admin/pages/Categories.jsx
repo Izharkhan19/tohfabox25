@@ -324,7 +324,7 @@ export default function Categories() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
-  const [formData, setFormData] = useState({ name: "" });
+  const [formData, setFormData] = useState({ name: "", type: "Product" });
 
   /* -------------------- API CALLS -------------------- */
 
@@ -346,7 +346,7 @@ export default function Categories() {
   const saveCategory = async () => {
     setSaving(true);
     try {
-      const payload = { name: formData.name.trim() };
+      const payload = { name: formData.name.trim(), type: formData.type };
       return editingCategory
         ? await updateCategory(editingCategory._id, payload)
         : await createCategory(payload);
@@ -373,14 +373,14 @@ export default function Categories() {
 
   const openModal = (category = null) => {
     setEditingCategory(category);
-    setFormData({ name: category?.name || "" });
+    setFormData({ name: category?.name || "", type: category?.type || "Product" });
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingCategory(null);
-    setFormData({ name: "" });
+    setFormData({ name: "", type: "Product" });
   };
 
   const handleSubmit = async (e) => {
@@ -479,9 +479,14 @@ export default function Categories() {
               <div className="flex justify-between mb-4 sm:mb-5">
                 <div>
                   <h3 className="text-xl font-bold">{category.name}</h3>
-                  <p className="text-sm text-gray-500">
-                    /{category.slug || "no-slug"}
-                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-medium">
+                      {category.type || 'Product'}
+                    </span>
+                    <p className="text-sm text-gray-500">
+                      /{category.slug || "no-slug"}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex gap-2">
@@ -563,12 +568,26 @@ export default function Categories() {
                 Category name
                 <input
                   value={formData.name}
-                  onChange={(e) => setFormData({ name: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#12343b] outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   placeholder="e.g. Resin Clocks"
                   required
                   autoFocus
                 />
+              </label>
+
+              <label className="block text-xs font-black uppercase tracking-wider text-gray-600 mt-4">
+                Category Type
+                <select
+                  value={formData.type}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#12343b] outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                  required
+                >
+                  <option value="Product">Product Category</option>
+                  <option value="Occasion">Occasion</option>
+                  <option value="Relationship">Relationship</option>
+                </select>
               </label>
 
               <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">

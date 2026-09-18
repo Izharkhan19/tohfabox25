@@ -172,6 +172,8 @@ export default function AddEditProduct() {
     price: "",
     stock: "",
     category: "",
+    occasions: [],
+    relationships: [],
     description: "",
     isFeatured: false,
     weightValue: "",
@@ -190,7 +192,9 @@ export default function AddEditProduct() {
   
   const [previewImage, setPreviewImage] = useState(null);
 
-  const [categories, setCategories] = useState([]);
+  const [productCategories, setProductCategories] = useState([]);
+  const [occasionCategories, setOccasionCategories] = useState([]);
+  const [relationshipCategories, setRelationshipCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
 
   const [loadingProduct, setLoadingProduct] = useState(false);
@@ -204,7 +208,10 @@ export default function AddEditProduct() {
       try {
         const res = await getCategories();
         if (res.success) {
-          setCategories(res.data?.data || []);
+          const allCats = res.data?.data || [];
+          setProductCategories(allCats.filter(c => c.type === 'Product' || !c.type));
+          setOccasionCategories(allCats.filter(c => c.type === 'Occasion'));
+          setRelationshipCategories(allCats.filter(c => c.type === 'Relationship'));
         }
       } catch (err) {
         console.error("Failed to load categories", err);
@@ -231,6 +238,8 @@ export default function AddEditProduct() {
               price: product.price || "",
               stock: product.stock || "",
               category: product.category?._id || product.category || "",
+              occasions: product.occasions?.map(o => o._id || o) || [],
+              relationships: product.relationships?.map(r => r._id || r) || [],
               description: product.description || "",
               isFeatured: product.isFeatured || false,
               weightValue: product.weight?.value || "",
@@ -263,6 +272,18 @@ export default function AddEditProduct() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxArrayChange = (e, fieldName) => {
+    const { value, checked } = e.target;
+    setFormData(prev => {
+      const array = prev[fieldName] || [];
+      if (checked) {
+        return { ...prev, [fieldName]: [...array, value] };
+      } else {
+        return { ...prev, [fieldName]: array.filter(item => item !== value) };
+      }
+    });
   };
 
   const handleMainImageChange = async (e) => {
@@ -346,6 +367,9 @@ export default function AddEditProduct() {
     
     formDataToSend.append("weight", JSON.stringify({ value: formData.weightValue, unit: formData.weightUnit }));
     formDataToSend.append("dimensions", JSON.stringify({ length: formData.dimLength, width: formData.dimWidth, height: formData.dimHeight, unit: formData.dimUnit }));
+
+    formData.occasions.forEach(occ => formDataToSend.append("occasions", occ));
+    formData.relationships.forEach(rel => formDataToSend.append("relationships", rel));
 
     // Append new images
     if (mainImage) {
@@ -509,7 +533,7 @@ export default function AddEditProduct() {
                     required
                   >
                     <option value="">Select category</option>
-                    {categories.map((cat) => (
+                    {productCategories.map((cat) => (
                       <option key={cat._id} value={cat._id}>
                         {cat.name}
                       </option>
@@ -542,6 +566,48 @@ export default function AddEditProduct() {
                       ? "Marked as Featured Product"
                       : "Not featured"}
                   </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
+              {/* Occasions */}
+              <div>
+                <label className="block mb-2 font-semibold text-gray-700">Occasions</label>
+                <div className="bg-gray-50 border rounded-lg p-3 max-h-40 overflow-y-auto flex flex-col gap-2">
+                  {occasionCategories.length === 0 && <p className="text-sm text-gray-500">No occasions created.</p>}
+                  {occasionCategories.map(cat => (
+                    <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        value={cat._id}
+                        checked={formData.occasions.includes(cat._id)}
+                        onChange={(e) => handleCheckboxArrayChange(e, 'occasions')}
+                        className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-700">{cat.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Relationships */}
+              <div>
+                <label className="block mb-2 font-semibold text-gray-700">Relationships</label>
+                <div className="bg-gray-50 border rounded-lg p-3 max-h-40 overflow-y-auto flex flex-col gap-2">
+                  {relationshipCategories.length === 0 && <p className="text-sm text-gray-500">No relationships created.</p>}
+                  {relationshipCategories.map(cat => (
+                    <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        value={cat._id}
+                        checked={formData.relationships.includes(cat._id)}
+                        onChange={(e) => handleCheckboxArrayChange(e, 'relationships')}
+                        className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-700">{cat.name}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>

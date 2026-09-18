@@ -40,6 +40,14 @@ const productSchema = new mongoose.Schema({
         ref: 'Category',
         required: [true, 'Product category is required']
     },
+    occasions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    }],
+    relationships: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    }],
     images: [{
         url: {
             type: String,

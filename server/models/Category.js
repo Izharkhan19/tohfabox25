@@ -9,6 +9,11 @@ const categorySchema = new mongoose.Schema({
         minlength: [2, 'Category name must be at least 2 characters'],
         maxlength: [50, 'Category name cannot exceed 50 characters']
     },
+    type: {
+        type: String,
+        enum: ['Product', 'Occasion', 'Relationship'],
+        default: 'Product'
+    },
     slug: {
         type: String,
         unique: true,

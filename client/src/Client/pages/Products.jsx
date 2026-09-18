@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   FunnelIcon,
   MagnifyingGlassIcon,
@@ -33,8 +33,17 @@ const itemVariants = {
 };
 
 export default function Products() {
+  const [searchParams] = useSearchParams();
+  
+  // Parse initial filter from URL
+  const initialFilterType = searchParams.get('occasion') ? 'Occasion' 
+    : searchParams.get('relationship') ? 'Relationship' 
+    : searchParams.get('category') ? 'Product' : 'all';
+    
+  const initialFilterId = searchParams.get('occasion') || searchParams.get('relationship') || searchParams.get('category') || 'all';
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedFilter, setSelectedFilter] = useState({ type: initialFilterType, id: initialFilterId });
   const [sortBy, setSortBy] = useState("featured");
   const [viewMode, setViewMode] = useState("grid");
   const [products, setProducts] = useState([]);
@@ -53,12 +62,9 @@ export default function Products() {
     const result = await getCategories();
 
     if (result?.success) {
-      setCategories([
-        { _id: "all", name: "All Masterpieces" },
-        ...(Array.isArray(result?.data?.data) ? result.data.data : []),
-      ]);
+      setCategories(Array.isArray(result?.data?.data) ? result.data.data : []);
     } else {
-      setCategories([{ _id: "all", name: "All Masterpieces" }]);
+      setCategories([]);
     }
     setLoadingCategories(false);
   };
@@ -67,7 +73,9 @@ export default function Products() {
     setLoading(true);
     const filters = {
       search: searchTerm || undefined,
-      category: selectedCategory !== "all" ? selectedCategory : undefined,
+      category: selectedFilter.type === 'Product' ? selectedFilter.id : undefined,
+      occasion: selectedFilter.type === 'Occasion' ? selectedFilter.id : undefined,
+      relationship: selectedFilter.type === 'Relationship' ? selectedFilter.id : undefined,
       sort:
         sortBy === "featured"
           ? "-createdAt"
@@ -100,7 +108,7 @@ export default function Products() {
 
   useEffect(() => {
     fetchProducts();
-  }, [searchTerm, selectedCategory, sortBy]);
+  }, [searchTerm, selectedFilter, sortBy]);
 
   const toggleWishlist = async (productId) => {
     if (!isLoggedIn) {
@@ -267,29 +275,64 @@ export default function Products() {
                 </div>
               ) : (
                 <ul className="space-y-4">
-                  {categories.map((cat) => (
-                    <li key={cat._id}>
-                      <label className="flex items-center gap-3 cursor-pointer group">
-                        <div className="relative flex items-center">
-                          <input
-                            type="radio"
-                            name="category_desktop"
-                            checked={selectedCategory === cat._id}
-                            onChange={() => setSelectedCategory(cat._id)}
-                            className="peer sr-only"
-                          />
-                          <div className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-[#2d545e] peer-checked:bg-[#2d545e] transition-all shadow-sm"></div>
-                          <div className="absolute inset-0 rounded-full scale-0 peer-checked:scale-50 bg-[#e1b382] transition-transform"></div>
-                        </div>
-                        <span className={`text-sm transition-colors font-medium ${
-                            selectedCategory === cat._id ? "font-bold text-[#2d545e]" : "text-gray-600 group-hover:text-[#12343b]"
-                          }`}
-                        >
-                          {cat.name}
-                        </span>
-                      </label>
-                    </li>
-                  ))}
+                  {/* All Masterpieces */}
+                  <li>
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <div className="relative flex items-center">
+                        <input
+                          type="radio"
+                          name="category_desktop"
+                          checked={selectedFilter.id === 'all'}
+                          onChange={() => setSelectedFilter({ type: 'all', id: 'all' })}
+                          className="peer sr-only"
+                        />
+                        <div className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-[#2d545e] peer-checked:bg-[#2d545e] transition-all shadow-sm"></div>
+                        <div className="absolute inset-0 rounded-full scale-0 peer-checked:scale-50 bg-[#e1b382] transition-transform"></div>
+                      </div>
+                      <span className={`text-sm transition-colors font-medium ${
+                          selectedFilter.id === 'all' ? "font-bold text-[#2d545e]" : "text-gray-600 group-hover:text-[#12343b]"
+                        }`}
+                      >
+                        All Masterpieces
+                      </span>
+                    </label>
+                  </li>
+
+                  {/* Grouped Categories */}
+                  {['Product', 'Occasion', 'Relationship'].map(type => {
+                    const groupCats = categories?.filter(c => (c.type || 'Product') === type);
+                    if (groupCats?.length === 0) return null;
+                    return (
+                      <div key={type} className="pt-4 border-t border-gray-100">
+                        <p className="text-xs font-black uppercase text-gray-400 mb-3 tracking-widest">{type === 'Product' ? 'Product Types' : type + 's'}</p>
+                        <ul className="space-y-4">
+                          {groupCats.map(cat => (
+                            <li key={cat._id}>
+                              <label className="flex items-center gap-3 cursor-pointer group">
+                                <div className="relative flex items-center">
+                                  <input
+                                    type="radio"
+                                    name="category_desktop"
+                                    checked={selectedFilter.id === cat._id}
+                                    onChange={() => setSelectedFilter({ type: cat.type || 'Product', id: cat._id })}
+                                    className="peer sr-only"
+                                  />
+                                  <div className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-[#2d545e] peer-checked:bg-[#2d545e] transition-all shadow-sm"></div>
+                                  <div className="absolute inset-0 rounded-full scale-0 peer-checked:scale-50 bg-[#e1b382] transition-transform"></div>
+                                </div>
+                                <span className={`text-sm transition-colors font-medium ${
+                                    selectedFilter.id === cat._id ? "font-bold text-[#2d545e]" : "text-gray-600 group-hover:text-[#12343b]"
+                                  }`}
+                                >
+                                  {cat.name}
+                                </span>
+                              </label>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
                 </ul>
               )}
             </div>
@@ -307,32 +350,70 @@ export default function Products() {
                           </button>
                       </div>
                       <ul className="space-y-5">
-                          {categories.map((cat) => (
-                            <li key={cat._id}>
-                              <label className="flex items-center justify-between cursor-pointer group p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-colors">
-                                <span className={`text-base font-bold transition-colors ${
-                                    selectedCategory === cat._id ? "text-[#2d545e]" : "text-gray-600"
-                                  }`}
-                                >
-                                  {cat.name}
-                                </span>
-                                <div className="relative flex items-center">
-                                  <input
-                                    type="radio"
-                                    name="category_mobile"
-                                    checked={selectedCategory === cat._id}
-                                    onChange={() => {
-                                        setSelectedCategory(cat._id);
-                                        setIsMobileFiltersOpen(false);
-                                    }}
-                                    className="peer sr-only"
-                                  />
-                                  <div className="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-[#2d545e] peer-checked:bg-[#2d545e] transition-all shadow-sm"></div>
-                                  <div className="absolute inset-0 rounded-full scale-0 peer-checked:scale-50 bg-[#e1b382] transition-transform"></div>
-                                </div>
-                              </label>
-                            </li>
-                          ))}
+                          {/* All Masterpieces Mobile */}
+                          <li>
+                            <label className="flex items-center justify-between cursor-pointer group p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-colors">
+                              <span className={`text-base font-bold transition-colors ${
+                                  selectedFilter.id === 'all' ? "text-[#2d545e]" : "text-gray-600"
+                                }`}
+                              >
+                                All Masterpieces
+                              </span>
+                              <div className="relative flex items-center">
+                                <input
+                                  type="radio"
+                                  name="category_mobile"
+                                  checked={selectedFilter.id === 'all'}
+                                  onChange={() => {
+                                      setSelectedFilter({ type: 'all', id: 'all' });
+                                      setIsMobileFiltersOpen(false);
+                                  }}
+                                  className="peer sr-only"
+                                />
+                                <div className="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-[#2d545e] peer-checked:bg-[#2d545e] transition-all shadow-sm"></div>
+                                <div className="absolute inset-0 rounded-full scale-0 peer-checked:scale-50 bg-[#e1b382] transition-transform"></div>
+                              </div>
+                            </label>
+                          </li>
+
+                          {/* Grouped Categories Mobile */}
+                          {['Product', 'Occasion', 'Relationship'].map(type => {
+                            const groupCats = categories?.filter(c => (c.type || 'Product') === type);
+                            if (groupCats?.length === 0) return null;
+                            return (
+                              <div key={type} className="pt-4 border-t border-gray-100">
+                                <p className="text-xs font-black uppercase text-gray-400 mb-3 tracking-widest px-3">{type === 'Product' ? 'Product Types' : type + 's'}</p>
+                                <ul className="space-y-2">
+                                  {groupCats.map(cat => (
+                                    <li key={cat._id}>
+                                      <label className="flex items-center justify-between cursor-pointer group p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-colors">
+                                        <span className={`text-base font-bold transition-colors ${
+                                            selectedFilter.id === cat._id ? "text-[#2d545e]" : "text-gray-600"
+                                          }`}
+                                        >
+                                          {cat.name}
+                                        </span>
+                                        <div className="relative flex items-center">
+                                          <input
+                                            type="radio"
+                                            name="category_mobile"
+                                            checked={selectedFilter.id === cat._id}
+                                            onChange={() => {
+                                                setSelectedFilter({ type: cat.type || 'Product', id: cat._id });
+                                                setIsMobileFiltersOpen(false);
+                                            }}
+                                            className="peer sr-only"
+                                          />
+                                          <div className="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-[#2d545e] peer-checked:bg-[#2d545e] transition-all shadow-sm"></div>
+                                          <div className="absolute inset-0 rounded-full scale-0 peer-checked:scale-50 bg-[#e1b382] transition-transform"></div>
+                                        </div>
+                                      </label>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            );
+                          })}
                       </ul>
                   </div>
               </div>
@@ -351,7 +432,7 @@ export default function Products() {
                 <button
                   onClick={() => {
                     setSearchTerm("");
-                    setSelectedCategory("all");
+                    setSelectedFilter({ type: 'all', id: 'all' });
                     setSortBy("featured");
                   }}
                   className="text-[#12343b] font-bold bg-[#e1b382] hover:bg-[#c89666] px-8 py-3 rounded-full transition-colors shadow-lg active:scale-95"

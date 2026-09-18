@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createCustomRequest } from '../../api-services/apiService';
+import imageCompression from 'browser-image-compression';
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 import { EnvelopeIcon, PhoneIcon, UserIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
@@ -20,11 +21,19 @@ export default function CustomRequest() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setReferenceImage(file);
-      setPreviewImage(URL.createObjectURL(file));
+      try {
+        const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
+        const compressedFile = await imageCompression(file, options);
+        setReferenceImage(compressedFile);
+        setPreviewImage(URL.createObjectURL(compressedFile));
+      } catch (error) {
+        console.error("Compression error:", error);
+        setReferenceImage(file);
+        setPreviewImage(URL.createObjectURL(file));
+      }
     }
   };
 

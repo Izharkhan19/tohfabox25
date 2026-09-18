@@ -21,7 +21,7 @@ export default function CustomRequests() {
     setLoading(true);
     const res = await getCustomRequests();
     if (res?.success) {
-      setRequests(res.data || []);
+      setRequests(res.data?.data || res.data || []);
     } else {
       toast.error('Failed to fetch custom requests');
     }

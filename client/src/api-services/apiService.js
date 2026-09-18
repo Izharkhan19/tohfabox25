@@ -299,3 +299,18 @@ export const getOrderStats = () =>
 
 export const getMonthlySales = () =>
     handleApiCall(() => api.get('/orders/stats/monthly'));
+
+// ==================== CUSTOM REQUESTS ====================
+// Client
+export const createCustomRequest = (data) =>
+    handleApiCall(() => api.post("/custom-requests", data), "Request submitted successfully!");
+
+// Admin
+export const getCustomRequests = () =>
+    handleApiCall(() => api.get("/custom-requests"));
+
+export const updateCustomRequestStatus = (id, status) =>
+    handleApiCall(() => api.put(`/custom-requests/${id}/status`, { status }), "Status updated!");
+
+export const deleteCustomRequest = (id) =>
+    handleApiCall(() => api.delete(`/custom-requests/${id}`), "Request deleted!");

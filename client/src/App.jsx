@@ -135,6 +135,7 @@ const AdminCategories = lazy(() => import("./Admin/pages/Categories"));
 const AdminOrders = lazy(() => import("./Admin/pages/Orders"));
 const AdminTransactions = lazy(() => import("./Admin/pages/Transactions"));
 const AdminPromos = lazy(() => import("./Admin/pages/Promos"));
+const AdminCustomRequests = lazy(() => import("./Admin/pages/CustomRequests"));
 const AdminLayout = lazy(() => import("./Admin/components/Layout"));
 
 // === Client (Lazy Loaded) ===
@@ -150,6 +151,7 @@ const Checkout = lazy(() => import("./Client/pages/Checkout"));
 const Wishlist = lazy(() => import("./Client/pages/Wishlist"));
 const OrderList = lazy(() => import("./Client/pages/OrderList"));
 const OrderSuccess = lazy(() => import("./Client/pages/OrderSuccess"));
+const CustomRequest = lazy(() => import("./Client/pages/CustomRequest"));
 const ClientLayout = lazy(() => import("./Client/components/Layout"));
 
 // === Auth (Lazy Loaded) ===
@@ -288,6 +290,7 @@ export default function App() {
             <Route path="orders" element={<AdminOrders />} />
             <Route path="transactions" element={<AdminTransactions />} />
             <Route path="promos" element={<AdminPromos />} />
+            <Route path="custom-requests" element={<AdminCustomRequests />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Route>
 
@@ -306,6 +309,7 @@ export default function App() {
             <Route path="privacy-policy" element={<PrivacyPolicy />} />
             <Route path="terms-of-service" element={<TermsOfService />} />
             <Route path="app-info" element={<AppInfo />} />
+            <Route path="custom-orders" element={<CustomRequest />} />
             <Route path="products/:id" element={<ProductDetail />} />
 
             {/* Protected Routes - Require Login */}

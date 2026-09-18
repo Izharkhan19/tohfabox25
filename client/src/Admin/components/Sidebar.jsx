@@ -70,7 +70,8 @@ import {
   ChartBarIcon,
   ArrowRightOnRectangleIcon,
   XMarkIcon,
-  CurrencyDollarIcon
+  CurrencyDollarIcon,
+  ClipboardDocumentListIcon
 } from "@heroicons/react/24/outline";
 
 const menu = [
@@ -81,6 +82,7 @@ const menu = [
   { name: "Orders", icon: InboxIcon, path: "/admin/orders" },
   { name: "Transactions", icon: CurrencyDollarIcon, path: "/admin/transactions" },
   { name: "Promo Codes", icon: TicketIcon, path: "/admin/promos" },
+  { name: "Custom Requests", icon: ClipboardDocumentListIcon, path: "/admin/custom-requests" },
 ];
 
 export default function Sidebar({ onClose }) {

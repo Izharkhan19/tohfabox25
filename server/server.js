@@ -37,7 +37,7 @@ const wishlistRoutes = require('./routes/wishlist')
 const cartRoutes = require('./routes/cart')
 const promoRoutes = require('./routes/promos');
 const emailRoutes = require('./routes/email');
-
+const customRequestRoutes = require('./routes/customRequests');
 
 const app = express();
 
@@ -115,6 +115,7 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/promos', promoRoutes);
 app.use('/api/email', emailRoutes);
+app.use('/api/custom-requests', customRequestRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

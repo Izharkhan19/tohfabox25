@@ -25,7 +25,7 @@ import {
   XIcon,
 } from "react-share";
 
-import { getGalleryItems, placeGalleryOrder } from "../../api-services/apiService";
+import { getGalleryItems, placeGalleryOrder, getProducts } from "../../api-services/apiService";
 import LogoLoader from "../../components/LogoLoader";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -258,20 +258,52 @@ export default function Gallery() {
   const [orderItem, setOrderItem] = useState(null);
 
   useEffect(() => {
-    const fetchGallery = async () => {
+    const fetchGalleryAndProducts = async () => {
       setLoading(true);
       try {
-        const result = await getGalleryItems();
-        if (result?.success) {
-          setItems(result.data?.data || []);
+        const [galleryRes, productsRes] = await Promise.all([
+          getGalleryItems(),
+          getProducts()
+        ]);
+
+        let combinedItems = [];
+
+        // 1. Add Gallery Items
+        if (galleryRes?.success) {
+          combinedItems = [...(galleryRes.data?.data || [])];
         }
+
+        // 2. Add Product Images (formatted to look like gallery items)
+        if (productsRes?.success) {
+          const products = productsRes.data?.data || [];
+          products.forEach(product => {
+            if (product.images && product.images.length > 0) {
+              product.images.forEach((img, idx) => {
+                // Strip HTML tags from description if present
+                const cleanDesc = product.shortDescription || (product.description ? product.description.replace(/<[^>]+>/g, '').substring(0, 100) + '...' : '');
+                
+                combinedItems.push({
+                  _id: `prod_${product._id}_${idx}`,
+                  title: product.name,
+                  description: cleanDesc,
+                  price: product.price,
+                  image: { url: img.url },
+                  isProductImage: true
+                });
+              });
+            }
+          });
+        }
+
+        // Optional: shuffle or sort combined items here
+        setItems(combinedItems);
       } catch (error) {
-        console.error("Failed to fetch gallery", error);
+        console.error("Failed to fetch gallery and products", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchGallery();
+    fetchGalleryAndProducts();
   }, []);
 
   const currentUrl = typeof window !== "undefined" ? window.location.origin : "";

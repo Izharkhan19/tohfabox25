@@ -378,7 +378,7 @@ export default function Dashboard() {
 
   const fetchProducts = async () => {
     setLoadingProducts(true);
-    const result = await getProducts();
+    const result = await getProducts({ limit: 1000 });
     if (result?.success) {
       setProducts(result?.data?.data || []);
     } else {

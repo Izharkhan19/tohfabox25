@@ -263,7 +263,7 @@ export default function Gallery() {
       try {
         const [galleryRes, productsRes] = await Promise.all([
           getGalleryItems(),
-          getProducts()
+          getProducts({ limit: 100 })
         ]);
 
         let combinedItems = [];

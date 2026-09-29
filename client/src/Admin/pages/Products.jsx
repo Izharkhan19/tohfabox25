@@ -20,7 +20,7 @@ export default function Products() {
   /* -------------------- FETCH PRODUCTS -------------------- */
   const fetchAllProducts = async () => {
     setLoading(true);
-    const resData = await getProducts();
+    const resData = await getProducts({ limit: 1000 });
 
     if (resData?.success) {
       setProducts(resData.data?.data || resData.data || []);

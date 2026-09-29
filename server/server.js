@@ -116,6 +116,8 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/promos', promoRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/custom-requests', customRequestRoutes);
+app.use('/api/gallery', require('./routes/gallery'));
+app.use('/api/gallery-orders', require('./routes/galleryOrders'));
 
 // Health check route
 app.get('/api/health', (req, res) => {

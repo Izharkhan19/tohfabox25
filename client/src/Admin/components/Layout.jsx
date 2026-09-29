@@ -71,6 +71,8 @@ export default function AdminLayout() {
                 ? "Custom Requests"
                 : location.pathname.includes("transactions")
                 ? "Transactions"
+                : location.pathname.includes("gallery")
+                ? "Gallery"
                 : "Dashboard"}
             </h2>
           </div>

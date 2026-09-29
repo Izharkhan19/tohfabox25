@@ -314,3 +314,38 @@ export const updateCustomRequestStatus = (id, status) =>
 
 export const deleteCustomRequest = (id) =>
     handleApiCall(() => api.delete(`/custom-requests/${id}`), "Request deleted!");
+
+// ==================== GALLERY ====================
+export const getGalleryItems = (params = {}) =>
+    handleApiCall(() => api.get("/gallery", { params }));
+
+export const getGalleryItem = (id) =>
+    handleApiCall(() => api.get(`/gallery/${id}`));
+
+export const createGalleryItem = (formData) =>
+    handleApiCall(() =>
+        api.post("/gallery", formData, { headers: { "Content-Type": "multipart/form-data" } }),
+        "Gallery item created!"
+    );
+
+export const updateGalleryItem = (id, formData) =>
+    handleApiCall(() =>
+        api.put(`/gallery/${id}`, formData, { headers: { "Content-Type": "multipart/form-data" } }),
+        "Gallery item updated!"
+    );
+
+export const deleteGalleryItem = (id) =>
+    handleApiCall(() => api.delete(`/gallery/${id}`), "Gallery item deleted!");
+
+// ==================== GALLERY ORDERS ====================
+export const placeGalleryOrder = (data) =>
+    handleApiCall(() => api.post("/gallery-orders", data), "Order placed successfully!");
+
+export const getGalleryOrders = () =>
+    handleApiCall(() => api.get("/gallery-orders"));
+
+export const updateGalleryOrderStatus = (id, status) =>
+    handleApiCall(() => api.put(`/gallery-orders/${id}/status`, { status }), "Status updated!");
+
+export const deleteGalleryOrder = (id) =>
+    handleApiCall(() => api.delete(`/gallery-orders/${id}`), "Order deleted!");

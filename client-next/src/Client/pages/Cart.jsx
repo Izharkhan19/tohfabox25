@@ -361,7 +361,7 @@ export default function Cart() {
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-4">
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sticky top-24">
-              <h2 className="text-lg font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">
+              <h2 className="text-sm sm:text-lg font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">
                 Order Summary
               </h2>
 

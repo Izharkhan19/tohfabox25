@@ -74,8 +74,8 @@
 //     };
 
 //     return (
-//         // <div className="max-w-7xl mx-auto p-6">
-//         <div className="p-6">
+//         // <div className="max-w-7xl mx-auto px-3 py-4 sm:p-6">
+//         <div className="px-3 py-4 sm:p-6">
 //             {/* Header */}
 //             <div className="flex justify-between items-center mb-8">
 //                 <div>
@@ -96,11 +96,11 @@
 
 //             {/* Loading State */}
 //             {loadingCategories && (
-//                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+//                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gapx-3 py-4 sm:p-6">
 //                     {[...Array(6)].map((_, i) => (
 //                         <div
 //                             key={i}
-//                             className="bg-white rounded-xl p-6 shadow-sm border animate-pulse"
+//                             className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-sm border animate-pulse"
 //                         >
 //                             <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
 //                             <div className="h-20 bg-gray-100 rounded"></div>
@@ -124,11 +124,11 @@
 
 //             {/* Categories Grid */}
 //             {!loadingCategories && categories?.length > 0 && (
-//                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+//                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gapx-3 py-4 sm:p-6">
 //                     {categories?.map((category) => (
 //                         <div
 //                             key={category._id}
-//                             className="bg-white rounded-2xl shadow-md border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+//                             className="bg-white rounded-2xl shadow-md border border-gray-200 px-3 py-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
 //                         >
 //                             <div className="flex justify-between items-start mb-5">
 //                                 <div>
@@ -313,6 +313,10 @@ import {
   deleteCategory,
 } from "../../api-services/apiService";
 import { toast } from "react-toastify";
+import { Dialog } from 'primereact/dialog';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
 
 export default function Categories() {
   /* -------------------- STATE -------------------- */
@@ -422,9 +426,9 @@ export default function Categories() {
 
   /* -------------------- UI -------------------- */
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:px-3 py-4 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gapx-3 py-4 sm:p-6 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
             Product Categories
@@ -443,11 +447,11 @@ export default function Categories() {
 
       {/* Loading */}
       {loadingCategories && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gapx-3 py-4 sm:p-6">
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="bg-white rounded-xl p-6 shadow-sm border animate-pulse"
+              className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-sm border animate-pulse"
             >
               <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
               <div className="h-20 bg-gray-100 rounded" />
@@ -471,11 +475,11 @@ export default function Categories() {
 
       {/* Categories */}
       {!loadingCategories && categories.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gapx-3 py-4 sm:p-6">
           {categories.map((category) => (
             <div
               key={category._id}
-              className="bg-white rounded-xl sm:rounded-2xl shadow-md border p-4 sm:p-6 hover:shadow-xl transition"
+              className="bg-white rounded-xl sm:rounded-2xl shadow-md border p-4 sm:px-3 py-4 sm:p-6 hover:shadow-xl transition"
             >
               <div className="flex justify-between mb-4 sm:mb-5">
                 <div>
@@ -564,7 +568,7 @@ export default function Categories() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-4 sm:p-6">
+            <form onSubmit={handleSubmit} className="p-4 sm:px-3 py-4 sm:p-6">
               <label className="block text-xs font-black uppercase tracking-wider text-gray-600">
                 Category name
                 <input

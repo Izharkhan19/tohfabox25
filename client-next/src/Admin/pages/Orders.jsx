@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { Dialog } from 'primereact/dialog';
+import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
 import {
   EyeIcon,
   InboxIcon,
@@ -146,7 +149,7 @@ export default function Orders() {
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:px-3 py-4 sm:p-6">
       {/* Search */}
       <div className="mb-6 max-w-md relative">
         <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -314,41 +317,40 @@ export default function Orders() {
       )}
 
       {/* Status Modal */}
-      {isStatusModalOpen && selectedOrder && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">Update Status</h3>
+      <Dialog 
+        header="Update Status" 
+        visible={isStatusModalOpen && selectedOrder} 
+        onHide={() => setIsStatusModalOpen(false)}
+        className="w-[95vw] sm:w-full sm:max-w-md rounded-2xl shadow-2xl"
+        breakpoints={{ '960px': '75vw', '640px': '95vw' }}
+      >
+        <div className="flex flex-col gap-4 mt-2">
+          <Dropdown
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.value)}
+            options={Object.entries(statusConfig).map(([key, c]) => ({ label: c.label, value: key }))}
+            className="w-full"
+            placeholder="Select a status"
+          />
 
-            <select
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value)}
-              className="w-full border px-4 py-3 rounded-xl mb-4"
-            >
-              {Object.entries(statusConfig).map(([key, c]) => (
-                <option key={key} value={key}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsStatusModalOpen(false)}
-                className="flex-1 border py-2 rounded-xl hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleStatusUpdate}
-                disabled={updatingStatus}
-                className="flex-1 bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 disabled:opacity-70"
-              >
-                {updatingStatus ? "Updating..." : "Update"}
-              </button>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <Button
+              label="Cancel"
+              outlined
+              onClick={() => setIsStatusModalOpen(false)}
+              className="w-full sm:w-1/2 justify-center py-3"
+            />
+            <Button
+              label={updatingStatus ? "Updating..." : "Update"}
+              icon={updatingStatus ? "pi pi-spin pi-spinner" : "pi pi-check"}
+              disabled={updatingStatus}
+              onClick={handleStatusUpdate}
+              className="w-full sm:w-1/2 justify-center py-3 bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
+            />
           </div>
         </div>
-      )}
+      </Dialog>
     </div>
   );
 }
+

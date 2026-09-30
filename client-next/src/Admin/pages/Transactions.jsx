@@ -61,7 +61,7 @@ export default function Transactions() {
   };
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:px-3 py-4 sm:p-6">
 
 
       {/* Search */}

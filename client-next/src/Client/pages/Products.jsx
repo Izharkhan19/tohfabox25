@@ -494,7 +494,7 @@ export default function Products() {
 
                               <div>
                                   <Link href={`/products/${product._id}`}>
-                                    <h3 className="text-xs md:text-xl font-black text-[#12343b] mb-1 md:mb-2 group-hover:text-[#2d545e] transition-colors line-clamp-2 leading-tight">
+                                    <h3 className="text-xs md:text-base sm:text-xl font-black text-[#12343b] mb-1 md:mb-2 group-hover:text-[#2d545e] transition-colors line-clamp-2 leading-tight">
                                       {product.name}
                                     </h3>
                                   </Link>

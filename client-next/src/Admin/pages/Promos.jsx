@@ -96,7 +96,7 @@ export default function Promos() {
                     <h2 className="font-bold text-gray-800">Create a promotion</h2>
                     <p className="mt-1 text-[10px] sm:text-xs text-gray-500">Customers can use the code during its active period.</p>
                 </div>
-                <div className="grid gap-x-5 gap-y-4 p-4 sm:grid-cols-2 sm:p-6 lg:grid-cols-4">
+                <div className="grid gap-x-5 gap-y-4 p-4 sm:grid-cols-2 sm:px-3 py-4 sm:p-6 lg:grid-cols-4">
                     <label className="text-xs font-bold text-gray-600">Promo code<input required placeholder="WELCOME10" value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} className={`${inputClass} uppercase`} /></label>
                     <label className="text-xs font-bold text-gray-600">Discount type<Select value={discountTypeOptions.find((option) => option.value === form.discountType)} onChange={(option) => setForm({ ...form, discountType: option.value })} options={discountTypeOptions} isSearchable={false} className="mt-1 text-sm" styles={{ control: (base, state) => ({ ...base, minHeight: 46, borderRadius: 12, borderColor: state.isFocused ? '#3b82f6' : '#e5e7eb', backgroundColor: state.isFocused ? '#fff' : '#f9fafb', boxShadow: state.isFocused ? '0 0 0 2px #dbeafe' : 'none' }), menu: (base) => ({ ...base, zIndex: 20 }), option: (base, state) => ({ ...base, color: '#1f2937', backgroundColor: state.isFocused ? '#eff6ff' : '#fff' }) }} /></label>
                     <label className="text-xs font-bold text-gray-600">Discount value<input required type="number" min="0" step="0.01" value={form.discountValue} onChange={(e) => setForm({ ...form, discountValue: e.target.value })} className={inputClass} /></label>

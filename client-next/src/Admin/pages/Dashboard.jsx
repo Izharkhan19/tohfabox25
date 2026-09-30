@@ -18,15 +18,15 @@
 
 // // export default function Dashboard() {
 // //     return (
-// //         <div className="p-6">
+// //         <div className="px-3 py-4 sm:p-6">
 // //             {/* Header */}
 // //             <h1 className="text-3xl font-bold mb-8 text-gray-800">Dashboard Overview</h1>
 
 // //             {/* Stats Cards */}
-// //             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+// //             <div className="grid grid-cols-1 md:grid-cols-4 gapx-3 py-4 sm:p-6 mb-10">
 
 // //                 {/* Card 1 */}
-// //                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
+// //                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
 // //                     <div className="flex items-center justify-between">
 // //                         <div>
 // //                             <p className="text-gray-500 text-sm">Total Products</p>
@@ -37,7 +37,7 @@
 // //                 </div>
 
 // //                 {/* Card 2 */}
-// //                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
+// //                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
 // //                     <div className="flex items-center justify-between">
 // //                         <div>
 // //                             <p className="text-gray-500 text-sm">Total Orders</p>
@@ -48,7 +48,7 @@
 // //                 </div>
 
 // //                 {/* Card 3 */}
-// //                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
+// //                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
 // //                     <div className="flex items-center justify-between">
 // //                         <div>
 // //                             <p className="text-gray-500 text-sm">Revenue</p>
@@ -59,7 +59,7 @@
 // //                 </div>
 
 // //                 {/* Card 4 */}
-// //                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
+// //                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
 // //                     <div className="flex items-center justify-between">
 // //                         <div>
 // //                             <p className="text-gray-500 text-sm">Customers</p>
@@ -71,7 +71,7 @@
 // //             </div>
 
 // //             {/* Sales Chart */}
-// //             <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+// //             <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100">
 // //                 <h2 className="text-xl font-semibold mb-6 text-gray-800">Sales Overview</h2>
 // //                 <ResponsiveContainer width="100%" height={320}>
 // //                     <BarChart data={data}>
@@ -150,13 +150,13 @@
 //     const lowStockProducts = products?.filter(p => p.stock < 10).length;
 
 //     return (
-//         <div className="p-6">
+//         <div className="px-3 py-4 sm:p-6">
 //             <h1 className="text-3xl font-bold mb-8 text-gray-800">Dashboard Overview</h1>
 
 //             {/* Stats Cards */}
-//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gapx-3 py-4 sm:p-6 mb-10">
 //                 {/* Total Products */}
-//                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
+//                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
 //                     <div className="flex items-center justify-between">
 //                         <div>
 //                             <p className="text-gray-500 text-sm">Total Products</p>
@@ -177,7 +177,7 @@
 //                 </div>
 
 //                 {/* Total Orders */}
-//                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
+//                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
 //                     <div className="flex items-center justify-between">
 //                         <div>
 //                             <p className="text-gray-500 text-sm">Total Orders</p>
@@ -197,7 +197,7 @@
 //                 </div>
 
 //                 {/* Revenue */}
-//                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
+//                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
 //                     <div className="flex items-center justify-between">
 //                         <div>
 //                             <p className="text-gray-500 text-sm">Revenue</p>
@@ -217,7 +217,7 @@
 //                 </div>
 
 //                 {/* Customers */}
-//                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
+//                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100 hover:shadow-lg transition">
 //                     <div className="flex items-center justify-between">
 //                         <div>
 //                             <p className="text-gray-500 text-sm">Customers</p>
@@ -240,7 +240,7 @@
 //             {/* Charts Section */}
 //             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 //                 {/* Sales Overview Chart */}
-//                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+//                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100">
 //                     <h2 className="text-xl font-semibold mb-6 text-gray-800">
 //                         Monthly Sales Overview
 //                     </h2>
@@ -279,7 +279,7 @@
 //                 </div>
 
 //                 {/* Recent Activity / Quick Stats */}
-//                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+//                 <div className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-md border border-gray-100">
 //                     <h2 className="text-xl font-semibold mb-6 text-gray-800">
 //                         Quick Stats
 //                     </h2>
@@ -431,15 +431,15 @@ export default function Dashboard() {
 
   /* -------------------- UI -------------------- */
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:px-3 py-4 sm:p-6">
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-800">
         Dashboard Overview
       </h1>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gapx-3 py-4 sm:p-6 mb-10">
         {/* Total Products */}
-        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border">
+        <div className="bg-white rounded-xl p-4 sm:px-3 py-4 sm:p-6 shadow-md border">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-gray-500 text-xs sm:text-sm">Total Products</p>
@@ -455,7 +455,7 @@ export default function Dashboard() {
         </div>
 
         {/* Orders */}
-        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border">
+        <div className="bg-white rounded-xl p-4 sm:px-3 py-4 sm:p-6 shadow-md border">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-gray-500 text-xs sm:text-sm">Total Orders</p>
@@ -468,7 +468,7 @@ export default function Dashboard() {
         </div>
 
         {/* Revenue */}
-        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border">
+        <div className="bg-white rounded-xl p-4 sm:px-3 py-4 sm:p-6 shadow-md border">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-gray-500 text-xs sm:text-sm">Revenue</p>
@@ -481,7 +481,7 @@ export default function Dashboard() {
         </div>
 
         {/* Customers */}
-        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border">
+        <div className="bg-white rounded-xl p-4 sm:px-3 py-4 sm:p-6 shadow-md border">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-gray-500 text-xs sm:text-sm">Customers</p>
@@ -495,9 +495,9 @@ export default function Dashboard() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gapx-3 py-4 sm:p-6 sm:gap-8">
         {/* Monthly Sales */}
-        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border overflow-x-auto min-w-0">
+        <div className="bg-white rounded-xl p-4 sm:px-3 py-4 sm:p-6 shadow-md border overflow-x-auto min-w-0">
           <h2 className="text-xl font-semibold mb-6">Monthly Sales Overview</h2>
 
           {loadingChart ? (
@@ -521,7 +521,7 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-md border">
+        <div className="bg-white rounded-xl p-4 sm:px-3 py-4 sm:p-6 shadow-md border">
           <h2 className="text-xl font-semibold mb-6">Quick Stats</h2>
 
           <div className="space-y-4">

@@ -204,7 +204,7 @@ export default function AdminGallery() {
                                     <XMarkIcon className="w-5 h-5" />
                                 </button>
                             </div>
-                            <form onSubmit={handleSubmit} className="grid gap-5 p-4 sm:grid-cols-2 sm:p-6">
+                            <form onSubmit={handleSubmit} className="grid gap-5 p-4 sm:grid-cols-2 sm:px-3 py-4 sm:p-6">
                                 {/* Image Upload */}
                                 <div
                                     onClick={() => fileRef.current?.click()}

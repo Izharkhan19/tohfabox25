@@ -77,7 +77,7 @@ export default function CustomRequest() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 min-h-screen py-12 px-2 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Header Section */}
         <div className="bg-gray-900 px-6 py-8 sm:p-10 text-center">

@@ -4,9 +4,9 @@ import Link from "next/link";
 
 const TermsOfService = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">
-        <h1 className="text-3xl font-serif font-bold text-gray-900 mb-6">Terms of Service</h1>
+    <div className="min-h-screen bg-gray-50 py-8 md:py-12 px-2 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 md:p-12">
+        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-gray-900 mb-6">Terms of Service</h1>
         
         <div className="space-y-6 text-gray-600 leading-relaxed">
           <p>Last updated: {new Date().toLocaleDateString()}</p>

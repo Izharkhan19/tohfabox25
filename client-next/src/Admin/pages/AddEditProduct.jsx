@@ -26,7 +26,7 @@
 //                 <form onSubmit={handleSubmit}>
 
 //                     {/* Product Basic Info */}
-//                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                     <div className="grid grid-cols-1 md:grid-cols-2 gapx-3 py-4 sm:p-6">
 //                         <div>
 //                             <label className="block mb-1 font-semibold text-gray-700">
 //                                 Product Name
@@ -94,7 +94,7 @@
 //                             Upload Images
 //                         </label>
 
-//                         <div className="border-2 border-dashed border-gray-300 p-6 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative">
+//                         <div className="border-2 border-dashed border-gray-300 px-3 py-4 sm:p-6 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative">
 //                             <input
 //                                 type="file"
 //                                 multiple
@@ -449,7 +449,7 @@ export default function AddEditProduct() {
   const getImageId = (img) => img._id || img.public_id || img.name;
 
   return (
-    <div className="max-w-5xl mx-auto p-4 sm:p-6">
+    <div className="max-w-5xl mx-auto p-4 sm:px-3 py-4 sm:p-6">
       <div className="flex items-center gap-4 mb-6 sm:mb-8">
         <button
           onClick={() => router.push("/admin/products")}
@@ -473,7 +473,7 @@ export default function AddEditProduct() {
       ) : (
         <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-md border border-gray-100 mt-4 sm:mt-0">
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gapx-3 py-4 sm:p-6">
               <div>
                 <label className="block mb-1 font-semibold text-gray-700">
                   Product Name
@@ -571,7 +571,7 @@ export default function AddEditProduct() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gapx-3 py-4 sm:p-6 mt-6">
               {/* Occasions */}
               <div>
                 <label className="block mb-2 font-semibold text-gray-700">Occasions</label>
@@ -613,7 +613,7 @@ export default function AddEditProduct() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gapx-3 py-4 sm:p-6 mt-6">
               {/* Weight */}
               <div>
                 <label className="block mb-1 font-semibold text-gray-700">Weight</label>
@@ -704,7 +704,7 @@ export default function AddEditProduct() {
                 Sub Images (Gallery)
               </label>
               
-              <div className="border-2 border-dashed border-gray-300 p-4 sm:p-6 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
+              <div className="border-2 border-dashed border-gray-300 p-4 sm:px-3 py-4 sm:p-6 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
                 <input
                   type="file"
                   multiple

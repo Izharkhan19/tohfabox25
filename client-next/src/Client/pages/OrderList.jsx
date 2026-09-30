@@ -221,7 +221,7 @@ export default function OrderList() {
 
                                             <div className="flex items-center justify-between w-full sm:w-auto sm:text-right gap-4">
                                                 <div>
-                                                    <p className="text-xl font-black text-[#12343b]">
+                                                    <p className="text-base sm:text-xl font-black text-[#12343b]">
                                                         ₹{Number(order.total || 0).toFixed(2)}
                                                     </p>
                                                     <p className="text-[10px] uppercase tracking-widest font-bold mt-0.5 text-gray-400">

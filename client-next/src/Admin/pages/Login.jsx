@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 // import { API_URL } from "../../services/Apiroute";
 // import { commonService } from "../../utils/commonService";
 import { loginUser } from "../../api-services/apiService";
+import { InputText } from "primereact/inputtext";
+import { Password } from "primereact/password";
+import { Button } from "primereact/button";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -65,7 +68,7 @@ export default function Login() {
 
         <div className="mb-4">
           <label className="text-sm text-gray-300 mb-1 block">Email</label>
-          <input
+          <InputText
             type="email"
             placeholder="Enter email"
             value={email}
@@ -77,38 +80,34 @@ export default function Login() {
 
         <div className="mb-6">
           <label className="text-sm text-gray-300 mb-1 block">Password</label>
-          <input
-            type="password"
-            placeholder="Enter password"
+          <Password
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            feedback={false}
+            toggleMask
+            placeholder="Enter password"
+            inputClassName="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full"
             required
           />
         </div>
 
-        <button
+        <Button
+          label="Login"
+          icon={loading ? "pi pi-spin pi-spinner" : "pi pi-sign-in"}
           disabled={loading}
           onClick={handleLogin}
           type="submit"
-          aria-busy={loading}
-          className="w-full bg-blue-600 py-3 rounded-lg text-white font-semibold hover:bg-blue-700 transition shadow-md"
-        >
-          {loading ? (
-            <span className="inline-flex items-center justify-center gap-2" aria-live="polite">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
-              Signing in...
-            </span>
-          ) : "Login"}
-        </button>
+          className="w-full bg-blue-600 border-none py-3 rounded-lg text-white font-semibold hover:bg-blue-700 transition shadow-md flex justify-center"
+        />
 
-        <button
+        <Button
+          label="Go to Client Login"
           type="button"
+          outlined
           onClick={() => router.push("/login")}
-          className="w-full mt-4 bg-transparent border border-white/40 py-3 rounded-lg text-white font-semibold hover:bg-white/10 transition"
-        >
-          Go to Client Login
-        </button>
+          className="w-full mt-4 border border-white/40 bg-transparent text-white py-3 rounded-lg font-semibold hover:bg-white/10 transition flex justify-center"
+        />
 
         {/* <p className="text-sm text-center mt-5 text-gray-300">
           Demo: admin@example.com / admin123

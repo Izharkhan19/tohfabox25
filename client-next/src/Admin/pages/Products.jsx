@@ -109,7 +109,7 @@ export default function Products() {
 
   /* -------------------- UI -------------------- */
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:px-3 py-4 sm:p-6">
       {/* Top Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4 sm:mb-6">
         {/* Search Input */}

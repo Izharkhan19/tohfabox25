@@ -153,15 +153,15 @@ function QuickOrderModal({ item, onClose }) {
                     <button
                       type="button"
                       onClick={() => setForm((p) => ({ ...p, quantity: Math.max(1, p.quantity - 1) }))}
-                      className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition text-lg font-bold"
+                      className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition text-sm sm:text-lg font-bold"
                     >
                       −
                     </button>
-                    <span className="w-10 text-center text-lg font-bold text-gray-800">{form.quantity}</span>
+                    <span className="w-10 text-center text-sm sm:text-lg font-bold text-gray-800">{form.quantity}</span>
                     <button
                       type="button"
                       onClick={() => setForm((p) => ({ ...p, quantity: p.quantity + 1 }))}
-                      className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition text-lg font-bold"
+                      className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition text-sm sm:text-lg font-bold"
                     >
                       +
                     </button>

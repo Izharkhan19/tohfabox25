@@ -64,7 +64,7 @@ export default function ForgotPassword() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-bold text-green-800 mb-2">Request Received</h3>
+                            <h3 className="text-sm sm:text-lg font-bold text-green-800 mb-2">Request Received</h3>
                             <p className="text-green-700 text-sm">
                                 If an account exists for {email}, you will receive reset instructions shortly.
                             </p>

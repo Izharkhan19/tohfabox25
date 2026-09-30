@@ -71,7 +71,7 @@ export default function ResetPassword() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-bold text-green-800 mb-2">Success!</h3>
+                            <h3 className="text-sm sm:text-lg font-bold text-green-800 mb-2">Success!</h3>
                             <p className="text-green-700 text-sm">{success}</p>
                         </div>
                     </div>

@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { loginUser } from '../../api-services/apiService';
+import { InputText } from 'primereact/inputtext';
+import { Password } from 'primereact/password';
+import { Button } from 'primereact/button';
+import { Checkbox } from 'primereact/checkbox';
 
 export default function Login() {
     const router = useRouter();
@@ -88,8 +92,7 @@ export default function Login() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-2">Email Address or Phone Number</label>
-                            <input
-                                type="text"
+                            <InputText
                                 required
                                 className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
                                 placeholder="you@example.com or +1 (555) 000-0000"
@@ -100,62 +103,43 @@ export default function Login() {
 
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-2">Password</label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    required
-                                    className="w-full px-5 py-4 pr-14 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
-                                    placeholder="••••••••"
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword((visible) => !visible)}
-                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                    title={showPassword ? 'Hide password' : 'Show password'}
-                                    className="absolute inset-y-0 right-0 flex items-center px-5 text-gray-500 hover:text-resin-blue focus:outline-none focus:ring-2 focus:ring-inset focus:ring-resin-blue rounded-r-xl"
-                                >
-                                    {showPassword ? (
-                                        <EyeSlashIcon className="w-5 h-5" aria-hidden="true" />
-                                    ) : (
-                                        <EyeIcon className="w-5 h-5" aria-hidden="true" />
-                                    )}
-                                </button>
-                            </div>
+                            <Password
+                                required
+                                feedback={false}
+                                toggleMask
+                                inputClassName="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
+                                className="w-full"
+                                placeholder="••••••••"
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            />
                         </div>
 
                         <div className="flex items-center justify-between">
-                            <label className="flex items-center">
-                                <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-resin-blue focus:ring-resin-blue" />
-                                <span className="ml-2 text-sm text-gray-600">Remember me</span>
-                            </label>
+                            <div className="flex items-center">
+                                <Checkbox inputId="rememberMe" className="mr-2 text-resin-blue" />
+                                <label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer">Remember me</label>
+                            </div>
                             <Link href="/forgot-password" className="text-sm font-bold text-resin-blue hover:text-resin-dark transition-colors">
                                 Forgot password?
                             </Link>
                         </div>
 
-                        <button
+                        <Button
                             type="submit"
+                            label={loading ? "Signing in..." : "Sign In"}
+                            icon={loading ? "pi pi-spin pi-spinner" : "pi pi-sign-in"}
                             disabled={loading}
-                            aria-busy={loading}
-                            className="w-full bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold h-14 rounded-full tracking-widest uppercase text-sm transition-all shadow-md mt-4"
-                        >
-                            {loading ? (
-                                <span className="inline-flex items-center justify-center gap-2" aria-live="polite">
-                                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
-                                    Signing in...
-                                </span>
-                            ) : 'Sign In'}
-                        </button>
+                            className="w-full bg-resin-dark border-none hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold h-14 rounded-full tracking-widest uppercase text-sm transition-all shadow-md mt-4 justify-center"
+                        />
 
-                        <button
+                        <Button
                             type="button"
+                            label="Login as Admin"
+                            outlined
                             onClick={() => router.push('/admin/login')}
-                            className="w-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-bold h-12 rounded-full tracking-widest uppercase text-xs transition-all mt-3"
-                        >
-                            Login as Admin
-                        </button>
+                            className="w-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-bold h-12 rounded-full tracking-widest uppercase text-xs transition-all mt-3 justify-center"
+                        />
                     </form>
 
                     <p className="mt-8 text-center text-sm text-gray-600">

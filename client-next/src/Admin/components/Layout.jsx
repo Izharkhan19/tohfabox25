@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import AdminSidebar from "./Sidebar";
 import { ArrowRightOnRectangleIcon, Bars3Icon, GlobeAltIcon } from "@heroicons/react/24/outline";
 
-export default function AdminLayout() {
+export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,7 +20,7 @@ export default function AdminLayout() {
     if (pathname === "/admin") {
       router.push("/admin", { replace: true });
     }
-  }, [pathname, navigate]);
+  }, [pathname, router]);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -97,7 +97,7 @@ export default function AdminLayout() {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50">
-          <Outlet /> 
+          {children} 
         </main>
       </div>
     </div>

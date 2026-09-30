@@ -391,19 +391,19 @@ export default function Gallery() {
                 >
                   <div className="flex flex-col gap-2">
                     <div>
-                      <p className="text-white font-black text-sm md:text-base line-clamp-1">{item.title}</p>
+                      <p className="text-white font-black text-sm md:text-base line-clamp-2 leading-snug mb-1">{item.title}</p>
                       <p className="text-[#e1b382] font-bold text-xs md:text-sm">
                         {item.price > 0 ? `₹${Number(item.price).toLocaleString("en-IN")}` : "Price on inquiry"}
                       </p>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-1 items-center">
                       {/* Quick Order Button */}
                       <button
                         onClick={() => setOrderItem(item)}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#e1b382] text-[#12343b] text-xs font-black hover:bg-[#c89666] transition-colors"
+                        className="flex items-center justify-center gap-1.5 py-1.5 px-3 md:px-4 rounded-xl bg-[#e1b382] text-[#12343b] text-[11px] md:text-xs font-black hover:bg-[#c89666] transition-colors whitespace-nowrap"
                       >
-                        <ShoppingBagIcon className="w-3.5 h-3.5" />
+                        <ShoppingBagIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         <span>Quick Order</span>
                       </button>
 

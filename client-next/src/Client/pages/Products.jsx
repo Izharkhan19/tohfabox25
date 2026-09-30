@@ -459,15 +459,18 @@ export default function Products() {
                           <div
                             className={`h-full group bg-white rounded-3xl shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all duration-300 overflow-hidden border border-[#c89666]/20 flex ${viewMode === 'list' ? 'flex-row h-48 md:h-64' : 'flex-col'}`}
                           >
-                            <Link href={`/products/${product._id}`} className={`block overflow-hidden relative bg-gray-100 ${viewMode === 'list' ? 'w-2/5 md:w-1/3' : 'w-full aspect-square'}`}>
-                              <img referrerPolicy="no-referrer"
-                                src={
-                                  product.images?.[0]?.url ||
-                                  "https://via.placeholder.com/600"
-                                }
-                                alt={product.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                              />
+                            <Link href={`/products/${product._id}`} className={`block overflow-hidden relative bg-gray-100 ${viewMode === 'list' ? 'w-2/5 md:w-1/3' : 'w-full aspect-square flex items-center justify-center'}`}>
+                              {(product.images && product.images.length > 0 && product.images[0].url) ? (
+                                <img referrerPolicy="no-referrer"
+                                  src={product.images[0].url}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                />
+                              ) : (
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400 text-[10px] md:text-xs font-black uppercase tracking-widest">
+                                  No Image
+                                </div>
+                              )}
                               {!product.stock && (
                                 <div className="absolute inset-0 bg-[#12343b]/70 backdrop-blur-sm flex items-center justify-center z-20">
                                   <span className="bg-white/10 text-white border border-white/30 px-4 md:px-6 py-2 rounded-full font-black tracking-widest uppercase text-xs md:text-sm shadow-lg">

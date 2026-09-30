@@ -401,11 +401,11 @@ export default function Gallery() {
                       </p>
                     </div>
 
-                    <div className="flex gap-2 mt-1 items-center">
+                    <div className="flex flex-wrap gap-1.5 mt-1 items-center">
                       {/* Quick Order Button */}
                       <button
                         onClick={() => setOrderItem(item)}
-                        className="flex items-center justify-center gap-1.5 py-1.5 px-3 md:px-4 rounded-xl bg-[#e1b382] text-[#12343b] text-[11px] md:text-xs font-black hover:bg-[#c89666] transition-colors whitespace-nowrap"
+                        className="flex-1 min-w-[100px] flex items-center justify-center gap-1.5 py-1.5 px-2 md:px-4 rounded-xl bg-[#e1b382] text-[#12343b] text-[11px] md:text-xs font-black hover:bg-[#c89666] transition-colors whitespace-nowrap"
                       >
                         <ShoppingBagIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         <span>Quick Order</span>
@@ -414,14 +414,14 @@ export default function Gallery() {
                       {/* View Details Button */}
                       <button
                         onClick={() => setViewDetailsItem(item)}
-                        className="w-8 h-8 md:w-9 md:h-9 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-[#12343b] transition-colors"
+                        className="shrink-0 w-8 h-8 md:w-9 md:h-9 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-[#12343b] transition-colors"
                         title="View Details"
                       >
                         <EyeIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </button>
 
                       {/* Share Button */}
-                      <div className="relative">
+                      <div className="relative shrink-0">
                         <button
                           onClick={(e) => handleShareClick(e, item)}
                           className="w-8 h-8 md:w-9 md:h-9 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-[#e1b382] hover:text-[#12343b] transition-colors"
@@ -463,13 +463,15 @@ export default function Gallery() {
         visible={!!viewDetailsItem}
         onHide={() => setViewDetailsItem(null)}
         header={viewDetailsItem?.title || "Details"}
-        className="w-[95vw] sm:max-w-md rounded-2xl overflow-hidden shadow-2xl"
+        className="w-[95vw] sm:max-w-md rounded-2xl shadow-2xl bg-white"
+        contentClassName="bg-white pt-2 pb-4 px-4 sm:px-6"
+        headerClassName="bg-white px-4 sm:px-6 py-4 rounded-t-2xl border-b border-gray-100"
         breakpoints={{ '960px': '75vw', '640px': '95vw' }}
         dismissableMask
         draggable={false}
       >
         {viewDetailsItem && (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 bg-white">
             <img 
               src={viewDetailsItem.image?.url} 
               alt={viewDetailsItem.title} 

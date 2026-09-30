@@ -10,6 +10,8 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 
 import {
   ShareIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
   EyeIcon,
   ShoppingBagIcon,
   XMarkIcon,
@@ -261,6 +263,8 @@ export default function Gallery() {
   const [openShareId, setOpenShareId] = useState(null);
   const [viewDetailsItem, setViewDetailsItem] = useState(null);
   const [orderItem, setOrderItem] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("featured");
 
   useEffect(() => {
     const fetchGalleryAndProducts = async () => {
@@ -327,9 +331,20 @@ export default function Gallery() {
     setOpenShareId(openShareId === item._id ? null : item._id);
   };
 
-  const breakpointCols = { default: 4, 1280: 4, 1024: 3, 768: 3, 640: 2, 0: 2 };
+    const breakpointCols = { default: 4, 1280: 4, 1024: 3, 768: 3, 640: 2, 0: 2 };
 
-  const slides = items.map((item) => ({ src: item.image?.url, alt: item.title }));
+  const filteredItems = items
+    .filter((item) =>
+      (item.title || "").toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortBy === "price-low") return (a.price || 0) - (b.price || 0);
+      if (sortBy === "price-high") return (b.price || 0) - (a.price || 0);
+      if (sortBy === "name") return (a.title || "").localeCompare(b.title || "");
+      return 0;
+    });
+
+  const slides = filteredItems.map((item) => ({ src: item.image?.url, alt: item.title }));
 
   return (
     <>
@@ -351,13 +366,66 @@ export default function Gallery() {
         </div>
       </section>
 
+      
+      {/* Sleek Mobile & Desktop Filters Bar */}
+      <section className="sticky top-[56px] md:top-[76px] bg-[#fdfbf9]/95 backdrop-blur-xl shadow-md z-30 py-3 md:py-4 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+            {/* Search Input */}
+            <div className="relative w-full md:w-96 group">
+              <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#2d545e] transition-colors" />
+              <input
+                type="text"
+                placeholder="Search art pieces..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 focus:border-[#2d545e] transition-all text-sm font-medium text-[#12343b] placeholder-gray-400"
+              />
+            </div>
+
+            {/* Mobile Actions Grid */}
+            <div className="grid grid-cols-2 md:hidden w-full gap-2">
+               <button 
+                  className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm active:scale-95 transition-transform"
+               >
+                 <FunnelIcon className="w-4 h-4 text-[#e1b382]" /> Categories
+               </button>
+               <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 appearance-none text-center"
+                >
+                  <option value="featured">Featured First</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="name">Alphabetical</option>
+                </select>
+            </div>
+
+            {/* Desktop Sort */}
+            <div className="hidden md:flex justify-end gap-4 items-center">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-6 py-2.5 bg-white border border-gray-200 rounded-2xl font-bold text-sm text-[#12343b] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 cursor-pointer transition-all"
+              >
+                <option value="featured">Sort: Featured</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="name">Alphabetical</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Gallery Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20 bg-[#fdfbf9]">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <LogoLoader label="Loading gallery..." />
           </div>
-        ) : items.length === 0 ? (
+        ) : filteredItems.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-2xl font-black text-[#12343b] mb-3">Nothing here yet</p>
             <p className="text-gray-500 font-medium">Our gallery is being curated. Check back soon!</p>
@@ -368,7 +436,7 @@ export default function Gallery() {
             className="flex w-auto -ml-3 md:-ml-4"
             columnClassName="pl-3 md:pl-4 bg-clip-padding"
           >
-            {items.map((item, idx) => (
+            {filteredItems.map((item, idx) => (
               <motion.div
                 key={item._id}
                 initial={{ opacity: 0, y: 20 }}

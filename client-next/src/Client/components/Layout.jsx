@@ -378,7 +378,7 @@ export default function ClientLayout({ children }) {
             )}
 
             {/* Main Content */}
-            <main className="flex-1 mt-20 md:mt-24">
+            <main className="flex-1 w-full mt-20 md:mt-24">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={pathname}
@@ -386,7 +386,7 @@ export default function ClientLayout({ children }) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        className="h-full"
+                        className="min-h-full flex flex-col"
                     >
                         {children}
                     </motion.div>

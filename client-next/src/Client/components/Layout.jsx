@@ -404,7 +404,7 @@ export default function ClientLayout({ children }) {
                             </h2>
                         </div>
                         <p className="text-[#fdfbf9]/70 font-light leading-relaxed text-lg max-w-md mx-auto lg:mx-0">
-                            Handcrafted luxury. We create mesmerizing resin art and personalized gifts that capture beautiful memories in perfect clarity.
+                            Handcrafted luxury. We create mesmerizing crochet art and personalized gifts that capture beautiful memories in perfect clarity.
                         </p>
                     </div>
                     <div>

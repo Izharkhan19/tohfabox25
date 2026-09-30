@@ -188,7 +188,7 @@ export default function Wishlist() {
             Collection is Empty
           </h2>
           <p className="text-gray-500 mb-10">
-            Save your favorite resin art pieces here to easily find them later.
+            Save your favorite crochet art pieces here to easily find them later.
           </p>
           <Link
             to="/products"

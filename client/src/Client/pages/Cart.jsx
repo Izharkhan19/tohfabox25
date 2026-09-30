@@ -221,7 +221,7 @@ export default function Cart() {
             Your cart is empty
           </h2>
           <p className="text-gray-500 mb-10">
-            Discover unique resin art pieces to add to your collection.
+            Discover unique crochet art pieces to add to your collection.
           </p>
           <Link
             to="/products"

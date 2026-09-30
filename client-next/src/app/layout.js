@@ -16,19 +16,19 @@ export const metadata = {
   manifest: "/manifest.json",
   metadataBase: new URL('https://artistarycrafts.vercel.app'),
   title: {
-    default: "Artistary Crafts - Luxury Resin Art & Bespoke Gifts",
+    default: "Artistary Crafts - Luxury Crochet Art & Bespoke Gifts",
     template: "%s | Artistary Crafts",
   },
-  description: "Discover handcrafted resin art, personalized gift hampers, and timeless custom creations at Artistary Crafts. Perfect gifts for every special occasion.",
-  keywords: ["Resin Art", "Handcrafted Gifts", "Gift Hampers", "Custom Resin Creations", "Artistary Crafts", "Luxury Gifts", "Personalized Gifts", "Home Decor"],
+  description: "Discover handcrafted crochet art, personalized gift hampers, and timeless custom creations at Artistary Crafts. Perfect gifts for every special occasion.",
+  keywords: ["Crochet Art", "Handcrafted Gifts", "Gift Hampers", "Custom Crochet Creations", "Artistary Crafts", "Luxury Gifts", "Personalized Gifts", "Home Decor"],
   authors: [{ name: "Artistary Crafts" }],
   creator: "Artistary Crafts",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://artistarycrafts.vercel.app",
-    title: "Artistary Crafts - Luxury Resin Art & Bespoke Gifts",
-    description: "Discover handcrafted resin art, personalized gift hampers, and timeless custom creations at Artistary Crafts. Perfect gifts for every special occasion.",
+    title: "Artistary Crafts - Luxury Crochet Art & Bespoke Gifts",
+    description: "Discover handcrafted crochet art, personalized gift hampers, and timeless custom creations at Artistary Crafts. Perfect gifts for every special occasion.",
     siteName: "Artistary Crafts",
     images: [
       {
@@ -41,8 +41,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Artistary Crafts - Luxury Resin Art & Bespoke Gifts",
-    description: "Discover handcrafted resin art, personalized gift hampers, and timeless custom creations at Artistary Crafts.",
+    title: "Artistary Crafts - Luxury Crochet Art & Bespoke Gifts",
+    description: "Discover handcrafted crochet art, personalized gift hampers, and timeless custom creations at Artistary Crafts.",
     images: ["/logo.png"],
   },
   robots: {

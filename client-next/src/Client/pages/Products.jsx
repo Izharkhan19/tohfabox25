@@ -173,7 +173,7 @@ export default function Products() {
             The <span className="text-[#e1b382] italic">Collection</span>
           </h1>
           <p className="text-base md:text-xl text-[#fdfbf9]/90 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Explore our curated gallery of exquisite resin art and personalized gifts, handcrafted to perfection.
+            Explore our curated gallery of exquisite crochet art and personalized gifts, handcrafted to perfection.
           </p>
         </div>
       </section>

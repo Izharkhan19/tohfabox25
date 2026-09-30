@@ -45,7 +45,7 @@ export default function OrderSuccess() {
                 </h1>
                 
                 <p className="text-gray-500 mb-8 text-lg leading-relaxed">
-                    Thank you for your purchase. Your handcrafted resin masterpiece will soon be on its way to you. We've sent a confirmation email with your order details.
+                    Thank you for your purchase. Your handcrafted crochet masterpiece will soon be on its way to you. We've sent a confirmation email with your order details.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">

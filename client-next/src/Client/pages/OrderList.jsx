@@ -102,7 +102,7 @@ export default function OrderList() {
                 <div className="max-w-md w-full bg-white rounded-3xl p-10 text-center shadow-[0_4px_20px_rgba(45,84,94,0.08)] border border-[#c89666]/20">
                     <ShoppingBagIcon className="w-16 h-16 text-gray-300 mx-auto mb-6" />
                     <h2 className="text-3xl font-serif text-[#12343b] mb-4">Sign In Required</h2>
-                    <p className="text-gray-500 mb-8 font-medium">Please sign in to view your account and track your bespoke resin art purchases.</p>
+                    <p className="text-gray-500 mb-8 font-medium">Please sign in to view your account and track your bespoke crochet art purchases.</p>
                     <Link
                         href="/login"
                         className="block w-full bg-[#12343b] hover:bg-[#2d545e] text-white font-bold h-14 leading-[56px] rounded-2xl tracking-widest uppercase text-sm transition-all shadow-md"

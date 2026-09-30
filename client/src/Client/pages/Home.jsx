@@ -76,9 +76,9 @@ export default function Home() {
     // {
     //     image: "https://images.unsplash.com/photo-1584305574600-0cc9ebac3fc9?w=1920&q=80",
     //     title: "Timeless Custom Art",
-    //     subtitle: "Beautiful resin clocks, frames, and hampers crafted with love.",
+    //     subtitle: "Beautiful crochet clocks, frames, and hampers crafted with love.",
     //     cta: "View Custom Art",
-    //     link: "/products?category=resin"
+    //     link: "/products?category=crochet"
     // },
     {
         image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1920&q=80",
@@ -104,7 +104,7 @@ export default function Home() {
   }, [heroSlides.length]);
 
   const categories = [
-    { name: "Resin Clocks", icon: ClockIcon },
+    { name: "Crochet Decor", icon: ClockIcon },
     { name: "Photo Frames", icon: PhotoIcon },
     { name: "Gift Hampers", icon: GiftIcon },
     { name: "Custom Art", icon: SparklesIcon },

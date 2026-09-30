@@ -108,7 +108,7 @@ export default function ForgotPassword() {
                         e.currentTarget.onerror = null;
                         e.currentTarget.src = '/logo.png';
                     }}
-                    alt="Resin Art Background" 
+                    alt="Crochet Art Background" 
                     className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-resin-dark/30 mix-blend-multiply"></div>

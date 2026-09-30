@@ -570,7 +570,7 @@ export default function Categories() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#12343b] outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                  placeholder="e.g. Resin Clocks"
+                  placeholder="e.g. Crochet Decor"
                   required
                   autoFocus
                 />

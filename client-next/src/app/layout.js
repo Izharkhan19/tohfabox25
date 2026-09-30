@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  manifest: "/manifest.json",
   metadataBase: new URL('https://artistarycrafts.vercel.app'),
   title: {
     default: "Artistary Crafts - Luxury Resin Art & Bespoke Gifts",

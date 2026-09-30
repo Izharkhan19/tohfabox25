@@ -13,8 +13,55 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Artistary Crafts",
-  description: "Handcrafted resin art, bespoke gift hampers, and timeless creations for every occasion.",
+  metadataBase: new URL('https://artistarycrafts.vercel.app'),
+  title: {
+    default: "Artistary Crafts - Luxury Resin Art & Bespoke Gifts",
+    template: "%s | Artistary Crafts",
+  },
+  description: "Discover handcrafted resin art, personalized gift hampers, and timeless custom creations at Artistary Crafts. Perfect gifts for every special occasion.",
+  keywords: ["Resin Art", "Handcrafted Gifts", "Gift Hampers", "Custom Resin Creations", "Artistary Crafts", "Luxury Gifts", "Personalized Gifts", "Home Decor"],
+  authors: [{ name: "Artistary Crafts" }],
+  creator: "Artistary Crafts",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://artistarycrafts.vercel.app",
+    title: "Artistary Crafts - Luxury Resin Art & Bespoke Gifts",
+    description: "Discover handcrafted resin art, personalized gift hampers, and timeless custom creations at Artistary Crafts. Perfect gifts for every special occasion.",
+    siteName: "Artistary Crafts",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Artistary Crafts",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Artistary Crafts - Luxury Resin Art & Bespoke Gifts",
+    description: "Discover handcrafted resin art, personalized gift hampers, and timeless custom creations at Artistary Crafts.",
+    images: ["/logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#12343b',
 };
 
 export default function RootLayout({ children }) {

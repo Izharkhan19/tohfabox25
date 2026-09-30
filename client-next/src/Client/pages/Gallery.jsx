@@ -10,6 +10,7 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 
 import {
   ShareIcon,
+  EyeIcon,
   ShoppingBagIcon,
   XMarkIcon,
   CheckCircleIcon,
@@ -31,6 +32,8 @@ import LogoLoader from "../../components/LogoLoader";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { toast } from "react-toastify";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
 
 /* ─────────────────────────────────────────────
    Quick Order Modal
@@ -256,6 +259,7 @@ export default function Gallery() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [openShareId, setOpenShareId] = useState(null);
+  const [viewDetailsItem, setViewDetailsItem] = useState(null);
   const [orderItem, setOrderItem] = useState(null);
 
   useEffect(() => {
@@ -407,6 +411,15 @@ export default function Gallery() {
                         <span>Quick Order</span>
                       </button>
 
+                      {/* View Details Button */}
+                      <button
+                        onClick={() => setViewDetailsItem(item)}
+                        className="w-8 h-8 md:w-9 md:h-9 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-[#12343b] transition-colors"
+                        title="View Details"
+                      >
+                        <EyeIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      </button>
+
                       {/* Share Button */}
                       <div className="relative">
                         <button
@@ -443,6 +456,55 @@ export default function Gallery() {
           </Masonry>
         )}
       </section>
+
+      
+      {/* View Details Dialog */}
+      <Dialog
+        visible={!!viewDetailsItem}
+        onHide={() => setViewDetailsItem(null)}
+        header={viewDetailsItem?.title || "Details"}
+        className="w-[95vw] sm:max-w-md rounded-2xl overflow-hidden shadow-2xl"
+        breakpoints={{ '960px': '75vw', '640px': '95vw' }}
+        dismissableMask
+        draggable={false}
+      >
+        {viewDetailsItem && (
+          <div className="flex flex-col gap-4">
+            <img 
+              src={viewDetailsItem.image?.url} 
+              alt={viewDetailsItem.title} 
+              className="w-full h-64 object-cover rounded-xl shadow-sm"
+            />
+            <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">{viewDetailsItem.title}</h3>
+                <p className="text-[#c89666] font-bold text-lg mb-3">
+                  {viewDetailsItem.price > 0 ? `₹${Number(viewDetailsItem.price).toLocaleString("en-IN")}` : "Price on inquiry"}
+                </p>
+                <div className="prose prose-sm text-gray-600">
+                    <p>{viewDetailsItem.description || "No description available for this masterpiece."}</p>
+                </div>
+            </div>
+            
+            <div className="mt-2 flex gap-3 pt-4 border-t border-gray-100">
+              <Button 
+                label="Close" 
+                outlined 
+                onClick={() => setViewDetailsItem(null)} 
+                className="flex-1 py-3 justify-center" 
+              />
+              <Button 
+                label="Quick Order" 
+                icon="pi pi-shopping-bag" 
+                onClick={() => {
+                  setOrderItem(viewDetailsItem);
+                  setViewDetailsItem(null);
+                }}
+                className="flex-1 py-3 justify-center bg-[#12343b] hover:bg-[#1a4b57] border-none text-white" 
+              />
+            </div>
+          </div>
+        )}
+      </Dialog>
 
       {/* Lightbox */}
       <Lightbox

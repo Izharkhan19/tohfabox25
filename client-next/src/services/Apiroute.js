@@ -1,6 +1,6 @@
 // // import { AsYouType } from "libphonenumber-js";
 
-// const BASEURL = import.meta.env.VITE_API_URL
+// const BASEURL = process.env.NEXT_PUBLIC_API_URL
 
 // export const API_URL = {
 //   AUTH: {

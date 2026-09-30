@@ -269,7 +269,7 @@ export default function AddEditProduct() {
     }
   }, [id, isEditMode]);
   const API_BASE_URL =
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));

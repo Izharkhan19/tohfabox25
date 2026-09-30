@@ -39,8 +39,8 @@ import moment from "moment";
 // // import verynegative from "../assets/images/verynegative-icon.svg";
 
 // const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-// const IP_INFO_KEY = import.meta.env.VITE_IP_INFO_API_KEY;
-// const IP_INFO_KEY1 = import.meta.env;
+// const IP_INFO_KEY = process.env.NEXT_PUBLIC_IP_INFO_API_KEY;
+// const IP_INFO_KEY1 = process.env;
 // export const commonService = {
 //   setItem,
 //   getItem,

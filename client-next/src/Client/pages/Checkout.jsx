@@ -101,7 +101,7 @@ export default function Checkout() {
   const total = subtotal + shippingCost - discount;
 
   const handleWhatsAppOrder = () => {
-    const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER || "919000000000"; // Fallback number
+    const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919000000000"; // Fallback number
     let message = "Hello! I would like to place an order for the following items:\n\n";
     
     cartItems.forEach((item, index) => {
@@ -219,7 +219,7 @@ export default function Checkout() {
       if (result.success) {
         if (paymentMethod === "razorpay" && result.data?.razorpayOrderId) {
           const options = {
-            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
             amount: result.data.amount,
             currency: result.data.currency,
             name: "Tohfabox25",

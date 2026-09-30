@@ -2,7 +2,7 @@
 // import axios from 'axios';
 
 // // Base URL - Change this according to your environment
-// const API_BASE_URL = import.meta.env.VITE_API_URL
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 // // Create axios instance
 // const api = axios.create({
@@ -84,7 +84,7 @@
 // src/api-services/api.js
 // import axios from "axios";
 
-// const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 // const api = axios.create({
 //     baseURL: API_BASE_URL,
@@ -171,8 +171,8 @@
 // src/api-services/api.js
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (
-    import.meta.env.DEV
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (
+    (process.env.NODE_ENV !== "production")
         ? "http://localhost:5000/api"
         : "https://tohfabox25.onrender.com/api"
 );
@@ -210,7 +210,7 @@ api.interceptors.response.use(undefined, async (error) => {
     const retryCount = config?._retryCount || 0;
     const method = config?.method?.toUpperCase();
     const isReadRequest = ["GET", "HEAD", "OPTIONS"].includes(method);
-    const isRetryable = isReadRequest && (!error.response || RETRYABLE_STATUS_CODES.has(status)) && !import.meta.env.DEV;
+    const isRetryable = isReadRequest && (!error.response || RETRYABLE_STATUS_CODES.has(status)) && !(process.env.NODE_ENV !== "production");
 
     if (config && isRetryable && retryCount < MAX_RETRIES) {
         config._retryCount = retryCount + 1;
@@ -343,7 +343,7 @@ export default api;
 
 // import axios from 'axios';
 
-// const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 // const api = axios.create({
 //     baseURL: API_BASE_URL,

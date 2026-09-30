@@ -1,8 +1,8 @@
 // import { ApiService } from "../utils/apicall";
 // import { commonService } from "../utils/commonService";
 
-// const API_URL = import.meta.env.VITE_API_URL;
-// const CHAT_FAST_API_URL = import.meta.env.VITE_BACKEND_PYTHON_BASE_URL;
+// const API_URL = process.env.NEXT_PUBLIC_API_URL;
+// const CHAT_FAST_API_URL = process.env.NEXT_PUBLIC_BACKEND_PYTHON_BASE_URL;
 
 // // auth apis
 // export const loginUser = async (loginData) => {

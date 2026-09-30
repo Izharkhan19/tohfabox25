@@ -220,7 +220,7 @@ export default function Checkout() {
             key: import.meta.env.VITE_RAZORPAY_KEY_ID,
             amount: result.data.amount,
             currency: result.data.currency,
-            name: "Tohfabox25",
+            name: "Artistary Crafts",
             description: "Order Payment",
             order_id: result.data.razorpayOrderId,
             handler: async function (response) {

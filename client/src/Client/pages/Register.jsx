@@ -221,7 +221,7 @@ export default function Register() {
                 />
                 <div className="absolute inset-0 bg-resin-dark/30 mix-blend-multiply"></div>
                 <div className="absolute inset-0 flex flex-col justify-end p-16">
-                    <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 drop-shadow-md mb-4">Start Your Tohfabox25 Collection</h2>
+                    <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 drop-shadow-md mb-4">Start Your Artistary Crafts Collection</h2>
                     <p className="text-resin-light text-lg font-light max-w-md">Join exclusive access to one-of-a-kind, handcrafted resin masterpieces before they sell out.</p>
                 </div>
             </div>

@@ -10,7 +10,7 @@ const PrivacyPolicy = () => {
         <div className="space-y-6 text-gray-600 leading-relaxed text-sm">
           <p className="font-semibold text-gray-800">Effective Date: {new Date().toLocaleDateString()}</p>
           
-          <p>Tohfabox ("we," "us," or "our") operates the Tohfabox website. This Privacy Policy informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
+          <p>Artistary ("we," "us," or "our") operates the Artistary website. This Privacy Policy informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
 
           <section>
             <h2 className="text-lg font-bold text-gray-800 mb-2">1. Information Collection and Use</h2>
@@ -23,7 +23,7 @@ const PrivacyPolicy = () => {
 
           <section>
             <h2 className="text-lg font-bold text-gray-800 mb-2">2. Google API Services User Data Policy</h2>
-            <p>Tohfabox's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" className="text-blue-600 hover:underline" target="_blank" rel="noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+            <p>Artistary's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" className="text-blue-600 hover:underline" target="_blank" rel="noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li><strong>Data Accessed:</strong> Our application accesses your Google Drive strictly for the purpose of uploading and managing product images for the store's inventory system.</li>
               <li><strong>Data Use:</strong> We use the Google Drive API solely to upload media files and retrieve public view links for those files to display products on our storefront.</li>

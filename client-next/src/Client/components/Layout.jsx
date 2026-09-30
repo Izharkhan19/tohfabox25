@@ -142,7 +142,7 @@ export default function ClientLayout({ children }) {
                     <div className="flex items-center gap-4">
                         <img referrerPolicy="no-referrer" src="/logo.png" alt="App Icon" className="w-12 h-12 rounded-xl object-cover shadow-inner" />
                         <div>
-                            <p className="font-bold text-white text-base leading-tight">Install Tohfabox25</p>
+                            <p className="font-bold text-white text-base leading-tight">Install Artistary Crafts</p>
                             <p className="text-sm text-[#e1b382] mt-0.5 font-medium">Faster, offline access!</p>
                         </div>
                     </div>
@@ -190,9 +190,9 @@ export default function ClientLayout({ children }) {
                                     });
                                 }}
                             >
-                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Tohfabox25 Logo" className="w-10 h-10 md:w-11 md:h-11 rounded-lg object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)] transform group-hover:scale-105 active:scale-95 transition-all duration-300" />
+                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-10 h-10 md:w-11 md:h-11 rounded-lg object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)] transform group-hover:scale-105 active:scale-95 transition-all duration-300" />
                                 <h1 className="text-2xl md:text-3xl font-extrabold text-[#e1b382] tracking-tight drop-shadow-md font-serif hidden sm:block">
-                                    Tohfabox<span className="text-white font-light">25</span>
+                                    Artistary Crafts
                                 </h1>
                             </Link>
                         </div>
@@ -292,7 +292,7 @@ export default function ClientLayout({ children }) {
                         <div className="p-6 border-b border-white/10 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <img referrerPolicy="no-referrer" src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl" />
-                                <span className="text-xl font-black text-[#e1b382] font-serif">Tohfabox25</span>
+                                <span className="text-xl font-black text-[#e1b382] font-serif">Artistary Crafts</span>
                             </div>
                             <button onClick={() => setMobileMenuOpen(false)} className="p-2 bg-white/5 rounded-full text-[#fdfbf9] hover:text-white hover:bg-[#c89666] transition-colors">
                                 <XMarkIcon className="w-6 h-6" />
@@ -398,9 +398,9 @@ export default function ClientLayout({ children }) {
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-8 text-center lg:text-left mb-16">
                     <div className="lg:col-span-2">
                         <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
-                            <img referrerPolicy="no-referrer" src="/logo.png" alt="Tohfabox25 Logo" className="w-14 h-14 rounded-xl object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)]" />
+                            <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-14 h-14 rounded-xl object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)]" />
                             <h2 className="text-4xl font-extrabold text-[#e1b382] drop-shadow-md font-serif">
-                                Tohfabox<span className="text-white font-light">25</span>
+                                Artistary Crafts
                             </h2>
                         </div>
                         <p className="text-[#fdfbf9]/70 font-light leading-relaxed text-lg max-w-md mx-auto lg:mx-0">
@@ -426,7 +426,7 @@ export default function ClientLayout({ children }) {
                     </div>
                 </div>
                 <div className="max-w-7xl mx-auto px-6 border-t border-brand-light/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-[#7a8f94] font-medium">
-                    <p>© {new Date().getFullYear()} Tohfabox25. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} Artistary Crafts. All rights reserved.</p>
                     <div className="flex gap-6 mt-6 md:mt-0">
                         <Link href="/privacy" className="hover:text-[#e1b382] transition-colors">Privacy Policy</Link>
                         <Link href="/terms" className="hover:text-[#e1b382] transition-colors">Terms of Service</Link>

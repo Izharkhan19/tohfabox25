@@ -61,7 +61,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className="backdrop-blur-xl bg-white/10 border border-white/20 px-10 py-12 rounded-2xl shadow-2xl w-96 text-white">
-        <h2 className="text-4xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Tohfabox25 Admin</h2>
+        <h2 className="text-4xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Artistary Crafts Admin</h2>
 
         <div className="mb-4">
           <label className="text-sm text-gray-300 mb-1 block">Email</label>

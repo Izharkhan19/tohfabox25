@@ -59,7 +59,7 @@ export default function Login() {
                     onError={(e) => {
                         e.currentTarget.onerror = null;
                     }}
-                    alt="Tohfabox25"
+                    alt="Artistary Crafts"
                     className="absolute inset-0 w-full h-full object-contain bg-white p-8"
                 />
             </div>

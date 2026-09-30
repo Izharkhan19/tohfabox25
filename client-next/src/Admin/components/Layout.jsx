@@ -1,6 +1,9 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import "primereact/resources/themes/lara-light-cyan/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 import AdminSidebar from "./Sidebar";
 import { ArrowRightOnRectangleIcon, Bars3Icon, GlobeAltIcon } from "@heroicons/react/24/outline";
 

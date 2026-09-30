@@ -45,6 +45,12 @@ export const metadata = {
     description: "Discover handcrafted crochet art, personalized gift hampers, and timeless custom creations at Artistary Crafts.",
     images: ["/logo.png"],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Artistary Crafts",
+    startupImage: ["/splash.png"],
+  },
   robots: {
     index: true,
     follow: true,

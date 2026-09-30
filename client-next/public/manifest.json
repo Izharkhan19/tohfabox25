@@ -1,23 +1,23 @@
 {
-  "name": "Artistary Crafts",
-  "short_name": "Artistary",
-  "description": "Discover handcrafted resin art, personalized gift hampers, and timeless custom creations at Artistary Crafts.",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#12343b",
-  "theme_color": "#12343b",
-  "icons": [
-    {
-      "src": "/logo.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ]
+    "name":  "Artistary Crafts",
+    "short_name":  "Artistary",
+    "description":  "Discover handcrafted resin art, personalized gift hampers, and timeless custom creations at Artistary Crafts.",
+    "start_url":  "/",
+    "display":  "standalone",
+    "background_color":  "#ffffff",
+    "theme_color":  "#12343b",
+    "icons":  [
+                  {
+                      "src":  "/logo.png",
+                      "sizes":  "192x192",
+                      "type":  "image/png",
+                      "purpose":  "maskable"
+                  },
+                  {
+                      "src":  "/logo.png",
+                      "sizes":  "512x512",
+                      "type":  "image/png",
+                      "purpose":  "any"
+                  }
+              ]
 }

@@ -29,7 +29,7 @@ import {
   XIcon,
 } from "react-share";
 
-import { getGalleryItems, placeGalleryOrder, getProducts } from "../../api-services/apiService";
+import { getGalleryItems, placeGalleryOrder, getProducts, getCategories } from "../../api-services/apiService";
 import LogoLoader from "../../components/LogoLoader";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -265,15 +265,20 @@ export default function Gallery() {
   const [orderItem, setOrderItem] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("featured");
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
     const fetchGalleryAndProducts = async () => {
       setLoading(true);
       try {
-        const [galleryRes, productsRes] = await Promise.all([
+        const [galleryRes, productsRes, categoriesRes] = await Promise.all([
           getGalleryItems(),
-          getProducts({ limit: 100 })
+          getProducts({ limit: 100 }),
+          getCategories()
         ]);
+        if (categoriesRes?.success) setCategories(categoriesRes.data?.data || []);
 
         let combinedItems = [];
 
@@ -297,7 +302,8 @@ export default function Gallery() {
                   description: cleanDesc,
                   price: product.price,
                   image: { url: img.url },
-                  isProductImage: true
+                  isProductImage: true,
+                  category: product.category?._id || product.category
                 });
               });
             }
@@ -335,7 +341,7 @@ export default function Gallery() {
 
   const filteredItems = items
     .filter((item) =>
-      (item.title || "").toLowerCase().includes(searchTerm.toLowerCase())
+      (item.title || "").toLowerCase().includes(searchTerm.toLowerCase()) && (selectedCategory === "all" || item.category === selectedCategory)
     )
     .sort((a, b) => {
       if (sortBy === "price-low") return (a.price || 0) - (b.price || 0);
@@ -386,6 +392,7 @@ export default function Gallery() {
             {/* Mobile Actions Grid */}
             <div className="grid grid-cols-2 md:hidden w-full gap-2">
                <button 
+                  onClick={() => setIsMobileFiltersOpen(true)}
                   className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm active:scale-95 transition-transform"
                >
                  <FunnelIcon className="w-4 h-4 text-[#e1b382]" /> Categories
@@ -577,6 +584,46 @@ export default function Gallery() {
           </div>
         )}
       </Dialog>
+
+      
+      {/* Mobile Filter Slide-Up Modal */}
+      {isMobileFiltersOpen && (
+          <div className="md:hidden fixed inset-0 z-50 flex items-end justify-center">
+              <div className="fixed inset-0 bg-[#12343b]/60 backdrop-blur-sm transition-opacity" onClick={() => setIsMobileFiltersOpen(false)}></div>
+              <div className="bg-white w-full rounded-t-3xl p-6 relative z-10 animate-slide-in-up max-h-[80vh] overflow-y-auto shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+                  <div className="flex justify-between items-center mb-6">
+                      <h3 className="font-black text-xl text-[#12343b]">Select Category</h3>
+                      <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors text-gray-500">
+                          <XMarkIcon className="w-6 h-6" />
+                      </button>
+                  </div>
+                  <ul className="space-y-2">
+                      <li>
+                          <label className="flex items-center justify-between cursor-pointer group p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-colors">
+                              <span className={`text-base font-bold transition-colors ${selectedCategory === 'all' ? "text-[#2d545e]" : "text-gray-600"}`}>All Masterpieces</span>
+                              <div className="relative flex items-center">
+                                  <input type="radio" checked={selectedCategory === 'all'} onChange={() => { setSelectedCategory('all'); setIsMobileFiltersOpen(false); }} className="peer sr-only" />
+                                  <div className="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-[#2d545e] peer-checked:bg-[#2d545e] transition-all shadow-sm"></div>
+                                  <div className="absolute inset-0 rounded-full scale-0 peer-checked:scale-50 bg-[#e1b382] transition-transform"></div>
+                              </div>
+                          </label>
+                      </li>
+                      {categories.map(cat => (
+                          <li key={cat._id}>
+                              <label className="flex items-center justify-between cursor-pointer group p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-colors">
+                                  <span className={`text-base font-bold transition-colors ${selectedCategory === cat._id ? "text-[#2d545e]" : "text-gray-600"}`}>{cat.name}</span>
+                                  <div className="relative flex items-center">
+                                      <input type="radio" checked={selectedCategory === cat._id} onChange={() => { setSelectedCategory(cat._id); setIsMobileFiltersOpen(false); }} className="peer sr-only" />
+                                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-[#2d545e] peer-checked:bg-[#2d545e] transition-all shadow-sm"></div>
+                                      <div className="absolute inset-0 rounded-full scale-0 peer-checked:scale-50 bg-[#e1b382] transition-transform"></div>
+                                  </div>
+                              </label>
+                          </li>
+                      ))}
+                  </ul>
+              </div>
+          </div>
+      )}
 
       {/* Lightbox */}
       <Lightbox

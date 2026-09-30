@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 // import { apiCall } from "../../services/Axiosservice";
 // import { API_URL } from "../../services/Apiroute";
@@ -12,6 +13,7 @@ import { Button } from "primereact/button";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 

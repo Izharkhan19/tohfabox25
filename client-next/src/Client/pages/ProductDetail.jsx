@@ -175,7 +175,7 @@ export default function ProductDetail() {
         <div className="bg-gray-100 pb-28 lg:pb-20 pt-0 lg:pt-8 min-h-screen relative">
             {/* Mobile Back Button */}
             <button 
-                onClick={() => router.push(-1)}
+                onClick={() => router.back()}
                 className="lg:hidden absolute top-4 left-4 z-10 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full shadow-sm flex items-center justify-center border border-gray-100 text-gray-700 hover:bg-white transition-colors"
             >
                 <ArrowLeftIcon className="w-5 h-5" />

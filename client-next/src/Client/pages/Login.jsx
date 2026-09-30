@@ -15,6 +15,7 @@ export default function Login() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -117,7 +118,12 @@ export default function Login() {
 
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                                <Checkbox inputId="rememberMe" className="mr-2 text-resin-blue" />
+                                <Checkbox 
+                                    inputId="rememberMe" 
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.checked)}
+                                    className="mr-2 text-resin-blue" 
+                                />
                                 <label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer">Remember me</label>
                             </div>
                             <Link href="/forgot-password" className="text-sm font-bold text-resin-blue hover:text-resin-dark transition-colors">

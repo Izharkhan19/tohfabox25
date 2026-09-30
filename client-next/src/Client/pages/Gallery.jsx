@@ -312,7 +312,7 @@ export default function Gallery() {
   const handleShareClick = async (e, item) => {
     e.stopPropagation();
     e.preventDefault();
-    const shareUrl = `${currentUrl}/gallery`;
+    const shareUrl = `${currentUrl}/gallery?item=${item._id}`;
     const shareTitle = `Check out this amazing piece: ${item.title}`;
     if (navigator.share) {
       try {
@@ -424,13 +424,13 @@ export default function Gallery() {
                           }`}
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <WhatsappShareButton url={`${currentUrl}/gallery`} title={`Check out: ${item.title}`}>
+                          <WhatsappShareButton url={`${currentUrl}/gallery?item=${item._id}`} title={`Check out: ${item.title}`}>
                             <WhatsappIcon size={30} round />
                           </WhatsappShareButton>
-                          <FacebookShareButton url={`${currentUrl}/gallery`} quote={item.title}>
+                          <FacebookShareButton url={`${currentUrl}/gallery?item=${item._id}`} quote={item.title}>
                             <FacebookIcon size={30} round />
                           </FacebookShareButton>
-                          <TwitterShareButton url={`${currentUrl}/gallery`} title={item.title}>
+                          <TwitterShareButton url={`${currentUrl}/gallery?item=${item._id}`} title={item.title}>
                             <XIcon size={30} round />
                           </TwitterShareButton>
                         </div>

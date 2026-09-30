@@ -1,0 +1,296 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-resin-dark: #12343b;
+  --color-resin-blue: #2d545e;
+  --color-resin-light: #fdfbf9;
+  --color-resin-gold: #c89666;
+  --color-resin-goldAccent: #e1b382;
+
+  --color-brand-primary: #2d545e;
+  --color-brand-secondary: #e1b382;
+  --color-brand-accent: #c89666;
+  --color-brand-dark: #12343b;
+  --color-brand-light: #fdfbf9;
+  --color-brand-muted: #7a8f94;
+
+  --font-sans: "DM Sans", sans-serif;
+  --font-serif: "Fraunces", serif;
+}
+
+:root {
+  color: #12343b;
+  background: #fdfbf9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply font-sans text-resin-dark;
+    margin: 0;
+    min-width: 320px;
+    overflow-x: hidden;
+    line-height: 1.5;
+    background:
+      radial-gradient(circle at 8% 15%, rgba(225, 179, 130, 0.12), transparent 22rem),
+      radial-gradient(circle at 92% 70%, rgba(45, 84, 94, 0.08), transparent 26rem),
+      #fdfbf9;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+
+  button, a, input, select, textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, a {
+    @apply cursor-pointer;
+  }
+
+  ::selection {
+    background: #e1b382;
+    color: #12343b;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f5eee7;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #c89666;
+    border: 3px solid #f5eee7;
+    border-radius: 999px;
+  }
+}
+
+.Toastify__toast-container {
+  width: min(96vw, 48rem) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  top: 1rem !important;
+  bottom: auto !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 0.75rem !important;
+}
+
+.mobile-toast {
+  align-items: center !important;
+  border: 1px solid rgba(225, 179, 130, 0.35) !important;
+  border-radius: 0.9rem !important;
+  min-height: 3.5rem !important;
+  padding: 0.75rem 0.9rem !important;
+  background: #12343b !important;
+  color: #fdfbf9 !important;
+  box-shadow: 0 16px 36px rgba(18, 52, 59, 0.28) !important;
+  flex: 1 1 20rem !important;
+  margin-bottom: 0 !important;
+}
+
+.mobile-toast-body {
+  color: #fdfbf9 !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.mobile-toast .Toastify__toast-icon {
+  width: 1.35rem !important;
+  margin-inline-end: 0.65rem !important;
+}
+
+.mobile-toast .Toastify__close-button {
+  align-self: flex-start !important;
+  color: #e1b382 !important;
+  opacity: 0.9 !important;
+}
+
+.mobile-toast .Toastify__progress-bar {
+  height: 3px !important;
+  background: #e1b382 !important;
+}
+
+.brand-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200, 150, 102, 0.7), transparent);
+}
+
+.soft-grid {
+  background-image: linear-gradient(rgba(45, 84, 94, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 84, 94, 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+@keyframes logo-breathe {
+  0%, 100% { transform: scale(0.96); opacity: 0.82; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+.logo-loader-mark {
+  animation: logo-breathe 1.8s ease-in-out infinite;
+}
+
+.react-datepicker {
+  border: 1px solid #dbe2e8 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 16px 35px rgba(18, 52, 59, 0.16) !important;
+  color: #12343b !important;
+  font-family: "DM Sans", sans-serif !important;
+  overflow: hidden;
+}
+
+.react-datepicker__header {
+  background: #f4f8f8 !important;
+  border-bottom: 1px solid #dbe2e8 !important;
+  padding-top: 0.75rem !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-list-item {
+  font-family: "DM Sans", sans-serif !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header {
+  color: #12343b !important;
+  font-weight: 700 !important;
+}
+
+.react-datepicker__day-name {
+  color: #7a8f94 !important;
+  font-weight: 700 !important;
+}
+
+.react-datepicker__day {
+  color: #12343b !important;
+  border-radius: 0.45rem !important;
+}
+
+.react-datepicker__day:hover,
+.react-datepicker__month-text:hover,
+.react-datepicker__quarter-text:hover,
+.react-datepicker__year-text:hover {
+  background: #e1b382 !important;
+  color: #12343b !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background: #2d545e !important;
+  color: #fff !important;
+}
+
+.react-datepicker__day--today {
+  border: 1px solid #c89666 !important;
+  font-weight: 700 !important;
+}
+
+.react-datepicker__day--disabled,
+.react-datepicker__time-list-item--disabled {
+  color: #b8c2c5 !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #2d545e !important;
+}
+
+.react-datepicker__time-container {
+  border-left: 1px solid #dbe2e8 !important;
+}
+
+.react-datepicker__time {
+  background: #fff !important;
+}
+
+.react-datepicker__time-list-item {
+  color: #12343b !important;
+}
+
+.react-datepicker__time-list-item:hover {
+  background: #f4f8f8 !important;
+}
+
+.react-datepicker__time-list-item--selected {
+  background: #2d545e !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+@media (max-width: 640px) {
+  .react-datepicker {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .react-datepicker__time-container {
+    width: 5.75rem !important;
+  }
+
+  .react-datepicker__time-list {
+    scrollbar-width: thin;
+  }
+}
+
+@media (min-width: 768px) {
+  .Toastify__toast-container {
+    left: auto !important;
+    right: 1.25rem !important;
+    transform: none !important;
+    width: 22rem !important;
+    top: 1rem !important;
+    width: min(96vw, 48rem) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  .Toastify__toast-container {
+    top: calc(4.5rem + env(safe-area-inset-top)) !important;
+    bottom: auto !important;
+    width: min(92vw, 22rem) !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .mobile-toast {
+    flex-basis: auto !important;
+    width: 100% !important;
+  }
+}
+
+/* Glassmorphism utilities */
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+  .glass-dark {
+    @apply bg-resin-dark/80 backdrop-blur-lg border border-white/10 shadow-2xl;
+  }
+}

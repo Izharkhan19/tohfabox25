@@ -1,0 +1,803 @@
+"use client";
+// import { useRouter, useParams } from "next/navigation";
+// import { useState } from "react";
+
+// export default function AddEditProduct() {
+//     const router = useRouter();
+//     const [images, setImages] = useState([]);
+
+//     const handleFileChange = (e) => {
+//         const files = Array.from(e.target.files);
+//         setImages(files);
+//     };
+
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+//         toast.success("Product saved!");
+//         router.push("/products");
+//     };
+
+//     return (
+//         <div className="max-w-5xl mx-auto">
+//             {/* Page Title */}
+//             <h1 className="text-3xl font-bold mb-6 text-gray-800">Add New Product</h1>
+
+//             <div className="bg-white p-8 rounded-2xl shadow-md border border-gray-100">
+//                 <form onSubmit={handleSubmit}>
+
+//                     {/* Product Basic Info */}
+//                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                         <div>
+//                             <label className="block mb-1 font-semibold text-gray-700">
+//                                 Product Name
+//                             </label>
+//                             <input
+//                                 type="text"
+//                                 placeholder="Enter product name"
+//                                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+//                                 required
+//                             />
+//                         </div>
+
+//                         <div>
+//                             <label className="block mb-1 font-semibold text-gray-700">
+//                                 Price (₹)
+//                             </label>
+//                             <input
+//                                 type="number"
+//                                 placeholder="Enter price"
+//                                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+//                                 required
+//                             />
+//                         </div>
+
+//                         <div>
+//                             <label className="block mb-1 font-semibold text-gray-700">
+//                                 Stock
+//                             </label>
+//                             <input
+//                                 type="number"
+//                                 placeholder="Enter stock quantity"
+//                                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+//                                 required
+//                             />
+//                         </div>
+
+//                         <div>
+//                             <label className="block mb-1 font-semibold text-gray-700">
+//                                 Category
+//                             </label>
+//                             <select className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400">
+//                                 <option>Electronics</option>
+//                                 <option>Clothing</option>
+//                                 <option>Home</option>
+//                             </select>
+//                         </div>
+//                     </div>
+
+//                     {/* Description */}
+//                     <div className="mt-6">
+//                         <label className="block mb-2 font-semibold text-gray-700">
+//                             Description
+//                         </label>
+//                         <textarea
+//                             rows="4"
+//                             placeholder="Write product details..."
+//                             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+//                             required
+//                         ></textarea>
+//                     </div>
+
+//                     {/* Image Upload */}
+//                     <div className="mt-8">
+//                         <label className="block mb-2 font-semibold text-gray-700">
+//                             Upload Images
+//                         </label>
+
+//                         <div className="border-2 border-dashed border-gray-300 p-6 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative">
+//                             <input
+//                                 type="file"
+//                                 multiple
+//                                 accept="image/*"
+//                                 onChange={handleFileChange}
+//                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+//                             />
+//                             <p className="text-gray-600 pointer-events-none">
+//                                 Drag & drop files here or click to upload
+//                             </p>
+//                         </div>
+
+//                         {/* Preview thumbnails */}
+//                         {images.length > 0 && (
+//                             <div className="mt-4 flex gap-3 flex-wrap">
+//                                 {images.map((img, i) => (
+//                                     <div key={i} className="w-24 h-24 border rounded overflow-hidden">
+//                                         <img
+//                                             src={URL.createObjectURL(img)}
+//                                             alt="preview"
+//                                             className="w-full h-full object-cover"
+//                                         />
+//                                     </div>
+//                                 ))}
+//                             </div>
+//                         )}
+//                     </div>
+
+//                     {/* Buttons */}
+//                     <div className="mt-10 flex gap-4">
+//                         <button
+//                             type="submit"
+//                             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl shadow-md"
+//                         >
+//                             Save Product
+//                         </button>
+
+//                         <button
+//                             type="button"
+//                             onClick={() => router.push("/products")}
+//                             className="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-xl"
+//                         >
+//                             Cancel
+//                         </button>
+//                     </div>
+//                 </form>
+//             </div>
+//         </div>
+//     );
+// }
+// src/Admin/pages/AddEditProduct.jsx
+import { useRouter, useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Dialog } from 'primereact/dialog';
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+import {
+  createProduct,
+  updateProduct,
+  getProduct,
+  getCategories,
+} from "../../api-services/apiService";
+import imageCompression from 'browser-image-compression';
+import axios from "axios";
+import { toast } from "react-toastify";
+import LogoLoader from "../../components/LogoLoader";
+
+export default function AddEditProduct() {
+  const { id } = useParams();
+  const router = useRouter();
+  const isEditMode = Boolean(id);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    stock: "",
+    category: "",
+    occasions: [],
+    relationships: [],
+    description: "",
+    isFeatured: false,
+    weightValue: "",
+    weightUnit: "kg",
+    dimLength: "",
+    dimWidth: "",
+    dimHeight: "",
+    dimUnit: "cm",
+  });
+
+  const [mainImage, setMainImage] = useState(null);
+  const [existingMainImage, setExistingMainImage] = useState(null);
+
+  const [subImages, setSubImages] = useState([]);
+  const [existingSubImages, setExistingSubImages] = useState([]);
+  
+  const [previewImage, setPreviewImage] = useState(null);
+
+  const [productCategories, setProductCategories] = useState([]);
+  const [occasionCategories, setOccasionCategories] = useState([]);
+  const [relationshipCategories, setRelationshipCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  const [loadingProduct, setLoadingProduct] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Load categories
+  useEffect(() => {
+    const loadCategories = async () => {
+      setLoadingCategories(true);
+      try {
+        const res = await getCategories();
+        if (res.success) {
+          const allCats = res.data?.data || [];
+          setProductCategories(allCats.filter(c => c.type === 'Product' || !c.type));
+          setOccasionCategories(allCats.filter(c => c.type === 'Occasion'));
+          setRelationshipCategories(allCats.filter(c => c.type === 'Relationship'));
+        }
+      } catch (err) {
+        console.error("Failed to load categories", err);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    loadCategories();
+  }, []);
+
+  // Load product in edit mode
+  useEffect(() => {
+    if (isEditMode) {
+      const loadProduct = async () => {
+        setLoadingProduct(true);
+        setError(null);
+        try {
+          const res = await getProduct(id);
+          if (res.success && res.data) {
+            const product = res.data?.data;
+
+            setFormData({
+              name: product.name || "",
+              price: product.price || "",
+              stock: product.stock || "",
+              category: product.category?._id || product.category || "",
+              occasions: product.occasions?.map(o => o._id || o) || [],
+              relationships: product.relationships?.map(r => r._id || r) || [],
+              description: product.description || "",
+              isFeatured: product.isFeatured || false,
+              weightValue: product.weight?.value || "",
+              weightUnit: product.weight?.unit || "kg",
+              dimLength: product.dimensions?.length || "",
+              dimWidth: product.dimensions?.width || "",
+              dimHeight: product.dimensions?.height || "",
+              dimUnit: product.dimensions?.unit || "cm",
+            });
+            const primaryImg = product.images?.find(img => img.isPrimary);
+            const secondaryImgs = product.images?.filter(img => !img.isPrimary) || [];
+            
+            setExistingMainImage(primaryImg || null);
+            setExistingSubImages(secondaryImgs);
+          } else {
+            setError("Product not found");
+          }
+        } catch (err) {
+          console.error("Failed to load product", err);
+          setError("Failed to load product details");
+        } finally {
+          setLoadingProduct(false);
+        }
+      };
+      loadProduct();
+    }
+  }, [id, isEditMode]);
+  const API_BASE_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxArrayChange = (e, fieldName) => {
+    const { value, checked } = e.target;
+    setFormData(prev => {
+      const array = prev[fieldName] || [];
+      if (checked) {
+        return { ...prev, [fieldName]: [...array, value] };
+      } else {
+        return { ...prev, [fieldName]: array.filter(item => item !== value) };
+      }
+    });
+  };
+
+  const handleMainImageChange = async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+      };
+      try {
+        const compressedFile = await imageCompression(file, options);
+        setMainImage(compressedFile);
+      } catch (error) {
+        console.error("Error compressing main image:", error);
+        setMainImage(file);
+      }
+    }
+    e.target.value = null;
+  };
+
+  const handleSubImagesChange = async (e) => {
+    const files = Array.from(e.target.files);
+    const maxSubImages = 4;
+    const totalSubImages = existingSubImages.length + subImages.length + files.length;
+
+    if (totalSubImages > maxSubImages) {
+      toast.info(`Maximum ${maxSubImages} sub-images allowed.`);
+      e.target.value = null;
+      return;
+    }
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1200,
+      useWebWorker: true,
+    };
+
+    const compressedFiles = await Promise.all(
+      files.map(async (file) => {
+        try {
+          return await imageCompression(file, options);
+        } catch (error) {
+          console.error("Error compressing sub image:", error);
+          return file;
+        }
+      })
+    );
+
+    setSubImages((prev) => [...prev, ...compressedFiles]);
+    e.target.value = null;
+  };
+
+  const removeMainImage = () => {
+    setMainImage(null);
+    setExistingMainImage(null);
+  };
+
+  const removeNewSubImage = (index) => {
+    setSubImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingSubImage = (imageId) => {
+    setExistingSubImages((prev) =>
+      prev.filter((img) => (img._id || img.public_id) !== imageId),
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("price", formData.price);
+    formDataToSend.append("stock", formData.stock);
+    formDataToSend.append("category", formData.category);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("isFeatured", formData.isFeatured);
+    
+    formDataToSend.append("weight", JSON.stringify({ value: formData.weightValue, unit: formData.weightUnit }));
+    formDataToSend.append("dimensions", JSON.stringify({ length: formData.dimLength, width: formData.dimWidth, height: formData.dimHeight, unit: formData.dimUnit }));
+
+    formData.occasions.forEach(occ => formDataToSend.append("occasions", occ));
+    formData.relationships.forEach(rel => formDataToSend.append("relationships", rel));
+
+    // Append new images
+    if (mainImage) {
+      formDataToSend.append("mainImage", mainImage);
+    }
+    subImages.forEach((image) => {
+      formDataToSend.append("subImages", image);
+    });
+
+    // Append existing images to keep (edit mode only)
+    if (isEditMode) {
+      if (existingMainImage) {
+        formDataToSend.append("retainedImages", existingMainImage._id || existingMainImage.public_id || existingMainImage.publicId);
+      }
+      existingSubImages.forEach((img) => {
+        formDataToSend.append("retainedImages", img._id || img.public_id || img.publicId);
+      });
+    }
+
+    try {
+      let response;
+      if (isEditMode) {
+        // Independent PUT call for update
+        response = await axios.put(
+          `${API_BASE_URL}/products/${id}`,
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${
+                (typeof window !== 'undefined' ? localStorage.getItem("adminToken") : null) || ""
+              }`,
+            },
+          },
+        );
+      } else {
+        // Independent POST call for create
+        response = await axios.post(
+          `${API_BASE_URL}/products`,
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${
+                (typeof window !== 'undefined' ? localStorage.getItem("adminToken") : null) || ""
+              }`,
+            },
+          },
+        );
+      }
+
+      const result = response.data;
+
+      if (result.success) {
+        toast.success(
+          `Product ${isEditMode ? "updated" : "added"} successfully!`,
+        );
+        router.push("/admin/products");
+      } else {
+        setError(result.message || "Failed to save product");
+      }
+    } catch (err) {
+      console.error("API Error:", err);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Something went wrong. Please try again.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getImageUrl = (img) =>
+    img.url || img.secure_url || URL.createObjectURL(img);
+  const getImageId = (img) => img._id || img.public_id || img.name;
+
+  return (
+    <div className="max-w-5xl mx-auto p-4 sm:p-6">
+      <div className="flex items-center gap-4 mb-6 sm:mb-8">
+        <button
+          onClick={() => router.push("/admin/products")}
+          className="text-gray-600 hover:text-gray-900"
+        >
+          <ArrowLeftIcon className="w-6 h-6" />
+        </button>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+          {isEditMode ? "Edit Product" : "Add New Product"}
+        </h1>
+      </div>
+
+      <hr />
+
+      {loadingProduct ? (
+        <div className="text-center py-12">
+          <LogoLoader label="Loading product..." compact />
+        </div>
+      ) : error ? (
+        <div className="text-center py-16 text-red-600">{error}</div>
+      ) : (
+        <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-md border border-gray-100 mt-4 sm:mt-0">
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Product Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Price (₹)
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleInputChange}
+                  min="0"
+                  step="0.01"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Stock
+                </label>
+                <input
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
+                  onChange={handleInputChange}
+                  min="0"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Category
+                </label>
+                {loadingCategories ? (
+                  <p>Loading categories...</p>
+                ) : (
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                    required
+                  >
+                    <option value="">Select category</option>
+                    {productCategories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              <div>
+                <label className="block mb-3 font-semibold text-gray-700">
+                  Is Featured
+                </label>
+                <div className="flex items-center gap-4">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isFeatured"
+                      checked={formData.isFeatured || false}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          isFeatured: e.target.checked,
+                        }));
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-12 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                  <span className="text-gray-600">
+                    {formData.isFeatured
+                      ? "Marked as Featured Product"
+                      : "Not featured"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
+              {/* Occasions */}
+              <div>
+                <label className="block mb-2 font-semibold text-gray-700">Occasions</label>
+                <div className="bg-gray-50 border rounded-lg p-3 max-h-40 overflow-y-auto flex flex-col gap-2">
+                  {occasionCategories.length === 0 && <p className="text-sm text-gray-500">No occasions created.</p>}
+                  {occasionCategories.map(cat => (
+                    <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        value={cat._id}
+                        checked={formData.occasions.includes(cat._id)}
+                        onChange={(e) => handleCheckboxArrayChange(e, 'occasions')}
+                        className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-700">{cat.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Relationships */}
+              <div>
+                <label className="block mb-2 font-semibold text-gray-700">Relationships</label>
+                <div className="bg-gray-50 border rounded-lg p-3 max-h-40 overflow-y-auto flex flex-col gap-2">
+                  {relationshipCategories.length === 0 && <p className="text-sm text-gray-500">No relationships created.</p>}
+                  {relationshipCategories.map(cat => (
+                    <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        value={cat._id}
+                        checked={formData.relationships.includes(cat._id)}
+                        onChange={(e) => handleCheckboxArrayChange(e, 'relationships')}
+                        className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-700">{cat.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
+              {/* Weight */}
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">Weight</label>
+                <div className="flex gap-2">
+                  <input type="number" name="weightValue" value={formData.weightValue} onChange={handleInputChange} min="0" step="0.01" className="w-full p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="e.g. 1.5" />
+                  <select name="weightUnit" value={formData.weightUnit} onChange={handleInputChange} className="p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-white">
+                    <option value="kg">kg</option>
+                    <option value="g">g</option>
+                    <option value="lb">lb</option>
+                    <option value="oz">oz</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Dimensions */}
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">Dimensions (L x W x H)</label>
+                <div className="flex gap-2">
+                  <input type="number" name="dimLength" value={formData.dimLength} onChange={handleInputChange} min="0" step="0.1" className="w-full p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="L" />
+                  <input type="number" name="dimWidth" value={formData.dimWidth} onChange={handleInputChange} min="0" step="0.1" className="w-full p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="W" />
+                  <input type="number" name="dimHeight" value={formData.dimHeight} onChange={handleInputChange} min="0" step="0.1" className="w-full p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400" placeholder="H" />
+                  <select name="dimUnit" value={formData.dimUnit} onChange={handleInputChange} className="p-2.5 sm:p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-white">
+                    <option value="cm">cm</option>
+                    <option value="in">in</option>
+                    <option value="m">m</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <label className="block mb-2 font-semibold text-gray-700">
+                Description
+              </label>
+              <div className="bg-white rounded-lg overflow-hidden">
+                <ReactQuill 
+                    theme="snow" 
+                    value={formData.description} 
+                    onChange={(value) => setFormData(prev => ({...prev, description: value}))}
+                    className="h-64 mb-12"
+                />
+              </div>
+            </div>
+
+            {/* Main Image Upload */}
+            <div className="mt-8">
+              <label className="block mb-2 font-semibold text-gray-700">
+                Main Product Image <span className="text-red-500">*</span>
+              </label>
+
+              {(mainImage || existingMainImage) ? (
+                <div className="relative group w-48 h-48 mb-4">
+                  <img
+                    src={mainImage ? URL.createObjectURL(mainImage) : getImageUrl(existingMainImage)}
+                    alt="Main product"
+                    className="w-full h-full object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
+                    onClick={() => setPreviewImage(mainImage ? URL.createObjectURL(mainImage) : getImageUrl(existingMainImage))}
+                  />
+                  <button
+                    type="button"
+                    onClick={removeMainImage}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
+                    title="Remove Main Image"
+                  >
+                    ×
+                  </button>
+                  <div className="absolute bottom-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded shadow">Primary</div>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-gray-300 p-5 sm:p-8 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleMainImageChange}
+                    className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                    required={!isEditMode}
+                  />
+                  <p className="text-gray-600 text-sm sm:text-base">
+                    Drop your main image here or click to upload
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Sub Images Upload */}
+            <div className="mt-6 border-t pt-6">
+              <label className="block mb-2 font-semibold text-gray-700">
+                Sub Images (Gallery)
+              </label>
+              
+              <div className="border-2 border-dashed border-gray-300 p-4 sm:p-6 rounded-xl text-center bg-gray-50 hover:bg-gray-100 transition relative mb-4">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleSubImagesChange}
+                  className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                />
+                <p className="text-gray-600 text-sm sm:text-base">
+                  Drop up to 4 additional images here
+                </p>
+              </div>
+
+              <div className="flex gap-4 flex-wrap">
+                {/* Existing Sub Images (Edit Mode) */}
+                {isEditMode && existingSubImages.map((img) => (
+                  <div key={getImageId(img)} className="relative group">
+                    <img
+                      src={getImageUrl(img)}
+                      alt="Sub product"
+                      className="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
+                      onClick={() => setPreviewImage(getImageUrl(img))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeExistingSubImage(getImageId(img))}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+
+                {/* New Sub Image Previews */}
+                {subImages.map((file, i) => (
+                  <div key={i} className="relative group">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="preview"
+                      className="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
+                      onClick={() => setPreviewImage(URL.createObjectURL(file))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeNewSubImage(i)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition shadow"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {error && <p className="text-red-600 mt-4 text-center">{error}</p>}
+
+            <div className="mt-8 sm:mt-10 flex flex-row gap-3 sm:gap-4 justify-end">
+              <button
+                type="button"
+                onClick={() => router.push("/admin/products")}
+                className="w-1/2 sm:w-auto px-4 py-2.5 sm:px-8 sm:py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-xl shadow-sm font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving || loadingProduct}
+                className="w-1/2 sm:w-auto px-4 py-2.5 sm:px-8 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md disabled:opacity-70 font-medium"
+              >
+                {saving
+                  ? isEditMode
+                    ? "Updating..."
+                    : "Saving..."
+                  : isEditMode
+                    ? "Update"
+                    : "Save"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Image Preview Modal */}
+      <Dialog 
+        header="Image Preview" 
+        visible={!!previewImage} 
+        style={{ width: '90vw', maxWidth: '600px' }} 
+        onHide={() => setPreviewImage(null)} 
+        dismissableMask
+      >
+        <div className="flex justify-center p-2 bg-gray-50 rounded-lg">
+          <img src={previewImage} alt="Preview" className="max-w-full h-auto max-h-[70vh] object-contain rounded shadow-sm" />
+        </div>
+      </Dialog>
+    </div>
+  );
+}

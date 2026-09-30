@@ -47,6 +47,7 @@ const app = express();
 const allowedOrigins = [
   process.env.CLIENT_URL,
   'https://tohfabox25.vercel.app',
+  'https://artistarycrafts.vercel.app',
   'http://localhost:5173'
 ].filter(Boolean);
 

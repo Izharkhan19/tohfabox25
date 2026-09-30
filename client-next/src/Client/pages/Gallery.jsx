@@ -390,31 +390,31 @@ export default function Gallery() {
 
                 {/* Hover Overlay */}
                 <div
-                  className="absolute inset-0 bg-gradient-to-t from-[#12343b]/95 via-[#12343b]/20 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-2.5 md:p-4"
+                  className="absolute inset-0 bg-gradient-to-t from-[#12343b]/95 via-[#12343b]/40 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-2 md:p-4"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-1 md:gap-2">
                     <div>
-                      <p className="text-white font-black text-sm md:text-base line-clamp-2 leading-snug mb-1">{item.title}</p>
-                      <p className="text-[#e1b382] font-bold text-xs md:text-sm">
+                      <p className="text-white font-black text-[11px] md:text-base line-clamp-2 leading-tight md:leading-snug mb-0.5 md:mb-1">{item.title}</p>
+                      <p className="text-[#e1b382] font-bold text-[10px] md:text-sm">
                         {item.price > 0 ? `₹${Number(item.price).toLocaleString("en-IN")}` : "Price on inquiry"}
                       </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-1.5 mt-1 items-center">
+                    <div className="flex gap-1 md:gap-2 mt-0.5 md:mt-1 items-center">
                       {/* Quick Order Button */}
                       <button
                         onClick={() => setOrderItem(item)}
-                        className="flex-1 min-w-[100px] flex items-center justify-center gap-1.5 py-1.5 px-2 md:px-4 rounded-xl bg-[#e1b382] text-[#12343b] text-[11px] md:text-xs font-black hover:bg-[#c89666] transition-colors whitespace-nowrap"
+                        className="flex-1 flex items-center justify-center gap-1 py-1 md:py-1.5 px-1.5 md:px-4 rounded-lg md:rounded-xl bg-[#e1b382] text-[#12343b] text-[9px] md:text-xs font-black hover:bg-[#c89666] transition-colors whitespace-nowrap overflow-hidden"
                       >
-                        <ShoppingBagIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                        <span>Quick Order</span>
+                        <ShoppingBagIcon className="w-3 h-3 md:w-4 md:h-4 shrink-0" />
+                        <span className="truncate">Order</span>
                       </button>
 
                       {/* View Details Button */}
                       <button
                         onClick={() => setViewDetailsItem(item)}
-                        className="shrink-0 w-8 h-8 md:w-9 md:h-9 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-[#12343b] transition-colors"
+                        className="shrink-0 w-7 h-7 md:w-9 md:h-9 bg-white/15 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-[#12343b] transition-colors"
                         title="View Details"
                       >
                         <EyeIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
@@ -424,7 +424,7 @@ export default function Gallery() {
                       <div className="relative shrink-0">
                         <button
                           onClick={(e) => handleShareClick(e, item)}
-                          className="w-8 h-8 md:w-9 md:h-9 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-[#e1b382] hover:text-[#12343b] transition-colors"
+                          className="w-7 h-7 md:w-9 md:h-9 bg-white/15 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white hover:bg-[#e1b382] hover:text-[#12343b] transition-colors"
                         >
                           <ShareIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         </button>
@@ -462,47 +462,49 @@ export default function Gallery() {
       <Dialog
         visible={!!viewDetailsItem}
         onHide={() => setViewDetailsItem(null)}
-        header={viewDetailsItem?.title || "Details"}
-        className="w-[95vw] sm:max-w-md rounded-2xl shadow-2xl bg-white"
-        contentClassName="bg-white pt-2 pb-4 px-4 sm:px-6"
-        headerClassName="bg-white px-4 sm:px-6 py-4 rounded-t-2xl border-b border-gray-100"
+        showHeader={false}
+        className="w-[95vw] sm:max-w-md rounded-2xl shadow-2xl bg-white overflow-hidden"
+        contentClassName="bg-white p-0 relative"
         breakpoints={{ '960px': '75vw', '640px': '95vw' }}
         dismissableMask
         draggable={false}
       >
         {viewDetailsItem && (
-          <div className="flex flex-col gap-4 bg-white">
-            <img 
-              src={viewDetailsItem.image?.url} 
-              alt={viewDetailsItem.title} 
-              className="w-full h-64 object-cover rounded-xl shadow-sm"
-            />
-            <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">{viewDetailsItem.title}</h3>
+          <div className="flex flex-col bg-white max-h-[85vh]">
+            <div className="relative shrink-0">
+              <img 
+                src={viewDetailsItem.image?.url} 
+                alt={viewDetailsItem.title} 
+                className="w-full h-56 sm:h-64 object-cover"
+              />
+              <button 
+                onClick={() => setViewDetailsItem(null)}
+                className="absolute top-3 right-3 w-8 h-8 bg-black/40 backdrop-blur-sm text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-colors"
+                title="Close"
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-4 sm:p-6 overflow-y-auto flex-1">
+                <h3 className="text-xl font-black text-gray-900 mb-1 leading-tight">{viewDetailsItem.title}</h3>
                 <p className="text-[#c89666] font-bold text-lg mb-3">
                   {viewDetailsItem.price > 0 ? `₹${Number(viewDetailsItem.price).toLocaleString("en-IN")}` : "Price on inquiry"}
                 </p>
-                <div className="prose prose-sm text-gray-600">
+                <div className="text-sm text-gray-600 mb-6 leading-relaxed">
                     <p>{viewDetailsItem.description || "No description available for this masterpiece."}</p>
                 </div>
-            </div>
-            
-            <div className="mt-2 flex gap-3 pt-4 border-t border-gray-100">
-              <Button 
-                label="Close" 
-                outlined 
-                onClick={() => setViewDetailsItem(null)} 
-                className="flex-1 py-3 justify-center" 
-              />
-              <Button 
-                label="Quick Order" 
-                icon="pi pi-shopping-bag" 
-                onClick={() => {
-                  setOrderItem(viewDetailsItem);
-                  setViewDetailsItem(null);
-                }}
-                className="flex-1 py-3 justify-center bg-[#12343b] hover:bg-[#1a4b57] border-none text-white" 
-              />
+                
+                <button 
+                  onClick={() => {
+                    setOrderItem(viewDetailsItem);
+                    setViewDetailsItem(null);
+                  }}
+                  className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 bg-[#12343b] hover:bg-[#1a4b57] text-white font-bold transition-colors shadow-md mt-auto"
+                >
+                  <ShoppingBagIcon className="w-5 h-5" />
+                  <span>Quick Order</span>
+                </button>
             </div>
           </div>
         )}

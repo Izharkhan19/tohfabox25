@@ -1,5 +1,7 @@
 import PageComponent from "../../../Client/pages/Gallery";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ searchParams }) {
   try {
     const itemQuery = await searchParams;

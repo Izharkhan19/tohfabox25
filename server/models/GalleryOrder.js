@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 const galleryOrderSchema = new mongoose.Schema({
     galleryItemId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Gallery',
-        required: true
+        ref: 'Gallery'
+    },
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
     },
     productTitle: {
         type: String,

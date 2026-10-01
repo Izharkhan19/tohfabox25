@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const GalleryOrder = require('../models/GalleryOrder');
+const Product = require('../models/Product');
 const Gallery = require('../models/Gallery');
 const { protect } = require('../middleware/auth');
 const { isAdmin } = require('../middleware/admin');
@@ -17,19 +18,45 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // Fetch gallery item for price info
-        const galleryItem = await Gallery.findById(galleryItemId);
-        if (!galleryItem || !galleryItem.isActive) {
-            return res.status(404).json({ success: false, message: 'Gallery item not found or inactive' });
+        let itemTitle, itemImage, itemPrice;
+        let realGalleryItemId = null;
+        let realProductId = null;
+
+        if (galleryItemId.startsWith('prod_')) {
+            const parts = galleryItemId.split('_');
+            const pId = parts[1];
+            const product = await Product.findById(pId);
+            if (!product) {
+                return res.status(404).json({ success: false, message: 'Product not found' });
+            }
+            realProductId = pId;
+            itemTitle = product.name;
+            itemPrice = product.price;
+            const imgIdx = parts[2] ? parseInt(parts[2]) : 0;
+            if (product.images && product.images[imgIdx]) {
+                itemImage = product.images[imgIdx].url;
+            } else if (product.images && product.images.length > 0) {
+                itemImage = product.images[0].url;
+            }
+        } else {
+            const galleryItem = await Gallery.findById(galleryItemId);
+            if (!galleryItem || !galleryItem.isActive) {
+                return res.status(404).json({ success: false, message: 'Gallery item not found or inactive' });
+            }
+            realGalleryItemId = galleryItemId;
+            itemTitle = galleryItem.title;
+            itemImage = galleryItem.image?.url;
+            itemPrice = galleryItem.price;
         }
 
         const qty = Number(quantity) || 1;
-        const price = Number(galleryItem.price) || 0;
+        const price = Number(itemPrice) || 0;
 
         const order = await GalleryOrder.create({
-            galleryItemId,
-            productTitle: galleryItem.title,
-            productImage: galleryItem.image?.url,
+            galleryItemId: realGalleryItemId || undefined,
+            productId: realProductId || undefined,
+            productTitle: itemTitle,
+            productImage: itemImage,
             name: name.trim(),
             phone: phone.trim(),
             address: address?.trim() || '',
@@ -56,6 +83,7 @@ router.get('/', protect, isAdmin, async (req, res) => {
     try {
         const orders = await GalleryOrder.find()
             .populate('galleryItemId', 'title image')
+            .populate('productId', 'name images')
             .sort('-createdAt');
         res.status(200).json({ success: true, count: orders.length, data: orders });
     } catch (error) {

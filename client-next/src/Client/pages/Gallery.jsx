@@ -71,6 +71,13 @@ function QuickOrderModal({ item, onClose }) {
 
     if (res?.success) {
       setDone(true);
+      
+      // WhatsApp notification
+      const adminPhone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919000000000"; // Fallback to a placeholder
+      const message = `*New Quick Order from Gallery!*\n\n*Item:* ${item.title}\n*Quantity:* ${form.quantity}\n*Price:* ${item.price > 0 ? '₹' + item.price : 'On Inquiry'}\n\n*Customer Details:*\n*Name:* ${form.name.trim()}\n*Phone:* ${form.phone}\n*Address:* ${form.address.trim() || 'N/A'}\n*Notes:* ${form.notes.trim() || 'None'}`;
+      
+      window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`, '_blank');
+      
     } else {
       toast.error(res?.message || "Failed to submit. Please try again.");
     }

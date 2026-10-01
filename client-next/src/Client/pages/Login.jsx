@@ -108,8 +108,8 @@ export default function Login() {
                                 required
                                 feedback={false}
                                 toggleMask
-                                inputClassName="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
-                                className="w-full"
+                                inputClassName="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all pr-12"
+                                className="w-full relative [&>svg]:absolute [&>svg]:right-4 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2 [&>svg]:cursor-pointer [&>svg]:text-gray-500 [&>svg]:w-5 [&>svg]:h-5"
                                 placeholder="••••••••"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -122,7 +122,7 @@ export default function Login() {
                                     inputId="rememberMe" 
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.checked)}
-                                    className="mr-2 text-resin-blue" 
+                                    className="mr-2 text-resin-blue flex items-center justify-center [&_.p-checkbox-icon]:w-3 [&_.p-checkbox-icon]:h-3 [&_.p-checkbox-box]:flex [&_.p-checkbox-box]:items-center [&_.p-checkbox-box]:justify-center" 
                                 />
                                 <label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer">Remember me</label>
                             </div>

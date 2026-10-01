@@ -562,4 +562,52 @@ exports.deleteMultipleProducts = async (req, res) => {
             error: error.message
         });
     }
-}; 
+// @desc    Update multiple product prices
+// @route   POST /api/products/bulk-update-prices
+// @access  Private/Admin
+exports.updateMultipleProductPrices = async (req, res) => {
+    try {
+        const { productIds, newPrice } = req.body;
+
+        if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No product IDs provided'
+            });
+        }
+
+        if (newPrice === undefined || newPrice === null || isNaN(Number(newPrice))) {
+            return res.status(400).json({
+                success: false,
+                message: 'A valid new price is required'
+            });
+        }
+
+        const numericPrice = Number(newPrice);
+
+        // Update all selected products with the new price
+        const result = await Product.updateMany(
+            { _id: { $in: productIds } },
+            { $set: { price: numericPrice } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No matching products found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Successfully updated prices for ${result.modifiedCount} products`
+        });
+    } catch (error) {
+        console.error('Bulk update prices error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error updating product prices',
+            error: error.message
+        });
+    }
+};

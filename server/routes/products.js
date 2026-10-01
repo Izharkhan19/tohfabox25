@@ -7,6 +7,7 @@ const {
     updateProduct,
     deleteProduct,
     deleteMultipleProducts,
+    updateMultipleProductPrices,
     deleteProductImage,
     getFeaturedProducts
 } = require('../controllers/productController');
@@ -24,6 +25,7 @@ router.get('/:identifier', getProduct);
 
 // Protected/Admin routes
 router.post('/bulk-delete', protect, isAdmin, deleteMultipleProducts);
+router.post('/bulk-update-prices', protect, isAdmin, updateMultipleProductPrices);
 router.post('/', protect, isAdmin, upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'subImages', maxCount: 4 }]), createProduct);
 router.put('/:id', protect, isAdmin, upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'subImages', maxCount: 4 }]), updateProduct);
 router.delete('/:id', protect, isAdmin, deleteProduct);

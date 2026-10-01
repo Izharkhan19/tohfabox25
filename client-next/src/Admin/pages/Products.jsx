@@ -6,7 +6,7 @@ import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { Checkbox } from 'primereact/checkbox';
 import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { deleteProduct, deleteMultipleProducts, getProducts } from "../../api-services/apiService";
+import { deleteProduct, deleteMultipleProducts, updateMultipleProductPrices, getProducts } from "../../api-services/apiService";
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import LogoLoader from '../../components/LogoLoader';
@@ -18,6 +18,9 @@ export default function Products() {
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
+  const [bulkNewPrice, setBulkNewPrice] = useState("");
+  const [updatingPrice, setUpdatingPrice] = useState(false);
 
   /* -------------------- FETCH PRODUCTS -------------------- */
   const fetchAllProducts = async () => {
@@ -107,6 +110,28 @@ export default function Products() {
     p.category?.name?.toLowerCase().includes(globalFilter.toLowerCase())
   );
 
+  const handleBulkUpdatePrice = async () => {
+    if (selectedProducts.length === 0) return;
+    if (!bulkNewPrice || isNaN(Number(bulkNewPrice)) || Number(bulkNewPrice) < 0) {
+      toast.error("Please enter a valid positive number for the new price.");
+      return;
+    }
+
+    setUpdatingPrice(true);
+    const productIds = selectedProducts.map(p => p._id);
+    const resData = await updateMultipleProductPrices(productIds, Number(bulkNewPrice));
+
+    if (resData?.success) {
+      setIsPriceModalOpen(false);
+      setBulkNewPrice("");
+      setSelectedProducts([]);
+      fetchAllProducts();
+    } else {
+      toast.error(resData?.message || "Something went wrong.");
+    }
+    setUpdatingPrice(false);
+  };
+
   /* -------------------- UI -------------------- */
   return (
     <div className="p-4 sm:px-3 py-4 sm:p-6">
@@ -126,13 +151,22 @@ export default function Products() {
 
         <div className="flex w-full sm:w-auto flex-col sm:flex-row justify-end items-center gap-2 sm:gap-3">
           {selectedProducts.length > 0 && (
-            <button
-              onClick={deleteSelectedProducts}
-              className="w-full sm:w-auto bg-red-500 text-white px-4 py-3 sm:px-5 sm:py-2.5 rounded-xl shadow-sm hover:bg-red-600 transition-all flex items-center justify-center gap-2 font-medium"
-            >
-              <TrashIcon className="w-5 h-5" />
-              <span>Delete Selected ({selectedProducts.length})</span>
-            </button>
+            <>
+              <button
+                onClick={() => setIsPriceModalOpen(true)}
+                className="w-full sm:w-auto bg-blue-500 text-white px-4 py-3 sm:px-5 sm:py-2.5 rounded-xl shadow-sm hover:bg-blue-600 transition-all flex items-center justify-center gap-2 font-medium"
+              >
+                <PencilIcon className="w-5 h-5" />
+                <span>Update Price ({selectedProducts.length})</span>
+              </button>
+              <button
+                onClick={deleteSelectedProducts}
+                className="w-full sm:w-auto bg-red-500 text-white px-4 py-3 sm:px-5 sm:py-2.5 rounded-xl shadow-sm hover:bg-red-600 transition-all flex items-center justify-center gap-2 font-medium"
+              >
+                <TrashIcon className="w-5 h-5" />
+                <span>Delete Selected ({selectedProducts.length})</span>
+              </button>
+            </>
           )}
           <Link
             href="/admin/products/add"
@@ -299,6 +333,46 @@ export default function Products() {
       >
         <div className="flex justify-center p-2 bg-gray-50 rounded-lg">
           <img src={previewImage} alt="Preview" className="max-w-full h-auto max-h-[70vh] object-contain rounded shadow-sm" />
+        </div>
+      </Dialog>
+
+      {/* Bulk Update Price Modal */}
+      <Dialog
+        header={`Update Price for ${selectedProducts.length} Products`}
+        visible={isPriceModalOpen}
+        style={{ width: '90vw', maxWidth: '400px' }}
+        onHide={() => !updatingPrice && setIsPriceModalOpen(false)}
+        dismissableMask={!updatingPrice}
+      >
+        <div className="flex flex-col gap-4 p-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">New Price (₹)</label>
+            <input
+              type="number"
+              value={bulkNewPrice}
+              onChange={(e) => setBulkNewPrice(e.target.value)}
+              placeholder="Enter new price"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              min="0"
+              disabled={updatingPrice}
+            />
+          </div>
+          <div className="flex justify-end gap-3 mt-4">
+            <button
+              onClick={() => setIsPriceModalOpen(false)}
+              disabled={updatingPrice}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleBulkUpdatePrice}
+              disabled={updatingPrice || !bulkNewPrice}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              {updatingPrice ? "Updating..." : "Update Prices"}
+            </button>
+          </div>
         </div>
       </Dialog>
     </div>

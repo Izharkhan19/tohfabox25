@@ -174,6 +174,9 @@ export const deleteProduct = (id) =>
 export const deleteMultipleProducts = (productIds) =>
     handleApiCall(() => api.post(`/products/bulk-delete`, { productIds }), "Products deleted successfully!");
 
+export const updateMultipleProductPrices = (productIds, newPrice) =>
+    handleApiCall(() => api.post(`/products/bulk-update-prices`, { productIds, newPrice }), "Prices updated successfully!");
+
 export const deleteProductImage = (productId, imageId) =>
     handleApiCall(() => api.delete(`/products/${productId}/images/${imageId}`));
 

@@ -88,8 +88,8 @@ export default function Login() {
             feedback={false}
             toggleMask
             placeholder="Enter password"
-            inputClassName="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            className="w-full"
+            inputClassName="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
+            className="w-full relative [&>svg]:absolute [&>svg]:right-4 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2 [&>svg]:cursor-pointer [&>svg]:text-gray-300 [&>svg]:w-5 [&>svg]:h-5 [&>i]:absolute [&>i]:right-4 [&>i]:top-1/2 [&>i]:-translate-y-1/2 [&>i]:cursor-pointer [&>i]:text-gray-300 [&>i]:w-5 [&>i]:h-5"
             required
           />
         </div>

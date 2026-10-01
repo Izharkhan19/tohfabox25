@@ -318,32 +318,77 @@ export default function Orders() {
 
       {/* Status Modal */}
       <Dialog 
-        header="Update Status" 
-        visible={isStatusModalOpen && selectedOrder} 
+        header={`Order Details - ${selectedOrder?.orderNumber || (selectedOrder?._id && `#${selectedOrder._id.slice(-8)}`)}`}
+        visible={isStatusModalOpen && !!selectedOrder} 
         onHide={() => setIsStatusModalOpen(false)}
-        className="w-[95vw] sm:w-full sm:max-w-md rounded-2xl shadow-2xl"
+        className="w-[95vw] sm:w-full sm:max-w-xl rounded-2xl shadow-2xl"
         breakpoints={{ '960px': '75vw', '640px': '95vw' }}
       >
         <div className="flex flex-col gap-4 mt-2">
+          
+          {/* ORDER ITEMS SECTION */}
+          {selectedOrder?.items && selectedOrder.items.length > 0 && (
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 max-h-72 overflow-y-auto">
+              <h3 className="text-sm font-bold text-gray-800 mb-3 uppercase tracking-wider">Ordered Items</h3>
+              <div className="flex flex-col gap-3">
+                {selectedOrder.items.map((item, idx) => (
+                  <div key={idx} className="flex gap-4 items-center bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Image</div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-gray-800 text-sm sm:text-base line-clamp-2">{item.name}</h4>
+                      <div className="flex items-center justify-between mt-1 sm:mt-2">
+                        <span className="text-sm text-gray-500 font-medium">Qty: {item.quantity}</span>
+                        <span className="font-bold text-blue-600">₹{item.price?.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-200 flex justify-between items-center px-1">
+                 <span className="font-bold text-gray-600">Total Amount</span>
+                 <span className="font-bold text-lg text-gray-900">₹{selectedOrder.total?.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* SHIPPING & CUSTOMER DETAILS */}
+          {selectedOrder?.shippingAddress && (
+             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+               <h3 className="text-sm font-bold text-gray-800 mb-2 uppercase tracking-wider">Shipping Address</h3>
+               <p className="text-sm text-gray-700 leading-relaxed">
+                 <span className="font-semibold">{selectedOrder.shippingAddress.fullName}</span> ({selectedOrder.shippingAddress.phone})<br/>
+                 {selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.city}<br/>
+                 {selectedOrder.shippingAddress.state}, {selectedOrder.shippingAddress.country} - {selectedOrder.shippingAddress.zipCode}
+               </p>
+             </div>
+          )}
+
+          <h3 className="text-sm font-bold text-gray-800 mt-2 uppercase tracking-wider">Update Status</h3>
           <Dropdown
             value={newStatus}
             onChange={(e) => setNewStatus(e.value)}
             options={Object.entries(statusConfig).map(([key, c]) => ({ label: c.label, value: key }))}
             className="w-full"
-            placeholder="Select a status"
+            placeholder={selectedOrder?.status ? statusConfig[selectedOrder.status]?.label : "Select a status"}
           />
 
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
             <Button
-              label="Cancel"
+              label="Close"
               outlined
               onClick={() => setIsStatusModalOpen(false)}
               className="w-full sm:w-1/2 justify-center py-3"
             />
             <Button
-              label={updatingStatus ? "Updating..." : "Update"}
+              label={updatingStatus ? "Updating..." : "Update Status"}
               icon={updatingStatus ? "pi pi-spin pi-spinner" : "pi pi-check"}
-              disabled={updatingStatus}
+              disabled={updatingStatus || !newStatus}
               onClick={handleStatusUpdate}
               className="w-full sm:w-1/2 justify-center py-3 bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
             />

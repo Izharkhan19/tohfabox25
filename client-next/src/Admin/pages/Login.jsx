@@ -82,20 +82,23 @@ export default function Login() {
 
         <div className="mb-6">
           <label className="text-sm text-gray-300 mb-1 block">Password</label>
-          <Password
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            feedback={false}
-            toggleMask
-            placeholder="Enter password"
-            pt={{
-                root: { className: 'w-full relative flex items-center' },
-                input: { className: 'w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12' },
-                showIcon: { className: 'absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-300 w-5 h-5 z-10' },
-                hideIcon: { className: 'absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-300 w-5 h-5 z-10' }
-            }}
-            required
-          />
+          <div className="relative">
+              <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  className="w-full p-3 pr-12 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                  {showPassword ? <EyeSlashIcon className="w-5 h-5 text-gray-300 hover:text-white" /> : <EyeIcon className="w-5 h-5 text-gray-300 hover:text-white" />}
+              </button>
+          </div>
         </div>
 
         <Button

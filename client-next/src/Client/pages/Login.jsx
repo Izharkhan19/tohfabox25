@@ -30,14 +30,14 @@ export default function Login() {
                 const userObj = result.data?.data?.user;
                 const token = result.data?.data?.token;
                 const userRole = userObj?.role || 'user';
-                
+
                 // Set to localStorage
                 localStorage.setItem("token", token);
                 if (userRole === 'admin') {
                     localStorage.setItem("adminToken", token);
                 }
                 localStorage.setItem("user", JSON.stringify(userObj));
-                
+
                 // Dispatch event so App.jsx updates
                 window.dispatchEvent(new Event("userChanged"));
 
@@ -92,11 +92,12 @@ export default function Login() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Email Address or Phone Number</label>
-                            <InputText
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                            <input
+                                type="email"
                                 required
-                                className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
-                                placeholder="you@example.com or +1 (555) 000-0000"
+                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-sm"
+                                placeholder="you@example.com"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             />
@@ -104,32 +105,35 @@ export default function Login() {
 
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-2">Password</label>
-                            <Password
-                                required
-                                feedback={false}
-                                toggleMask
-                                pt={{
-                                    root: { className: 'w-full relative flex items-center' },
-                                    input: { className: 'w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all pr-12' },
-                                    showIcon: { className: 'absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 w-5 h-5 z-10' },
-                                    hideIcon: { className: 'absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 w-5 h-5 z-10' }
-                                }}
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    className="w-full px-3 py-2 pr-11 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-sm"
+                                    placeholder="••••••••"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((visible) => !visible)}
+                                    className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                                >
+                                    {showPassword ? <EyeSlashIcon className="w-5 h-5 text-gray-500 hover:text-gray-700" /> : <EyeIcon className="w-5 h-5 text-gray-500 hover:text-gray-700" />}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <Checkbox 
+                            {/* <div className="flex items-center"> */}
+                            {/* <Checkbox 
                                     inputId="rememberMe" 
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.checked)}
-                                    className="mr-2 text-resin-blue flex items-center justify-center [&_.p-checkbox-icon]:w-3 [&_.p-checkbox-icon]:h-3 [&_.p-checkbox-box]:flex [&_.p-checkbox-box]:items-center [&_.p-checkbox-box]:justify-center" 
+                                    className="mr-2 text-resin-blue flex items-center justify-center" 
                                 />
-                                <label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer">Remember me</label>
-                            </div>
+                                <label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer">Remember me</label> */}
+                            {/* </div> */}
                             <Link href="/forgot-password" className="text-sm font-bold text-resin-blue hover:text-resin-dark transition-colors">
                                 Forgot password?
                             </Link>

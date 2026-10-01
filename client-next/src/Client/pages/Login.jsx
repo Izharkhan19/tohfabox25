@@ -108,8 +108,12 @@ export default function Login() {
                                 required
                                 feedback={false}
                                 toggleMask
-                                inputClassName="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all pr-12"
-                                className="w-full relative [&>svg]:absolute [&>svg]:right-4 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2 [&>svg]:cursor-pointer [&>svg]:text-gray-500 [&>svg]:w-5 [&>svg]:h-5 [&>i]:absolute [&>i]:right-4 [&>i]:top-1/2 [&>i]:-translate-y-1/2 [&>i]:cursor-pointer [&>i]:text-gray-500 [&>i]:w-5 [&>i]:h-5"
+                                pt={{
+                                    root: { className: 'w-full relative flex items-center' },
+                                    input: { className: 'w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all pr-12' },
+                                    showIcon: { className: 'absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 w-5 h-5 z-10' },
+                                    hideIcon: { className: 'absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 w-5 h-5 z-10' }
+                                }}
                                 placeholder="••••••••"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}

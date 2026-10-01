@@ -88,8 +88,12 @@ export default function Login() {
             feedback={false}
             toggleMask
             placeholder="Enter password"
-            inputClassName="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
-            className="w-full relative [&>svg]:absolute [&>svg]:right-4 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2 [&>svg]:cursor-pointer [&>svg]:text-gray-300 [&>svg]:w-5 [&>svg]:h-5 [&>i]:absolute [&>i]:right-4 [&>i]:top-1/2 [&>i]:-translate-y-1/2 [&>i]:cursor-pointer [&>i]:text-gray-300 [&>i]:w-5 [&>i]:h-5"
+            pt={{
+                root: { className: 'w-full relative flex items-center' },
+                input: { className: 'w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12' },
+                showIcon: { className: 'absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-300 w-5 h-5 z-10' },
+                hideIcon: { className: 'absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-300 w-5 h-5 z-10' }
+            }}
             required
           />
         </div>

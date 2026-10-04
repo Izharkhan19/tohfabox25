@@ -562,6 +562,8 @@ exports.deleteMultipleProducts = async (req, res) => {
             error: error.message
         });
     }
+};
+
 // @desc    Update multiple product prices
 // @route   POST /api/products/bulk-update-prices
 // @access  Private/Admin

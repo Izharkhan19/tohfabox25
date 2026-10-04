@@ -527,20 +527,17 @@ export default function AddEditProduct() {
                 {loadingCategories ? (
                   <p>Loading categories...</p>
                 ) : (
-                  <select
+                  <Select
                     name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                    value={productCategories.map(cat => ({ value: cat._id, label: cat.name })).find(opt => opt.value === formData.category) || null}
+                    onChange={(selectedOption) => setFormData(prev => ({ ...prev, category: selectedOption ? selectedOption.value : "" }))}
+                    options={productCategories.map(cat => ({ value: cat._id, label: cat.name }))}
+                    className="basic-single"
+                    classNamePrefix="select"
+                    placeholder="Select category"
+                    isClearable
                     required
-                  >
-                    <option value="">Select category</option>
-                    {productCategories.map((cat) => (
-                      <option key={cat._id} value={cat._id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 )}
               </div>
               <div>
@@ -576,41 +573,31 @@ export default function AddEditProduct() {
               {/* Occasions */}
               <div>
                 <label className="block mb-2 font-semibold text-gray-700">Occasions</label>
-                <div className="bg-gray-50 border rounded-lg p-3 max-h-40 overflow-y-auto flex flex-col gap-2">
-                  {occasionCategories.length === 0 && <p className="text-sm text-gray-500">No occasions created.</p>}
-                  {occasionCategories.map(cat => (
-                    <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        value={cat._id}
-                        checked={formData.occasions.includes(cat._id)}
-                        onChange={(e) => handleCheckboxArrayChange(e, 'occasions')}
-                        className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
-                      />
-                      <span className="text-sm text-gray-700">{cat.name}</span>
-                    </label>
-                  ))}
-                </div>
+                <Select
+                  isMulti
+                  name="occasions"
+                  value={occasionCategories.filter(cat => formData.occasions.includes(cat._id)).map(cat => ({ value: cat._id, label: cat.name }))}
+                  onChange={(selectedOptions) => setFormData(prev => ({ ...prev, occasions: selectedOptions ? selectedOptions.map(opt => opt.value) : [] }))}
+                  options={occasionCategories.map(cat => ({ value: cat._id, label: cat.name }))}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  placeholder="Select occasions..."
+                />
               </div>
 
               {/* Relationships */}
               <div>
                 <label className="block mb-2 font-semibold text-gray-700">Relationships</label>
-                <div className="bg-gray-50 border rounded-lg p-3 max-h-40 overflow-y-auto flex flex-col gap-2">
-                  {relationshipCategories.length === 0 && <p className="text-sm text-gray-500">No relationships created.</p>}
-                  {relationshipCategories.map(cat => (
-                    <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        value={cat._id}
-                        checked={formData.relationships.includes(cat._id)}
-                        onChange={(e) => handleCheckboxArrayChange(e, 'relationships')}
-                        className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
-                      />
-                      <span className="text-sm text-gray-700">{cat.name}</span>
-                    </label>
-                  ))}
-                </div>
+                <Select
+                  isMulti
+                  name="relationships"
+                  value={relationshipCategories.filter(cat => formData.relationships.includes(cat._id)).map(cat => ({ value: cat._id, label: cat.name }))}
+                  onChange={(selectedOptions) => setFormData(prev => ({ ...prev, relationships: selectedOptions ? selectedOptions.map(opt => opt.value) : [] }))}
+                  options={relationshipCategories.map(cat => ({ value: cat._id, label: cat.name }))}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  placeholder="Select relationships..."
+                />
               </div>
             </div>
 

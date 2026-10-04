@@ -442,7 +442,7 @@ export default function Checkout() {
             {/* Payment Method */}
             <div className="min-w-0 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
               <h2 className="text-xl font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">
-                Payment Method
+                Payment Method <span className="text-sm text-gray-500 font-normal">(Coming Soon)</span>
               </h2>
 
               <div className="space-y-4">
@@ -483,9 +483,10 @@ export default function Checkout() {
                     type="radio"
                     name="payment"
                     value="razorpay"
-                    checked={paymentMethod === "razorpay"}
+                    checked={false}
+                    disabled={true}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-5 h-5 text-resin-blue"
+                    className="w-5 h-5 text-gray-400 cursor-not-allowed"
                   />
                   <ShieldCheckIcon className="w-8 h-8 text-resin-dark" />
                   <div>
@@ -509,9 +510,10 @@ export default function Checkout() {
                     type="radio"
                     name="payment"
                     value="cash_on_delivery"
-                    checked={paymentMethod === "cash_on_delivery"}
+                    checked={false}
+                    disabled={true}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-5 h-5 text-resin-blue"
+                    className="w-5 h-5 text-gray-400 cursor-not-allowed"
                   />
                   <BanknotesIcon className="w-8 h-8 text-resin-dark" />
                   <div>
@@ -659,7 +661,7 @@ export default function Checkout() {
               {/* Desktop Place Order Button */}
               <button
                 type="submit"
-                disabled={placingOrder}
+                disabled={true}
                 className="hidden lg:flex w-full bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold h-14 rounded-full tracking-widest uppercase text-sm transition-all shadow-md items-center justify-center gap-3"
               >
                 {placingOrder ? (
@@ -670,7 +672,7 @@ export default function Checkout() {
                 ) : (
                   <>
                     <LockClosedIcon className="w-5 h-5" />
-                    Place Order
+                    Coming Soon
                   </>
                 )}
               </button>
@@ -713,7 +715,7 @@ export default function Checkout() {
             <div className="flex flex-col gap-2">
               <button
                 type="submit"
-                disabled={placingOrder}
+                disabled={true}
                 className="w-full bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold h-12 rounded-xl tracking-widest uppercase text-sm transition-all shadow-md flex items-center justify-center gap-2"
               >
                 {placingOrder ? (
@@ -724,7 +726,7 @@ export default function Checkout() {
                 ) : (
                   <>
                     <LockClosedIcon className="w-5 h-5" />
-                    Place Order
+                    Coming Soon
                   </>
                 )}
               </button>

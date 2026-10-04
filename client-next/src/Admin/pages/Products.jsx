@@ -6,8 +6,9 @@ import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { Checkbox } from 'primereact/checkbox';
 import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { deleteProduct, deleteMultipleProducts, updateMultipleProductPrices, getProducts } from "../../api-services/apiService";
+import { deleteProduct, deleteMultipleProducts, updateMultipleProductPrices, getProducts, getCategories } from "../../api-services/apiService";
 import { toast } from 'react-toastify';
+import Select from "react-select";
 import Swal from 'sweetalert2';
 import LogoLoader from '../../components/LogoLoader';
 
@@ -21,6 +22,8 @@ export default function Products() {
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
   const [bulkNewPrice, setBulkNewPrice] = useState("");
   const [updatingPrice, setUpdatingPrice] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   /* -------------------- FETCH PRODUCTS -------------------- */
   const fetchAllProducts = async () => {
@@ -37,8 +40,16 @@ export default function Products() {
     setLoading(false);
   };
 
+  const fetchAllCategories = async () => {
+    const resData = await getCategories();
+    if (resData?.success) {
+      setCategories(resData.data?.data || resData.data || []);
+    }
+  };
+
   useEffect(() => {
     fetchAllProducts();
+    fetchAllCategories();
   }, []);
 
   /* -------------------- DELETE PRODUCT -------------------- */
@@ -105,7 +116,11 @@ export default function Products() {
     setSelectedProducts(_selectedProducts);
   };
 
-  const filteredProducts = products.filter(p => 
+  const filteredByCategoryProducts = products.filter(p => {
+    return selectedCategory ? (p.category?._id === selectedCategory || p.category === selectedCategory) : true;
+  });
+
+  const filteredProducts = filteredByCategoryProducts.filter(p => 
     p.name?.toLowerCase().includes(globalFilter.toLowerCase()) || 
     p.category?.name?.toLowerCase().includes(globalFilter.toLowerCase())
   );
@@ -137,16 +152,31 @@ export default function Products() {
     <div className="p-4 sm:px-3 py-4 sm:p-6">
       {/* Top Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4 sm:mb-6">
-        {/* Search Input */}
-        <div className="w-full sm:w-72 relative">
-          <input 
-            type="text" 
-            placeholder="Search products..." 
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-          />
-          <svg className="w-5 h-5 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4">
+          {/* Search Input */}
+          <div className="w-full sm:w-72 relative">
+            <input 
+              type="text" 
+              placeholder="Search products..." 
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+            />
+            <svg className="w-5 h-5 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          </div>
+
+          {/* Category Filter */}
+          <div className="w-full sm:w-64">
+            <Select
+              value={selectedCategory ? { value: selectedCategory, label: categories.find(c => c._id === selectedCategory)?.name } : null}
+              onChange={(selectedOption) => setSelectedCategory(selectedOption ? selectedOption.value : "")}
+              options={[{ value: "", label: "All Categories" }, ...categories.map(cat => ({ value: cat._id, label: cat.name }))]}
+              className="basic-single w-full"
+              classNamePrefix="select"
+              placeholder="All Categories"
+              isClearable
+            />
+          </div>
         </div>
 
         <div className="flex w-full sm:w-auto flex-col sm:flex-row justify-end items-center gap-2 sm:gap-3">
@@ -196,7 +226,7 @@ export default function Products() {
           {/* Desktop Table View */}
           <div className="hidden lg:block bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden w-full">
             <DataTable 
-              value={products} 
+              value={filteredByCategoryProducts} 
               selection={selectedProducts} 
               onSelectionChange={(e) => setSelectedProducts(e.value)} 
               dataKey="_id"

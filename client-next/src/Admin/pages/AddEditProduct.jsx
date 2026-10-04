@@ -161,6 +161,7 @@ import {
 import imageCompression from 'browser-image-compression';
 import axios from "axios";
 import { toast } from "react-toastify";
+import Select from "react-select";
 import LogoLoader from "../../components/LogoLoader";
 
 export default function AddEditProduct() {

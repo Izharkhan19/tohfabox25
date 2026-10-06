@@ -463,6 +463,10 @@ export default function Products() {
                                   product.images?.[0]?.url ||
                                   "https://via.placeholder.com/600"
                                 }
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = "https://via.placeholder.com/600";
+                                }}
                                 alt={product.name}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                               />
@@ -508,9 +512,10 @@ export default function Products() {
                                   </div>
                                   
                                   {viewMode === 'list' && (
-                                      <p className="text-xs md:text-sm text-gray-500 line-clamp-2 md:line-clamp-3 mb-2 md:mb-4 font-medium hidden sm:block">
-                                          {product.description}
-                                      </p>
+                                      <div 
+                                          className="text-xs md:text-sm text-gray-500 line-clamp-2 md:line-clamp-3 mb-2 md:mb-4 font-medium hidden sm:block prose prose-sm max-w-none"
+                                          dangerouslySetInnerHTML={{ __html: product.description?.replace(/&nbsp;/g, ' ') || '' }}
+                                      />
                                   )}
                               </div>
 

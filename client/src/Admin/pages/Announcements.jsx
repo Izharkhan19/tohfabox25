@@ -18,7 +18,7 @@ export default function Announcements() {
         setLoading(true);
         const result = await getAnnouncements();
         if (result?.success) {
-            setAnnouncements(result.data);
+            setAnnouncements(result.data?.data || []);
         }
         setLoading(false);
     };

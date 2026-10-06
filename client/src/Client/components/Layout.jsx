@@ -103,7 +103,7 @@ export default function ClientLayout() {
         const fetchAnnouncement = async () => {
             const res = await getActiveAnnouncement();
             if (res?.success && res?.data) {
-                setAnnouncement(res.data);
+                setAnnouncement(res.data?.data || null);
             }
         };
         fetchAnnouncement();

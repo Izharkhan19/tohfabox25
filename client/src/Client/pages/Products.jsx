@@ -19,6 +19,13 @@ import LogoLoader from "../../components/LogoLoader";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 
+const decodeHTML = (html) => {
+  if (!html) return '';
+  const txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+};
+
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -455,9 +462,9 @@ export default function Products() {
                   <motion.div variants={itemVariants} key={product._id} className="h-full">
                       <Tilt tiltMaxAngleX={5} tiltMaxAngleY={5} scale={1.01} transitionSpeed={1000} className="h-full">
                           <div
-                            className={`h-full group bg-white rounded-3xl shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all duration-300 overflow-hidden border border-[#c89666]/20 flex ${viewMode === 'list' ? 'flex-row h-48 md:h-64' : 'flex-col'}`}
+                            className={`h-full group bg-white rounded-3xl shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all duration-300 overflow-hidden border border-[#c89666]/20 flex ${viewMode === 'list' ? 'flex-col sm:flex-row' : 'flex-col'}`}
                           >
-                            <Link to={`/products/${product._id}`} className={`block overflow-hidden relative bg-gray-100 ${viewMode === 'list' ? 'w-2/5 md:w-1/3' : 'w-full aspect-square'}`}>
+                            <Link to={`/products/${product._id}`} className={`block overflow-hidden relative bg-gray-50 shrink-0 ${viewMode === 'list' ? 'w-full sm:w-[280px] h-56 sm:h-auto' : 'w-full aspect-square'}`}>
                               <img referrerPolicy="no-referrer"
                                 src={
                                   product.images?.[0]?.url ||
@@ -479,7 +486,7 @@ export default function Products() {
                               )}
                             </Link>
 
-                            <div className={`p-3 md:p-6 flex flex-col justify-between flex-1 relative ${viewMode === 'list' ? 'justify-center' : ''}`}>
+                            <div className={`p-4 md:p-6 flex flex-col justify-between flex-1 relative ${viewMode === 'list' ? 'sm:py-8 sm:pr-8' : ''}`}>
                               <button
                                 onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
                                 className={`absolute z-20 p-2 md:p-3 rounded-full bg-white shadow-md hover:bg-gray-50 transition-all active:scale-90 ${viewMode === 'list' ? 'top-4 right-4' : '-top-5 md:-top-6 right-3 md:right-4'}`}
@@ -513,8 +520,8 @@ export default function Products() {
                                   
                                   {viewMode === 'list' && (
                                       <div 
-                                          className="text-xs md:text-sm text-gray-500 line-clamp-2 md:line-clamp-3 mb-2 md:mb-4 font-medium hidden sm:block prose prose-sm max-w-none"
-                                          dangerouslySetInnerHTML={{ __html: product.description?.replace(/&nbsp;/g, ' ') || '' }}
+                                          className="text-sm text-gray-500 line-clamp-3 mb-4 font-medium hidden sm:block prose prose-sm max-w-none"
+                                          dangerouslySetInnerHTML={{ __html: decodeHTML(product.description) }}
                                       />
                                   )}
                               </div>

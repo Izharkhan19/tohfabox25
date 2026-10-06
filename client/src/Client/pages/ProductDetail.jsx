@@ -14,6 +14,13 @@ import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
 
+const decodeHTML = (html) => {
+    if (!html) return '';
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+};
+
 export default function ProductDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -255,7 +262,7 @@ export default function ProductDetail() {
                                 <div className={`relative ${!isDescExpanded ? 'max-h-32 overflow-hidden' : ''}`}>
                                     <div 
                                         className="text-sm lg:text-base text-gray-600 font-light leading-relaxed prose prose-sm max-w-none break-words"
-                                        dangerouslySetInnerHTML={{ __html: product.description.replace(/&nbsp;/g, ' ') }}
+                                        dangerouslySetInnerHTML={{ __html: decodeHTML(product.description) }}
                                     />
                                     {!isDescExpanded && (
                                         <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>

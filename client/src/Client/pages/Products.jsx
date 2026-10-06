@@ -51,7 +51,7 @@ export default function Products() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState({ type: initialFilterType, id: initialFilterId });
-  const [sortBy, setSortBy] = useState("featured");
+  const [sortBy, setSortBy] = useState("price-low");
   const [viewMode, setViewMode] = useState("grid");
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -209,13 +209,13 @@ export default function Products() {
                >
                  <FunnelIcon className="w-4 h-4 text-[#e1b382]" /> Categories
                </button>
-               <select
+                <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 appearance-none text-center"
                 >
+                  <option value="price-low">Sort: Price (Low to High)</option>
                   <option value="featured">Featured First</option>
-                  <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
                   <option value="name">Alphabetical</option>
                   <option value="rating">Highest Rated</option>
@@ -229,8 +229,8 @@ export default function Products() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-6 py-2.5 bg-white border border-gray-200 rounded-2xl font-bold text-sm text-[#12343b] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 cursor-pointer transition-all"
               >
-                <option value="featured">Sort: Featured</option>
-                <option value="price-low">Price: Low to High</option>
+                <option value="price-low">Sort: Price (Low to High)</option>
+                <option value="featured">Featured First</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="name">Alphabetical</option>
                 <option value="rating">Highest Rated</option>

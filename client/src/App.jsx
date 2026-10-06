@@ -137,6 +137,7 @@ const AdminTransactions = lazy(() => import("./Admin/pages/Transactions"));
 const AdminPromos = lazy(() => import("./Admin/pages/Promos"));
 const AdminCustomRequests = lazy(() => import("./Admin/pages/CustomRequests"));
 const AdminGallery = lazy(() => import("./Admin/pages/Gallery"));
+const AdminAnnouncements = lazy(() => import("./Admin/pages/Announcements"));
 const AdminLayout = lazy(() => import("./Admin/components/Layout"));
 
 // === Client (Lazy Loaded) ===
@@ -293,6 +294,7 @@ export default function App() {
             <Route path="promos" element={<AdminPromos />} />
             <Route path="custom-requests" element={<AdminCustomRequests />} />
             <Route path="gallery" element={<AdminGallery />} />
+            <Route path="announcements" element={<AdminAnnouncements />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Route>
 

@@ -119,6 +119,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/custom-requests', customRequestRoutes);
 app.use('/api/gallery', require('./routes/gallery'));
 app.use('/api/gallery-orders', require('./routes/galleryOrders'));
+app.use('/api/announcements', require('./routes/announcementRoutes'));
 
 // Health check route
 app.get('/api/health', (req, res) => {

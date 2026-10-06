@@ -72,7 +72,8 @@ import {
   XMarkIcon,
   CurrencyDollarIcon,
   ClipboardDocumentListIcon,
-  PhotoIcon
+  PhotoIcon,
+  MegaphoneIcon
 } from "@heroicons/react/24/outline";
 
 const menu = [
@@ -85,6 +86,7 @@ const menu = [
   { name: "Promo Codes", icon: TicketIcon, path: "/admin/promos" },
   { name: "Custom Requests", icon: ClipboardDocumentListIcon, path: "/admin/custom-requests" },
   { name: "Gallery", icon: PhotoIcon, path: "/admin/gallery" },
+  { name: "Announcements", icon: MegaphoneIcon, path: "/admin/announcements" },
 ];
 
 export default function Sidebar({ onClose }) {

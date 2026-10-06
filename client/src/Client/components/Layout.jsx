@@ -19,6 +19,7 @@ import {
 import { useAppStore } from "../../stores/useAppStore";
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
+import { getActiveAnnouncement } from "../../api-services/apiService";
 
 export default function ClientLayout() {
     const location = useLocation();
@@ -27,6 +28,7 @@ export default function ClientLayout() {
     const [scrolled, setScrolled] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState(null);
     const [showInstallBanner, setShowInstallBanner] = useState(false);
+    const [announcement, setAnnouncement] = useState(null);
 
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
@@ -97,6 +99,16 @@ export default function ClientLayout() {
         };
     }, []);
 
+    useEffect(() => {
+        const fetchAnnouncement = async () => {
+            const res = await getActiveAnnouncement();
+            if (res?.success && res?.data) {
+                setAnnouncement(res.data);
+            }
+        };
+        fetchAnnouncement();
+    }, []);
+
     const isActive = (path) => {
         if (path === "/") return location.pathname === "/";
         return location.pathname.startsWith(path);
@@ -161,7 +173,18 @@ export default function ClientLayout() {
                 ? "bg-[#0f2b31]/95 backdrop-blur-xl shadow-[0_12px_35px_rgba(18,52,59,0.18)] border-[#e1b382]/25 py-2 md:py-3" 
                 : "bg-[#12343b] border-[#e1b382]/15 py-4 md:py-5"
             }`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {announcement && (
+                    <div className="bg-[#e1b382] text-[#12343b] text-[11px] md:text-sm font-bold py-1.5 px-4 text-center absolute top-0 left-0 w-full shadow-sm z-50">
+                        {announcement.link ? (
+                            <Link to={announcement.link} className="hover:underline inline-flex items-center gap-2">
+                                {announcement.message} <span aria-hidden="true">&rarr;</span>
+                            </Link>
+                        ) : (
+                            <span>{announcement.message}</span>
+                        )}
+                    </div>
+                )}
+                <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${announcement ? 'mt-6 md:mt-8' : ''}`}>
                     <div className="flex justify-between items-center h-14 md:h-16">
                         
                         {/* Mobile: Hamburger Left */}

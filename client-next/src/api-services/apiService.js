@@ -352,3 +352,19 @@ export const updateGalleryOrderStatus = (id, status) =>
 
 export const deleteGalleryOrder = (id) =>
     handleApiCall(() => api.delete(`/gallery-orders/${id}`), "Order deleted!");
+
+// ==================== ANNOUNCEMENTS ====================
+export const getActiveAnnouncement = () =>
+    handleApiCall(() => api.get("/announcements/active"));
+
+export const getAnnouncements = () =>
+    handleApiCall(() => api.get("/announcements"));
+
+export const createAnnouncement = (data) =>
+    handleApiCall(() => api.post("/announcements", data), "Announcement created!");
+
+export const updateAnnouncement = (id, data) =>
+    handleApiCall(() => api.put(`/announcements/${id}`, data), "Announcement updated!");
+
+export const deleteAnnouncement = (id) =>
+    handleApiCall(() => api.delete(`/announcements/${id}`), "Announcement deleted!");

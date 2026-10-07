@@ -15,16 +15,31 @@ export async function generateMetadata({ params }) {
     const product = data.product || data;
 
     // Get the first image URL or fallback to logo
-    const imageUrl = product.images?.[0]?.url || product.image?.url || "/logo.png";
+    let imageUrl = product.images?.[0]?.url || product.image?.url || "/logo.png";
+    
+    // WhatsApp requires absolute URLs with https://
+    if (imageUrl.startsWith('/')) {
+      if (imageUrl === '/logo.png') {
+        imageUrl = `https://artistarycrafts.vercel.app${imageUrl}`;
+      } else {
+        // If it's a relative path from the backend uploads
+        imageUrl = `${API_URL}${imageUrl}`;
+      }
+    } else if (imageUrl.startsWith('http://')) {
+      // Force HTTPS for Cloudinary or other external URLs
+      imageUrl = imageUrl.replace('http://', 'https://');
+    }
+
     const title = `${product.title || product.name} | Artistary Crafts`;
-    const description = product.description || "Check out this beautiful handcrafted crochet item at Artistary Crafts.";
+    // Strip HTML from description if any, otherwise it can break OG tags
+    const cleanDescription = (product.description || "Check out this beautiful handcrafted crochet item at Artistary Crafts.").replace(/<[^>]*>?/gm, '');
 
     return {
       title: title,
-      description: description,
+      description: cleanDescription,
       openGraph: {
         title: title,
-        description: description,
+        description: cleanDescription,
         url: `https://artistarycrafts.vercel.app/products/${id}`,
         siteName: "Artistary Crafts",
         images: [
@@ -40,7 +55,7 @@ export async function generateMetadata({ params }) {
       twitter: {
         card: "summary_large_image",
         title: title,
-        description: description,
+        description: cleanDescription,
         images: [imageUrl],
       },
     };

@@ -50,6 +50,168 @@ const razorpay = new Razorpay({
 // const Product = require('../models/Product');
 // const Order = require('../models/Order');
 
+/**
+ * Validates requested items against Product inventory, decrements stock, and returns normalized order items + subtotal.
+ */
+async function prepareOrderItems(items) {
+    const orderItems = [];
+    let calculatedSubtotal = 0;
+
+    for (const item of items) {
+        const product = await Product.findById(item.product);
+        if (!product) {
+            const err = new Error(`Product not found: ${item.product}`);
+            err.statusCode = 404;
+            throw err;
+        }
+        if (!product.isActive) {
+            const err = new Error(`Product unavailable: ${product.name}`);
+            err.statusCode = 400;
+            throw err;
+        }
+        if (product.stock < item.quantity) {
+            const err = new Error(`Insufficient stock for ${product.name}`);
+            err.statusCode = 400;
+            throw err;
+        }
+
+        orderItems.push({
+            product: product._id,
+            name: product.name,
+            image: product.images?.[0]?.url || null,
+            price: product.price,
+            quantity: item.quantity,
+        });
+
+        calculatedSubtotal += product.price * item.quantity;
+        product.stock -= item.quantity;
+        product.sales += item.quantity;
+        await product.save();
+    }
+
+    return { orderItems, calculatedSubtotal };
+}
+
+// @desc    Create order from WhatsApp or external channel (supports logged-in & guest users)
+// @route   POST /api/orders/whatsapp
+// @access  Public (optionalAuth)
+exports.createWhatsAppOrder = async (req, res) => {
+    try {
+        const {
+            items,
+            shippingAddress = {},
+            guestCustomer = {},
+            tax = 0,
+            shippingCost = 0,
+            promoCode,
+            notes,
+            orderSource = 'whatsapp',
+            paymentMethod = 'whatsapp',
+        } = req.body;
+
+        if (!items || items.length === 0) {
+            return res.status(400).json({ success: false, message: 'Order must contain at least one item' });
+        }
+
+        const resolvedName =
+            shippingAddress.fullName ||
+            guestCustomer.name ||
+            req.user?.name ||
+            '';
+        const resolvedPhone =
+            shippingAddress.phone ||
+            guestCustomer.phone ||
+            req.user?.phone ||
+            '';
+        const resolvedEmail =
+            guestCustomer.email ||
+            req.user?.email ||
+            '';
+
+        if (!req.user && (!resolvedName.trim() || !resolvedPhone.trim())) {
+            return res.status(400).json({
+                success: false,
+                message: 'Customer name and phone number are required for guest orders'
+            });
+        }
+
+        let orderItems, calculatedSubtotal;
+        try {
+            ({ orderItems, calculatedSubtotal } = await prepareOrderItems(items));
+        } catch (err) {
+            return res.status(err.statusCode || 400).json({ success: false, message: err.message });
+        }
+
+        let appliedDiscount = 0;
+        if (promoCode) {
+            try {
+                appliedDiscount = (await findValidPromo(promoCode, calculatedSubtotal)).discount;
+            } catch (error) {
+                return res.status(400).json({ success: false, message: error.message });
+            }
+        }
+
+        const total = calculatedSubtotal + Number(tax) + Number(shippingCost) - appliedDiscount;
+        const normalizedSource = ['website', 'whatsapp', 'instagram', 'phone', 'other'].includes(orderSource)
+            ? orderSource
+            : 'whatsapp';
+
+        const order = await Order.create({
+            user: req.user?._id || undefined,
+            guestCustomer: {
+                name: resolvedName.trim(),
+                phone: resolvedPhone.trim(),
+                email: resolvedEmail.trim(),
+            },
+            orderSource: normalizedSource,
+            items: orderItems,
+            shippingAddress: {
+                fullName: resolvedName.trim(),
+                phone: resolvedPhone.trim(),
+                street: shippingAddress.street || '',
+                apartment: shippingAddress.apartment || '',
+                city: shippingAddress.city || '',
+                state: shippingAddress.state || '',
+                zipCode: shippingAddress.zipCode || '',
+                country: shippingAddress.country || 'India',
+            },
+            paymentMethod: ['whatsapp', 'cash_on_delivery', 'other', 'razorpay', 'bank_transfer'].includes(paymentMethod)
+                ? paymentMethod
+                : 'whatsapp',
+            paymentStatus: 'pending',
+            subtotal: calculatedSubtotal,
+            tax: Number(tax),
+            shippingCost: Number(shippingCost),
+            discount: appliedDiscount,
+            promoCode: promoCode?.trim().toUpperCase(),
+            total,
+            notes,
+            status: 'pending',
+            statusHistory: [{
+                status: 'pending',
+                comment: notes || `Order initiated via ${normalizedSource}`,
+                updatedBy: req.user?._id,
+                updatedVia: normalizedSource === 'whatsapp' ? 'whatsapp' : 'other',
+                timestamp: new Date(),
+            }],
+        });
+
+        await incrementPromoUsage(promoCode);
+        if (order.user) {
+            await order.populate('user', 'name email phone');
+        }
+
+        return res.status(201).json({
+            success: true,
+            message: 'WhatsApp order recorded successfully',
+            data: order,
+        });
+    } catch (error) {
+        console.error('Create WhatsApp order error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    }
+};
+
 exports.createOrder = async (req, res) => {
     try {
         const {
@@ -407,6 +569,7 @@ exports.getOrders = async (req, res) => {
         const {
             status,
             paymentStatus,
+            orderSource,
             startDate,
             endDate,
             page = 1,
@@ -428,6 +591,10 @@ exports.getOrders = async (req, res) => {
 
         if (paymentStatus) {
             filter.paymentStatus = paymentStatus;
+        }
+
+        if (orderSource) {
+            filter.orderSource = orderSource;
         }
 
         if (startDate || endDate) {
@@ -473,7 +640,8 @@ exports.getOrder = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id)
             .populate('user', 'name email phone')
-            .populate('items.product', 'name slug');
+            .populate('items.product', 'name slug')
+            .populate('statusHistory.updatedBy', 'name email role');
 
         if (!order) {
             return res.status(404).json({
@@ -483,7 +651,8 @@ exports.getOrder = async (req, res) => {
         }
 
         // Check if user owns this order or is admin
-        if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+        const isOwner = order.user && order.user._id.toString() === req.user._id.toString();
+        if (!isOwner && req.user.role !== 'admin') {
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to access this order'
@@ -509,7 +678,7 @@ exports.getOrder = async (req, res) => {
 // @access  Private/Admin
 exports.updateOrderStatus = async (req, res) => {
     try {
-        const { status, comment, trackingNumber, shippingCarrier } = req.body;
+        const { status, comment, trackingNumber, shippingCarrier, updatedVia } = req.body;
 
         if (!status) {
             return res.status(400).json({
@@ -535,6 +704,7 @@ exports.updateOrderStatus = async (req, res) => {
             status,
             comment,
             updatedBy: req.user._id,
+            updatedVia: ['website', 'admin', 'whatsapp', 'other'].includes(updatedVia) ? updatedVia : 'admin',
             timestamp: new Date()
         });
 
@@ -564,7 +734,8 @@ exports.updateOrderStatus = async (req, res) => {
         }
 
         await order.save();
-        await order.populate('user', 'name email');
+        await order.populate('user', 'name email phone');
+        await order.populate('statusHistory.updatedBy', 'name email role');
 
         res.status(200).json({
             success: true,
@@ -648,7 +819,8 @@ exports.cancelOrder = async (req, res) => {
         }
 
         // Check if user owns this order or is admin
-        if (order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+        const isOwner = order.user && order.user.toString() === req.user._id.toString();
+        if (!isOwner && req.user.role !== 'admin') {
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to cancel this order'

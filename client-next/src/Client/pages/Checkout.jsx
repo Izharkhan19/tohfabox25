@@ -14,6 +14,7 @@ import {
 import { toast } from "react-toastify";
 import {
   createOrder,
+  createWhatsAppOrder,
   confirmOrder,
   getCurrentUser,
   validatePromo,
@@ -100,37 +101,93 @@ export default function Checkout() {
   const discount = appliedPromo?.discount || 0;
   const total = subtotal + shippingCost - discount;
 
-  const handleWhatsAppOrder = () => {
-    const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917737510030"; // Fallback number
-    let message = "Hello! I would like to place an order for the following items:\n\n";
-    
-    cartItems.forEach((item, index) => {
-      const product = item.product;
-      message += `${index + 1}. *${product.name}* (x${item.quantity}) - ₹${(product.price * item.quantity).toFixed(2)}\n`;
-    });
-    
-    message += `\n*Subtotal:* ₹${subtotal.toFixed(2)}`;
-    if (shippingCost > 0) {
-      message += `\n*Shipping:* ₹${shippingCost.toFixed(2)}`;
-    }
-    if (discount > 0) {
-      message += `\n*Discount:* -₹${discount.toFixed(2)}`;
-    }
-    message += `\n*Total Amount:* ₹${total.toFixed(2)}\n\n`;
-    
-    // Add customer details if available
-    if (formData.firstName || formData.phone) {
-      message += `*Customer Details:*\n`;
-      if (formData.firstName) message += `Name: ${formData.firstName} ${formData.lastName}\n`;
-      if (formData.phone) message += `Phone: ${formData.phone}\n`;
-      if (formData.address) message += `Address: ${formData.address}, ${formData.apartment ? formData.apartment + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pincode}\n`;
-      message += `\n`;
+  const handleWhatsAppOrder = async () => {
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty!");
+      return;
     }
 
-    message += `Please guide me with the UPI / Cash on Delivery (COD) payment options.`;
-    
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+    const isLoggedIn = !!(typeof window !== "undefined" && (localStorage.getItem("token") || localStorage.getItem("adminToken")));
+
+    if (!isLoggedIn && (!fullName || !formData.phone?.trim())) {
+      toast.error("Please enter your name and phone number to place a WhatsApp order.");
+      return;
+    }
+
+    setPlacingOrder(true);
+    try {
+      const result = await createWhatsAppOrder({
+        items: cartItems.map((item) => ({
+          product: item.product._id,
+          quantity: item.quantity,
+        })),
+        shippingAddress: {
+          fullName,
+          phone: formData.phone,
+          street: formData.address,
+          apartment: formData.apartment || "",
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.pincode,
+          country: "India",
+        },
+        guestCustomer: {
+          name: fullName,
+          phone: formData.phone,
+          email: formData.email,
+        },
+        shippingCost: Number(shippingCost.toFixed(2)),
+        promoCode: appliedPromo?.code,
+        orderSource: "whatsapp",
+        paymentMethod: "whatsapp",
+      });
+
+      if (!result?.success) {
+        toast.error(result?.message || "Failed to save WhatsApp order.");
+        return;
+      }
+
+      const savedOrder = result.data?.data || result.data;
+      const orderNumber = savedOrder?.orderNumber;
+
+      const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917737510030"; // Fallback number
+      let message = "Hello! I would like to place an order for the following items:\n\n";
+      if (orderNumber) {
+        message += `*Order ID:* ${orderNumber}\n\n`;
+      }
+
+      cartItems.forEach((item, index) => {
+        const product = item.product;
+        message += `${index + 1}. *${product.name}* (x${item.quantity}) - ₹${(product.price * item.quantity).toFixed(2)}\n`;
+      });
+
+      message += `\n*Subtotal:* ₹${subtotal.toFixed(2)}`;
+      if (shippingCost > 0) {
+        message += `\n*Shipping:* ₹${shippingCost.toFixed(2)}`;
+      }
+      if (discount > 0) {
+        message += `\n*Discount:* -₹${discount.toFixed(2)}`;
+      }
+      message += `\n*Total Amount:* ₹${total.toFixed(2)}\n\n`;
+
+      // Add customer details if available
+      if (formData.firstName || formData.phone) {
+        message += `*Customer Details:*\n`;
+        if (fullName) message += `Name: ${fullName}\n`;
+        if (formData.phone) message += `Phone: ${formData.phone}\n`;
+        if (formData.address) message += `Address: ${formData.address}, ${formData.apartment ? formData.apartment + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pincode}\n`;
+        message += `\n`;
+      }
+
+      message += `Please guide me with the UPI / Cash on Delivery (COD) payment options.`;
+
+      toast.success("Order recorded! Opening WhatsApp...");
+      const encodedMessage = encodeURIComponent(message);
+      window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
+    } finally {
+      setPlacingOrder(false);
+    }
   };
 
   const handleApplyPromo = async () => {

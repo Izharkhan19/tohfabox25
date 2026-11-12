@@ -32,6 +32,11 @@ const statusConfig = {
     color: "bg-yellow-100 text-yellow-800",
     label: "Pending",
   },
+  confirmed: {
+    icon: CheckCircleIcon,
+    color: "bg-teal-100 text-teal-800",
+    label: "Confirmed",
+  },
   processing: {
     icon: Cog6ToothIcon,
     color: "bg-blue-100 text-blue-800",
@@ -54,12 +59,42 @@ const statusConfig = {
   },
 };
 
+const sourceConfig = {
+  website: {
+    color: "bg-blue-50 text-blue-700 border-blue-200",
+    label: "Website",
+  },
+  whatsapp: {
+    color: "bg-green-50 text-green-700 border-green-200",
+    label: "WhatsApp",
+  },
+  instagram: {
+    color: "bg-pink-50 text-pink-700 border-pink-200",
+    label: "Instagram",
+  },
+  phone: {
+    color: "bg-amber-50 text-amber-700 border-amber-200",
+    label: "Phone",
+  },
+  other: {
+    color: "bg-gray-100 text-gray-700 border-gray-200",
+    label: "Other",
+  },
+};
+
+const updatedViaOptions = [
+  { label: "Admin Panel", value: "admin" },
+  { label: "WhatsApp", value: "whatsapp" },
+  { label: "Other", value: "other" },
+];
+
 export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const [filter, setFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 500);
 
@@ -68,6 +103,8 @@ export default function Orders() {
 
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState("");
+  const [statusComment, setStatusComment] = useState("");
+  const [updatedVia, setUpdatedVia] = useState("admin");
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
   /* ---------------- FETCH ORDERS ---------------- */
@@ -75,7 +112,7 @@ export default function Orders() {
     setLoading(true);
     setError("");
 
-    const res = await getOrders();
+    const res = await getOrders({ limit: 100 });
     if (res?.success) {
       setOrders(res?.data?.data || []);
     } else {
@@ -94,6 +131,9 @@ export default function Orders() {
 
     if (res?.success) {
       setSelectedOrder(res?.data?.data);
+      setNewStatus("");
+      setStatusComment("");
+      setUpdatedVia(res?.data?.data?.orderSource === "whatsapp" ? "whatsapp" : "admin");
       setIsStatusModalOpen(true);
     } else {
       toast.error("Failed to load order details");
@@ -108,15 +148,19 @@ export default function Orders() {
     setUpdatingStatus(true);
     const res = await updateOrderStatus(selectedOrder._id, {
       status: newStatus,
+      comment: statusComment.trim() || undefined,
+      updatedVia,
     });
 
     if (res?.success) {
+      toast.success("Order status updated!");
       await fetchOrders();
-      setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
-      setIsStatusModalOpen(false);
+      const updated = res?.data?.data;
+      setSelectedOrder(updated || ((prev) => ({ ...prev, status: newStatus })));
       setNewStatus("");
+      setStatusComment("");
     } else {
-      toast.error("Failed to update status");
+      toast.error(res?.message || "Failed to update status");
     }
     setUpdatingStatus(false);
   };
@@ -129,18 +173,26 @@ export default function Orders() {
   /* ---------------- FILTERING ---------------- */
   const filteredOrders = orders
     .filter((o) => filter === "all" || o.status === filter)
+    .filter((o) => sourceFilter === "all" || (o.orderSource || "website") === sourceFilter)
     .filter((o) => {
       const q = debouncedSearch.toLowerCase();
+      if (!q) return true;
       return (
         o.orderNumber?.toLowerCase().includes(q) ||
         o.user?.name?.toLowerCase().includes(q) ||
-        o.user?.email?.toLowerCase().includes(q)
+        o.user?.email?.toLowerCase().includes(q) ||
+        o.guestCustomer?.name?.toLowerCase().includes(q) ||
+        o.guestCustomer?.phone?.toLowerCase().includes(q) ||
+        o.shippingAddress?.fullName?.toLowerCase().includes(q) ||
+        o.shippingAddress?.phone?.toLowerCase().includes(q) ||
+        o.orderSource?.toLowerCase().includes(q)
       );
     });
 
   const statusCounts = {
     all: orders.length,
     pending: orders.filter((o) => o.status === "pending").length,
+    confirmed: orders.filter((o) => o.status === "confirmed").length,
     processing: orders.filter((o) => o.status === "processing").length,
     shipped: orders.filter((o) => o.status === "shipped").length,
     delivered: orders.filter((o) => o.status === "delivered").length,
@@ -150,19 +202,36 @@ export default function Orders() {
   /* ---------------- UI ---------------- */
   return (
     <div className="p-4 sm:px-3 py-4 sm:p-6">
-      {/* Search */}
-      <div className="mb-6 max-w-md relative">
-        <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by order ID, name, email..."
-          className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500"
-        />
+      {/* Search & Source Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6 items-stretch sm:items-center justify-between">
+        <div className="max-w-md w-full relative">
+          <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by order ID, name, email, phone..."
+            className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {["all", "website", "whatsapp", "other"].map((src) => (
+            <button
+              key={src}
+              onClick={() => setSourceFilter(src)}
+              className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border transition ${
+                sourceFilter === src
+                  ? "bg-gray-900 text-white border-gray-900"
+                  : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
+              }`}
+            >
+              {src === "all" ? "All Sources" : sourceConfig[src]?.label || src}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Status Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-3 sm:gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-7 gap-3 sm:gap-4 mb-8">
         {["all", ...Object.keys(statusConfig)].map((status) => {
           const config =
             status === "all"
@@ -218,12 +287,25 @@ export default function Orders() {
                   {rowData.orderNumber || `#${rowData._id.slice(-8)}`}
                 </span>
               )} sortable></Column>
-              <Column header="Customer" body={(rowData) => (
-                <div>
-                  <div className="font-medium">{rowData.user?.name || "Guest"}</div>
-                  <div className="text-sm text-gray-500">{rowData.user?.email}</div>
-                </div>
-              )} sortable sortField="user.name"></Column>
+              <Column header="Customer" body={(rowData) => {
+                const name = rowData.user?.name || rowData.guestCustomer?.name || rowData.shippingAddress?.fullName || "Guest";
+                const contact = rowData.user?.email || rowData.guestCustomer?.phone || rowData.shippingAddress?.phone || "";
+                return (
+                  <div>
+                    <div className="font-medium">{name}</div>
+                    {contact && <div className="text-sm text-gray-500">{contact}</div>}
+                  </div>
+                );
+              }} sortable sortField="user.name"></Column>
+              <Column header="Source" body={(rowData) => {
+                const src = rowData.orderSource || "website";
+                const sc = sourceConfig[src] || sourceConfig.other;
+                return (
+                  <span className={`inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full border ${sc.color}`}>
+                    {sc.label}
+                  </span>
+                );
+              }} sortable sortField="orderSource"></Column>
               <Column header="Date" body={(rowData) => new Date(rowData.createdAt).toLocaleDateString()} sortable sortField="createdAt"></Column>
               <Column header="Items" body={(rowData) => rowData.items?.length || 0} sortable sortField="items.length"></Column>
               <Column field="total" header="Total" body={(rowData) => <span className="font-bold">₹{rowData.total.toFixed(2)}</span>} sortable></Column>
@@ -270,11 +352,16 @@ export default function Orders() {
                   </div>
 
                   <div className="flex flex-col gap-0.5 sm:gap-1">
-                    <div className="text-gray-800 text-sm sm:text-base font-medium leading-tight">
-                      {order.user?.name || "Guest"}
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-800 text-sm sm:text-base font-medium leading-tight">
+                        {order.user?.name || order.guestCustomer?.name || order.shippingAddress?.fullName || "Guest"}
+                      </span>
+                      <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-semibold rounded-full border ${(sourceConfig[order.orderSource || "website"] || sourceConfig.other).color}`}>
+                        {(sourceConfig[order.orderSource || "website"] || sourceConfig.other).label}
+                      </span>
                     </div>
                     <div className="text-xs sm:text-sm text-gray-500">
-                      {order.user?.email}
+                      {order.user?.email || order.guestCustomer?.phone || order.shippingAddress?.phone}
                     </div>
                   </div>
 
@@ -357,25 +444,102 @@ export default function Orders() {
             </div>
           )}
 
+          {/* ORDER SOURCE & PAYMENT BADGES */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full border ${(sourceConfig[selectedOrder?.orderSource || "website"] || sourceConfig.other).color}`}>
+              Source: {(sourceConfig[selectedOrder?.orderSource || "website"] || sourceConfig.other).label}
+            </span>
+            <span className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+              Payment: {selectedOrder?.paymentMethod || "N/A"} ({selectedOrder?.paymentStatus || "pending"})
+            </span>
+          </div>
+
           {/* SHIPPING & CUSTOMER DETAILS */}
-          {selectedOrder?.shippingAddress && (
+          {(selectedOrder?.shippingAddress || selectedOrder?.guestCustomer) && (
              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-               <h3 className="text-sm font-bold text-gray-800 mb-2 uppercase tracking-wider">Shipping Address</h3>
+               <h3 className="text-sm font-bold text-gray-800 mb-2 uppercase tracking-wider">Customer & Shipping</h3>
                <p className="text-sm text-gray-700 leading-relaxed">
-                 <span className="font-semibold">{selectedOrder.shippingAddress.fullName}</span> ({selectedOrder.shippingAddress.phone})<br/>
-                 {selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.city}<br/>
-                 {selectedOrder.shippingAddress.state}, {selectedOrder.shippingAddress.country} - {selectedOrder.shippingAddress.zipCode}
+                 <span className="font-semibold">
+                   {selectedOrder.shippingAddress?.fullName || selectedOrder.guestCustomer?.name || selectedOrder.user?.name || "Guest"}
+                 </span>
+                 {(selectedOrder.shippingAddress?.phone || selectedOrder.guestCustomer?.phone) && (
+                   <> ({selectedOrder.shippingAddress?.phone || selectedOrder.guestCustomer?.phone})</>
+                 )}
+                 {(selectedOrder.shippingAddress?.street || selectedOrder.shippingAddress?.city) && (
+                   <>
+                     <br />
+                     {[selectedOrder.shippingAddress.street, selectedOrder.shippingAddress.city].filter(Boolean).join(", ")}
+                     <br />
+                     {[selectedOrder.shippingAddress.state, selectedOrder.shippingAddress.country].filter(Boolean).join(", ")}
+                     {selectedOrder.shippingAddress.zipCode ? ` - ${selectedOrder.shippingAddress.zipCode}` : ""}
+                   </>
+                 )}
                </p>
              </div>
           )}
 
+          {/* STATUS HISTORY TIMELINE */}
+          {selectedOrder?.statusHistory && selectedOrder.statusHistory.length > 0 && (
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <h3 className="text-sm font-bold text-gray-800 mb-3 uppercase tracking-wider">Status History</h3>
+              <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
+                {[...selectedOrder.statusHistory].reverse().map((entry, idx) => {
+                  const cfg = statusConfig[entry.status] || { color: "bg-gray-100 text-gray-800", label: entry.status };
+                  return (
+                    <div key={idx} className="flex items-start justify-between gap-3 bg-white p-2.5 rounded-lg border border-gray-100">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full ${cfg.color}`}>
+                            {cfg.label}
+                          </span>
+                          {entry.updatedVia && (
+                            <span className="text-[11px] px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-medium capitalize">
+                              via {entry.updatedVia}
+                            </span>
+                          )}
+                          {entry.updatedBy?.name && (
+                            <span className="text-[11px] text-gray-500">
+                              by {entry.updatedBy.name}
+                            </span>
+                          )}
+                        </div>
+                        {entry.comment && (
+                          <p className="text-xs text-gray-600">{entry.comment}</p>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-gray-400 whitespace-nowrap">
+                        {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : ""}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <h3 className="text-sm font-bold text-gray-800 mt-2 uppercase tracking-wider">Update Status</h3>
-          <Dropdown
-            value={newStatus}
-            onChange={(e) => setNewStatus(e.value)}
-            options={Object.entries(statusConfig).map(([key, c]) => ({ label: c.label, value: key }))}
-            className="w-full"
-            placeholder={selectedOrder?.status ? statusConfig[selectedOrder.status]?.label : "Select a status"}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Dropdown
+              value={newStatus}
+              onChange={(e) => setNewStatus(e.value)}
+              options={Object.entries(statusConfig).map(([key, c]) => ({ label: c.label, value: key }))}
+              className="w-full"
+              placeholder={selectedOrder?.status ? statusConfig[selectedOrder.status]?.label : "Select a status"}
+            />
+            <Dropdown
+              value={updatedVia}
+              onChange={(e) => setUpdatedVia(e.value)}
+              options={updatedViaOptions}
+              className="w-full"
+              placeholder="Updated via"
+            />
+          </div>
+          <input
+            type="text"
+            value={statusComment}
+            onChange={(e) => setStatusComment(e.target.value)}
+            placeholder="Optional note (e.g., Confirmed on WhatsApp, Dispatched...)"
+            className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <div className="flex flex-col sm:flex-row gap-3 mt-4">

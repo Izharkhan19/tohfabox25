@@ -275,6 +275,9 @@ export const clearWishlist = async () => {
 export const createOrder = (orderData) =>
     handleApiCall(() => api.post("/orders", orderData));
 
+export const createWhatsAppOrder = (orderData) =>
+    handleApiCall(() => api.post("/orders/whatsapp", orderData));
+
 export const confirmOrder = (data) =>
     handleApiCall(() => api.post("/orders/confirm", data), "Order placed successfully!");
 

@@ -31,42 +31,57 @@ const orderSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: false
+    },
+    guestCustomer: {
+        name: {
+            type: String,
+            trim: true
+        },
+        phone: {
+            type: String,
+            trim: true
+        },
+        email: {
+            type: String,
+            trim: true
+        }
+    },
+    orderSource: {
+        type: String,
+        enum: ['website', 'whatsapp', 'instagram', 'phone', 'other'],
+        default: 'website'
     },
     items: [orderItemSchema],
     shippingAddress: {
         fullName: {
-            type: String,
-            required: true
+            type: String
         },
         phone: {
-            type: String,
-            required: true
+            type: String
         },
         street: {
-            type: String,
-            required: true
+            type: String
+        },
+        apartment: {
+            type: String
         },
         city: {
-            type: String,
-            required: true
+            type: String
         },
         state: {
-            type: String,
-            required: true
+            type: String
         },
         zipCode: {
-            type: String,
-            required: true
+            type: String
         },
         country: {
-            type: String,
-            required: true
+            type: String
         }
     },
     paymentMethod: {
         type: String,
-        enum: ['credit_card', 'debit_card', 'paypal', 'cash_on_delivery', 'bank_transfer', 'razorpay'],
+        enum: ['credit_card', 'debit_card', 'paypal', 'cash_on_delivery', 'bank_transfer', 'razorpay', 'whatsapp', 'other'],
         required: true
     },
     paymentStatus: {
@@ -123,6 +138,11 @@ const orderSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
+        updatedVia: {
+            type: String,
+            enum: ['website', 'admin', 'whatsapp', 'other'],
+            default: 'admin'
+        },
         timestamp: {
             type: Date,
             default: Date.now
@@ -150,11 +170,12 @@ orderSchema.pre('save', function (next) {
     next();
 });
 
-// Add status to history when status changes
+// Add initial status to history on creation if not already provided
 orderSchema.pre('save', function (next) {
-    if (this.isModified('status')) {
+    if (this.isNew && this.statusHistory.length === 0) {
         this.statusHistory.push({
             status: this.status,
+            updatedVia: this.orderSource === 'whatsapp' ? 'whatsapp' : 'website',
             timestamp: new Date()
         });
     }

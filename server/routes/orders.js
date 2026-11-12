@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     createOrder,
+    createWhatsAppOrder,
     getOrders,
     getOrder,
     updateOrderStatus,
@@ -11,8 +12,11 @@ const {
     getMonthlySales,
     confirmOrder
 } = require('../controllers/orderController');
-const { protect } = require('../middleware/auth');
+const { protect, optionalAuth } = require('../middleware/auth');
 const { isAdmin } = require('../middleware/admin');
+
+// WhatsApp / External order route (supports both logged-in users and guests)
+router.post('/whatsapp', optionalAuth, createWhatsAppOrder);
 
 // Protected routes (require authentication)
 router.post('/', protect, createOrder);

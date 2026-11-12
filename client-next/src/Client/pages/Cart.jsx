@@ -16,6 +16,8 @@ import {
   updateCartItem,
   removeFromCart,
   clearCart,
+  createWhatsAppOrder,
+  getCurrentUser,
 } from "../../api-services/apiService";
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import LogoLoader from "../../components/LogoLoader";
@@ -135,24 +137,112 @@ export default function Cart() {
   const shipping = subtotal >= 100 ? 0 : 12.9;
   const total = subtotal + shipping;
 
-  const handleWhatsAppOrder = () => {
-    const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917737510030"; // Fallback number
-    let message = "Hello! I would like to place an order for the following items:\n\n";
-    
-    cartItems.forEach((item, index) => {
-      const product = item.product;
-      message += `${index + 1}. *${product.name}* (x${item.quantity}) - ₹${(product.price * item.quantity).toFixed(2)}\n`;
-    });
-    
-    message += `\n*Subtotal:* ₹${subtotal.toFixed(2)}`;
-    if (shipping > 0) {
-      message += `\n*Shipping:* ₹${shipping.toFixed(2)}`;
+  const [waOrdering, setWaOrdering] = useState(false);
+
+  const handleWhatsAppOrder = async () => {
+    if (cartItems.length === 0 || waOrdering) return;
+
+    setWaOrdering(true);
+    try {
+      let customerName = "";
+      let customerPhone = "";
+      let customerEmail = "";
+      let userAddress = {};
+
+      if (isLoggedIn) {
+        const userRes = await getCurrentUser();
+        if (userRes?.success && userRes.data) {
+          customerName = userRes.data.name || "";
+          customerPhone = userRes.data.phone || "";
+          customerEmail = userRes.data.email || "";
+          userAddress = userRes.data.address || {};
+        }
+      }
+
+      if (!customerName.trim() || !customerPhone.trim()) {
+        const { value: formValues, isConfirmed } = await Swal.fire({
+          title: "Quick Contact Details",
+          html:
+            `<input id="swal-wa-name" class="swal2-input" placeholder="Your Full Name" value="${customerName}">` +
+            `<input id="swal-wa-phone" class="swal2-input" placeholder="WhatsApp / Phone Number" value="${customerPhone}">`,
+          focusConfirm: false,
+          showCancelButton: true,
+          confirmButtonColor: "#25D366",
+          confirmButtonText: "Continue to WhatsApp",
+          preConfirm: () => {
+            const name = document.getElementById("swal-wa-name")?.value?.trim();
+            const phone = document.getElementById("swal-wa-phone")?.value?.trim();
+            if (!name || !phone) {
+              Swal.showValidationMessage("Please enter both your name and phone number");
+              return false;
+            }
+            return { name, phone };
+          },
+        });
+
+        if (!isConfirmed || !formValues) return;
+        customerName = formValues.name;
+        customerPhone = formValues.phone;
+      }
+
+      const result = await createWhatsAppOrder({
+        items: cartItems.map((item) => ({
+          product: item.product._id || item.product.id,
+          quantity: item.quantity || 1,
+        })),
+        shippingAddress: {
+          fullName: customerName,
+          phone: customerPhone,
+          street: userAddress.street || "",
+          apartment: userAddress.apartment || "",
+          city: userAddress.city || "",
+          state: userAddress.state || "",
+          zipCode: userAddress.zipCode || "",
+          country: userAddress.country || "India",
+        },
+        guestCustomer: {
+          name: customerName,
+          phone: customerPhone,
+          email: customerEmail,
+        },
+        shippingCost: Number(shipping.toFixed(2)),
+        orderSource: "whatsapp",
+        paymentMethod: "whatsapp",
+      });
+
+      if (!result?.success) {
+        toast.error(result?.message || "Failed to record WhatsApp order");
+        return;
+      }
+
+      const savedOrder = result.data?.data || result.data;
+      const orderNumber = savedOrder?.orderNumber;
+
+      const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917737510030"; // Fallback number
+      let message = "Hello! I would like to place an order for the following items:\n\n";
+      if (orderNumber) {
+        message += `*Order ID:* ${orderNumber}\n\n`;
+      }
+
+      cartItems.forEach((item, index) => {
+        const product = item.product;
+        message += `${index + 1}. *${product.name}* (x${item.quantity}) - ₹${(product.price * item.quantity).toFixed(2)}\n`;
+      });
+
+      message += `\n*Subtotal:* ₹${subtotal.toFixed(2)}`;
+      if (shipping > 0) {
+        message += `\n*Shipping:* ₹${shipping.toFixed(2)}`;
+      }
+      message += `\n*Total Amount:* ₹${total.toFixed(2)}\n\n`;
+      message += `*Customer:* ${customerName} (${customerPhone})\n\n`;
+      message += `Please guide me with the UPI / Cash on Delivery (COD) payment options.`;
+
+      toast.success("Order recorded! Opening WhatsApp...");
+      const encodedMessage = encodeURIComponent(message);
+      window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
+    } finally {
+      setWaOrdering(false);
     }
-    message += `\n*Total Amount:* ₹${total.toFixed(2)}\n\n`;
-    message += `Please guide me with the UPI / Cash on Delivery (COD) payment options.`;
-    
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
   };
 
   const totalItemsCount = cartItems.reduce(

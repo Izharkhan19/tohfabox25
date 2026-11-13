@@ -4,6 +4,7 @@ import { PhotoIcon, TrashIcon, PencilSquareIcon, PlusIcon, XMarkIcon, CheckIcon,
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import LogoLoader from '../../components/LogoLoader';
+import { Dialog } from 'primereact/dialog';
 import {
     getGalleryItems,
     createGalleryItem,
@@ -192,72 +193,67 @@ export default function AdminGallery() {
             {/* ─── GALLERY TAB ─── */}
             {activeTab === 'gallery' && (
                 <>
-                    {/* Add / Edit Form */}
-                    {showForm && (
-                        <div className="overflow-hidden rounded-2xl border border-purple-200 bg-white shadow-md">
-                            <div className="border-b border-gray-100 bg-purple-50/60 px-4 py-3 sm:px-6 sm:py-4 flex justify-between items-center">
-                                <div>
-                                    <h2 className="font-bold text-gray-800">{editId ? 'Edit Gallery Item' : 'Add New Gallery Item'}</h2>
-                                    <p className="mt-0.5 text-xs text-gray-500">Fill in details and upload an image.</p>
+                    {/* Add / Edit Modal */}
+                    <Dialog
+                        visible={showForm}
+                        onHide={closeForm}
+                        header={editId ? 'Edit Gallery Item' : 'Add New Gallery Item'}
+                        className="w-[95vw] sm:w-full sm:max-w-xl rounded-2xl shadow-2xl"
+                        breakpoints={{ '960px': '75vw', '640px': '95vw' }}
+                    >
+                        <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2 pt-2">
+                            {/* Image Upload */}
+                            <div
+                                onClick={() => fileRef.current?.click()}
+                                className="sm:col-span-2 cursor-pointer rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 hover:bg-purple-50 transition flex flex-col items-center justify-center gap-2 min-h-[160px] overflow-hidden relative p-3"
+                            >
+                                {preview ? (
+                                    <img src={preview} alt="Preview" className="w-full max-h-56 object-contain rounded-xl" />
+                                ) : (
+                                    <>
+                                        <PhotoIcon className="w-10 h-10 text-purple-300" />
+                                        <p className="text-sm text-gray-500 font-medium">Click to upload an image</p>
+                                        <p className="text-xs text-gray-400">JPG, PNG, WEBP up to 5MB</p>
+                                    </>
+                                )}
+                                {preview && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition text-white font-bold text-sm rounded-xl">
+                                        Change Image
+                                    </div>
+                                )}
+                            </div>
+                            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+
+                            <label className="text-xs font-bold text-gray-600">
+                                Title *
+                                <input required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} placeholder="e.g. Handcrafted Gift Hamper" />
+                            </label>
+
+                            <label className="text-xs font-bold text-gray-600">
+                                Price (₹) <span className="font-normal text-gray-400">(optional)</span>
+                                <input type="number" min="0" step="0.01" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} className={inputClass} placeholder="0" />
+                            </label>
+
+                            <label className="sm:col-span-2 text-xs font-bold text-gray-600">
+                                Description <span className="font-normal text-gray-400">(optional)</span>
+                                <textarea rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} className={`${inputClass} resize-none`} placeholder="Brief description shown in the quick order panel..." />
+                            </label>
+
+                            <label className="sm:col-span-2 flex items-center gap-3 cursor-pointer text-sm font-semibold text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                <div onClick={() => setForm(p => ({ ...p, isActive: !p.isActive }))} className={`relative w-11 h-6 rounded-full transition-colors ${form.isActive ? 'bg-purple-600' : 'bg-gray-300'}`}>
+                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isActive ? 'translate-x-5' : 'translate-x-0'}`} />
                                 </div>
-                                <button onClick={closeForm} className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition">
-                                    <XMarkIcon className="w-5 h-5" />
+                                {form.isActive ? 'Visible to users' : 'Hidden from users'}
+                            </label>
+
+                            <div className="sm:col-span-2 flex justify-end gap-3 pt-3 border-t border-gray-100 mt-2">
+                                <button type="button" onClick={closeForm} className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">Cancel</button>
+                                <button type="submit" disabled={saving} className="flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 font-bold text-white shadow-sm transition hover:bg-purple-700 disabled:bg-gray-400">
+                                    {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4" />{editId ? 'Update Item' : 'Add to Gallery'}</>)}
                                 </button>
                             </div>
-                            <form onSubmit={handleSubmit} className="grid gap-5 p-4 sm:grid-cols-2 sm:px-3 py-4 sm:p-6">
-                                {/* Image Upload */}
-                                <div
-                                    onClick={() => fileRef.current?.click()}
-                                    className="sm:col-span-2 cursor-pointer rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 hover:bg-purple-50 transition flex flex-col items-center justify-center gap-2 min-h-[160px] overflow-hidden relative"
-                                >
-                                    {preview ? (
-                                        <img src={preview} alt="Preview" className="w-full max-h-56 object-contain" />
-                                    ) : (
-                                        <>
-                                            <PhotoIcon className="w-10 h-10 text-purple-300" />
-                                            <p className="text-sm text-gray-500 font-medium">Click to upload an image</p>
-                                            <p className="text-xs text-gray-400">JPG, PNG, WEBP up to 5MB</p>
-                                        </>
-                                    )}
-                                    {preview && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition text-white font-bold text-sm">
-                                            Change Image
-                                        </div>
-                                    )}
-                                </div>
-                                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
-
-                                <label className="text-xs font-bold text-gray-600">
-                                    Title *
-                                    <input required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} placeholder="e.g. Handcrafted Gift Hamper" />
-                                </label>
-
-                                <label className="text-xs font-bold text-gray-600">
-                                    Price (₹) <span className="font-normal text-gray-400">(optional)</span>
-                                    <input type="number" min="0" step="0.01" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} className={inputClass} placeholder="0" />
-                                </label>
-
-                                <label className="sm:col-span-2 text-xs font-bold text-gray-600">
-                                    Description <span className="font-normal text-gray-400">(optional)</span>
-                                    <textarea rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} className={`${inputClass} resize-none`} placeholder="Brief description shown in the quick order panel..." />
-                                </label>
-
-                                <label className="flex items-center gap-3 cursor-pointer text-sm font-semibold text-gray-700">
-                                    <div onClick={() => setForm(p => ({ ...p, isActive: !p.isActive }))} className={`relative w-11 h-6 rounded-full transition-colors ${form.isActive ? 'bg-purple-600' : 'bg-gray-300'}`}>
-                                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isActive ? 'translate-x-5' : 'translate-x-0'}`} />
-                                    </div>
-                                    {form.isActive ? 'Visible to users' : 'Hidden from users'}
-                                </label>
-
-                                <div className="sm:col-span-2 flex justify-end gap-3 pt-2">
-                                    <button type="button" onClick={closeForm} className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">Cancel</button>
-                                    <button type="submit" disabled={saving} className="flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 font-bold text-white shadow-sm transition hover:bg-purple-700 disabled:bg-gray-400">
-                                        {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4" />{editId ? 'Update Item' : 'Add to Gallery'}</>)}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
+                        </form>
+                    </Dialog>
 
                     {/* Gallery Grid */}
                     {loading ? (
@@ -266,7 +262,7 @@ export default function AdminGallery() {
                         <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
                             <PhotoIcon className="mx-auto h-12 w-12 text-gray-300" />
                             <h2 className="mt-3 font-bold text-gray-700">No gallery items yet</h2>
-                            <p className="mt-1 text-sm text-gray-500">Click "Add Gallery Item" above to get started.</p>
+                            <p className="mt-1 text-sm text-gray-500">Click &quot;Add Gallery Item&quot; above to get started.</p>
                         </div>
                     ) : (
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

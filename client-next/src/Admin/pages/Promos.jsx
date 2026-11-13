@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { TrashIcon, TagIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, TagIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { createPromo, deletePromo, getPromos } from '../../api-services/apiService';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
@@ -8,6 +8,7 @@ import LogoLoader from '../../components/LogoLoader';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
+import { Dialog } from 'primereact/dialog';
 
 const initialForm = {
     code: '', discountType: 'percentage', discountValue: 10, minimumOrderValue: 0,
@@ -17,8 +18,8 @@ const initialForm = {
 };
 
 const discountTypeOptions = [
-    { value: 'percentage', label: 'Percentage' },
-    { value: 'fixed', label: 'Fixed amount' }
+    { value: 'percentage', label: 'Percentage (%)' },
+    { value: 'fixed', label: 'Fixed amount (₹)' }
 ];
 
 export default function Promos() {
@@ -26,6 +27,7 @@ export default function Promos() {
     const [form, setForm] = useState(initialForm);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const loadPromos = async () => {
         setLoading(true);
@@ -40,6 +42,16 @@ export default function Promos() {
         return () => clearTimeout(timer);
     }, []);
 
+    const handleOpenModal = () => {
+        setForm(initialForm);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setForm(initialForm);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setSaving(true);
@@ -48,23 +60,22 @@ export default function Promos() {
             code: form.code.trim().toUpperCase(),
             discountValue: Number(form.discountValue),
             minimumOrderValue: Number(form.minimumOrderValue),
-            usageLimit: form.usageLimit ? Number(form.usageLimit) : null,
-            startsAt: form.startsAt,
-            expiresAt: form.expiresAt
+            usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined
         });
         if (result?.success) {
-            toast.success('Promo code created');
-            setForm(initialForm);
+            toast.success('Promo code created successfully');
+            handleCloseModal();
             loadPromos();
-        } else toast.error(result?.message || 'Failed to create promo code');
+        } else {
+            toast.error(result?.message || 'Failed to create promo code');
+        }
         setSaving(false);
     };
 
     const handleDelete = async (id) => {
-        const promo = promos.find((item) => item._id === id);
         const confirmation = await Swal.fire({
             title: 'Delete promo code?',
-            text: `${promo?.code || 'This promo code'} will no longer be available at checkout.`,
+            text: 'This action cannot be undone.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc2626',
@@ -81,43 +92,210 @@ export default function Promos() {
         } else toast.error(result?.message || 'Failed to delete promo code');
     };
 
-    const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-3 text-sm text-gray-800 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100';
+    const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100';
 
     return (
-        <div className="w-full space-y-8">
-            <div>
-                <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-600">Campaigns</p>
-                <h1 className="mt-1 text-3xl font-bold text-gray-800">Promo codes</h1>
-                <p className="mt-2 max-w-xl text-sm text-gray-500">Create offers that automatically expire and apply securely at checkout.</p>
+        <div className="w-full space-y-6 p-4 sm:p-6">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-600">Campaigns</p>
+                    <h1 className="mt-1 text-2xl sm:text-3xl font-bold text-gray-800">Promo Codes</h1>
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500">Create discount offers that automatically apply at checkout.</p>
+                </div>
+                <button
+                    onClick={handleOpenModal}
+                    className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2.5 rounded-xl shadow-sm active:scale-95 transition text-sm self-start sm:self-auto"
+                >
+                    <PlusIcon className="w-5 h-5" />
+                    <span>Create Promo Code</span>
+                </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-                <div className="border-b border-gray-100 bg-gray-50/70 px-4 py-3 sm:px-6 sm:py-4">
-                    <h2 className="font-bold text-gray-800">Create a promotion</h2>
-                    <p className="mt-1 text-[10px] sm:text-xs text-gray-500">Customers can use the code during its active period.</p>
+            {/* List of Promos */}
+            {loading ? (
+                <div className="py-12"><LogoLoader label="Loading promo codes..." compact /></div>
+            ) : promos.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
+                    <TagIcon className="mx-auto h-12 w-12 text-gray-300" />
+                    <h2 className="mt-3 font-bold text-gray-800 text-base sm:text-lg">No promo codes yet</h2>
+                    <p className="mt-1 text-sm text-gray-500 max-w-sm mx-auto">Click &quot;Create Promo Code&quot; to add your first discount campaign.</p>
+                    <button
+                        onClick={handleOpenModal}
+                        className="mt-5 inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
+                    >
+                        <PlusIcon className="w-4 h-4" /> Create Promo
+                    </button>
                 </div>
-                <div className="grid gap-x-5 gap-y-4 p-4 sm:grid-cols-2 sm:px-3 py-4 sm:p-6 lg:grid-cols-4">
-                    <label className="text-xs font-bold text-gray-600">Promo code<input required placeholder="WELCOME10" value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} className={`${inputClass} uppercase`} /></label>
-                    <label className="text-xs font-bold text-gray-600">Discount type<Select value={discountTypeOptions.find((option) => option.value === form.discountType)} onChange={(option) => setForm({ ...form, discountType: option.value })} options={discountTypeOptions} isSearchable={false} className="mt-1 text-sm" styles={{ control: (base, state) => ({ ...base, minHeight: 46, borderRadius: 12, borderColor: state.isFocused ? '#3b82f6' : '#e5e7eb', backgroundColor: state.isFocused ? '#fff' : '#f9fafb', boxShadow: state.isFocused ? '0 0 0 2px #dbeafe' : 'none' }), menu: (base) => ({ ...base, zIndex: 20 }), option: (base, state) => ({ ...base, color: '#1f2937', backgroundColor: state.isFocused ? '#eff6ff' : '#fff' }) }} /></label>
-                    <label className="text-xs font-bold text-gray-600">Discount value<input required type="number" min="0" step="0.01" value={form.discountValue} onChange={(e) => setForm({ ...form, discountValue: e.target.value })} className={inputClass} /></label>
-                    <label className="text-xs font-bold text-gray-600">Minimum order value<input type="number" min="0" step="0.01" value={form.minimumOrderValue} onChange={(e) => setForm({ ...form, minimumOrderValue: e.target.value })} className={inputClass} /></label>
-                    <label className="text-xs font-bold text-gray-600">Starts at<DatePicker selected={form.startsAt} onChange={(date) => setForm({ ...form, startsAt: date })} showTimeSelect dateFormat="dd MMM yyyy, h:mm aa" minDate={new Date()} className={inputClass} wrapperClassName="mt-1 w-full" required /></label>
-                    <label className="text-xs font-bold text-gray-600">Expires at<DatePicker selected={form.expiresAt} onChange={(date) => setForm({ ...form, expiresAt: date })} showTimeSelect dateFormat="dd MMM yyyy, h:mm aa" minDate={form.startsAt || new Date()} className={inputClass} wrapperClassName="mt-1 w-full" required /></label>
-                    <label className="text-xs font-bold text-gray-600">Usage limit <span className="font-normal text-gray-400">(optional)</span><input type="number" min="1" placeholder="Unlimited" value={form.usageLimit} onChange={(e) => setForm({ ...form, usageLimit: e.target.value })} className={inputClass} /></label>
-                    <button disabled={saving} className="self-end rounded-xl bg-blue-600 px-4 py-3 font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:bg-gray-400">{saving ? 'Creating...' : 'Create promo code'}</button>
-                </div>
-            </form>
-
-            {loading ? <div className="py-12"><LogoLoader label="Loading promo codes..." compact /></div> : promos.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center"><TagIcon className="mx-auto h-10 w-10 text-gray-300" /><h2 className="mt-3 font-bold text-gray-700">No promo codes yet</h2><p className="mt-1 text-sm text-gray-500">Create your first promotion above.</p></div>
             ) : (
                 <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {promos.map((promo) => {
                         const active = promo.isActive && new Date() >= new Date(promo.startsAt) && new Date() <= new Date(promo.expiresAt) && (!promo.usageLimit || promo.usedCount < promo.usageLimit);
-                        return <div key={promo._id} className="rounded-xl sm:rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-sm"><div className="flex items-start justify-between"><div className="flex items-center gap-2"><TagIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" /><strong className="text-base sm:text-lg text-gray-800">{promo.code}</strong></div><button type="button" onClick={() => handleDelete(promo._id)} aria-label={`Delete ${promo.code}`} className="rounded-full p-2 text-red-500 transition hover:bg-red-50"><TrashIcon className="h-4 w-4 sm:h-5 sm:w-5" /></button></div><span className={`mt-2 sm:mt-3 inline-flex rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${active ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{active ? 'Active now' : 'Inactive'}</span><p className="mt-3 sm:mt-4 text-xl sm:text-2xl font-bold text-blue-600">{promo.discountType === 'percentage' ? `${promo.discountValue}% off` : `₹${promo.discountValue} off`}</p><p className="mt-2 text-xs sm:text-sm text-gray-500">Minimum order: ₹{promo.minimumOrderValue.toFixed(2)}</p><p className="mt-1 text-xs sm:text-sm text-gray-500">{new Date(promo.startsAt).toLocaleDateString()} to {new Date(promo.expiresAt).toLocaleDateString()}</p><p className="mt-1 text-xs sm:text-sm font-semibold text-gray-600">Used {promo.usedCount}{promo.usageLimit ? ` / ${promo.usageLimit}` : ' times'}</p></div>;
+                        return (
+                            <div key={promo._id} className="rounded-xl sm:rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md transition">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+                                            <TagIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                                        </div>
+                                        <strong className="text-base sm:text-lg text-gray-900 tracking-wide font-mono">{promo.code}</strong>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => handleDelete(promo._id)} 
+                                        aria-label={`Delete ${promo.code}`} 
+                                        className="rounded-lg p-2 text-red-500 transition hover:bg-red-50"
+                                    >
+                                        <TrashIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                                    </button>
+                                </div>
+                                <span className={`mt-3 inline-flex rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${active ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-500'}`}>
+                                    {active ? 'Active now' : 'Inactive'}
+                                </span>
+                                <p className="mt-3 text-xl sm:text-2xl font-bold text-blue-600">
+                                    {promo.discountType === 'percentage' ? `${promo.discountValue}% off` : `₹${promo.discountValue} off`}
+                                </p>
+                                <div className="mt-3 pt-3 border-t border-gray-100 space-y-1 text-xs sm:text-sm text-gray-500">
+                                    <p><span className="text-gray-400">Min. order:</span> ₹{promo.minimumOrderValue.toFixed(2)}</p>
+                                    <p><span className="text-gray-400">Validity:</span> {new Date(promo.startsAt).toLocaleDateString()} – {new Date(promo.expiresAt).toLocaleDateString()}</p>
+                                    <p className="font-medium text-gray-700"><span className="text-gray-400">Usage:</span> {promo.usedCount}{promo.usageLimit ? ` / ${promo.usageLimit}` : ' times'}</p>
+                                </div>
+                            </div>
+                        );
                     })}
                 </div>
             )}
+
+            {/* Create Promo Modal */}
+            <Dialog 
+                visible={isModalOpen} 
+                onHide={handleCloseModal}
+                header="Create Promo Code"
+                className="w-[95vw] sm:w-full sm:max-w-2xl rounded-2xl shadow-2xl"
+                breakpoints={{ '960px': '75vw', '640px': '95vw' }}
+            >
+                <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label className="text-xs font-bold text-gray-700">Promo Code *</label>
+                            <input 
+                                required 
+                                placeholder="e.g. FESTIVE20" 
+                                value={form.code} 
+                                onChange={(e) => setForm({ ...form, code: e.target.value })} 
+                                className={`${inputClass} uppercase font-mono font-semibold`} 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-xs font-bold text-gray-700">Discount Type *</label>
+                            <Select 
+                                value={discountTypeOptions.find((option) => option.value === form.discountType)} 
+                                onChange={(option) => setForm({ ...form, discountType: option.value })} 
+                                options={discountTypeOptions} 
+                                isSearchable={false} 
+                                className="mt-1 text-sm" 
+                                styles={{ 
+                                    control: (base, state) => ({ 
+                                        ...base, 
+                                        minHeight: 42, 
+                                        borderRadius: 12, 
+                                        borderColor: state.isFocused ? '#3b82f6' : '#e5e7eb', 
+                                        backgroundColor: state.isFocused ? '#fff' : '#f9fafb', 
+                                        boxShadow: state.isFocused ? '0 0 0 2px #dbeafe' : 'none' 
+                                    })
+                                }} 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-xs font-bold text-gray-700">Discount Value *</label>
+                            <input 
+                                required 
+                                type="number" 
+                                min="0" 
+                                step="0.01" 
+                                placeholder="10"
+                                value={form.discountValue} 
+                                onChange={(e) => setForm({ ...form, discountValue: e.target.value })} 
+                                className={inputClass} 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-xs font-bold text-gray-700">Minimum Order Value (₹)</label>
+                            <input 
+                                type="number" 
+                                min="0" 
+                                step="0.01" 
+                                placeholder="0"
+                                value={form.minimumOrderValue} 
+                                onChange={(e) => setForm({ ...form, minimumOrderValue: e.target.value })} 
+                                className={inputClass} 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-xs font-bold text-gray-700">Starts At *</label>
+                            <DatePicker 
+                                selected={form.startsAt} 
+                                onChange={(date) => setForm({ ...form, startsAt: date })} 
+                                showTimeSelect 
+                                dateFormat="dd MMM yyyy, h:mm aa" 
+                                minDate={new Date()} 
+                                className={inputClass} 
+                                wrapperClassName="w-full" 
+                                required 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-xs font-bold text-gray-700">Expires At *</label>
+                            <DatePicker 
+                                selected={form.expiresAt} 
+                                onChange={(date) => setForm({ ...form, expiresAt: date })} 
+                                showTimeSelect 
+                                dateFormat="dd MMM yyyy, h:mm aa" 
+                                minDate={form.startsAt || new Date()} 
+                                className={inputClass} 
+                                wrapperClassName="w-full" 
+                                required 
+                            />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                            <label className="text-xs font-bold text-gray-700">
+                                Usage Limit <span className="font-normal text-gray-400">(leave blank for unlimited)</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                min="1" 
+                                placeholder="e.g. 100 uses" 
+                                value={form.usageLimit} 
+                                onChange={(e) => setForm({ ...form, usageLimit: e.target.value })} 
+                                className={inputClass} 
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+                        <button
+                            type="button"
+                            onClick={handleCloseModal}
+                            className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:bg-gray-400 shadow-sm transition"
+                        >
+                            {saving ? 'Creating...' : 'Create Promo Code'}
+                        </button>
+                    </div>
+                </form>
+            </Dialog>
         </div>
     );
 }

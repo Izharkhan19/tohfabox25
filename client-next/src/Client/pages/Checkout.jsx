@@ -165,7 +165,7 @@ export default function Checkout() {
       const savedOrder = result.data?.data || result.data;
       const orderNumber = savedOrder?.orderNumber;
 
-      const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917737510030"; // Fallback number
+      const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919079841327"; // Primary WhatsApp number (+91 9079841327)
       let message = "Hello! I would like to place an order for the following items:\n\n";
       if (orderNumber) {
         message += `*Order ID:* ${orderNumber}\n\n`;

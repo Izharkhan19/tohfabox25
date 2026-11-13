@@ -202,11 +202,40 @@ export default function AdminGallery() {
                     <Dialog
                         visible={showForm}
                         onHide={closeForm}
-                        header={editId ? 'Edit Gallery Item' : 'Add New Gallery Item'}
-                        className="w-[95vw] sm:w-full sm:max-w-xl rounded-2xl shadow-2xl"
+                        header={
+                            <div>
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Showcase Management</p>
+                                <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
+                                    {editId ? 'Edit Gallery Item' : 'Add New Gallery Item'}
+                                </h3>
+                            </div>
+                        }
+                        footer={
+                            <div className="flex items-center justify-end gap-2.5 w-full">
+                                <button 
+                                    type="button" 
+                                    onClick={closeForm} 
+                                    className="min-h-[40px] px-4 py-2 rounded-xl border border-stone-200 text-xs sm:text-sm font-semibold text-stone-600 hover:bg-stone-100 transition active:scale-95"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    form="admin-gallery-form"
+                                    disabled={saving} 
+                                    className="min-h-[40px] flex items-center gap-1.5 rounded-xl bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-5 py-2 text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95 disabled:bg-stone-400"
+                                >
+                                    {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4 text-[#e1b382]" />{editId ? 'Update Item' : 'Add to Gallery'}</>)}
+                                </button>
+                            </div>
+                        }
+                        className="w-[95vw] sm:w-full sm:max-w-xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
+                        headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
+                        contentClassName="p-4 sm:p-6 max-h-[72vh] sm:max-h-[75vh] overflow-y-auto overscroll-contain"
+                        footerClassName="px-4 py-3 sm:px-6 sm:py-3.5 bg-[#fcfaf7]/70 border-t border-stone-100"
                         breakpoints={{ '960px': '75vw', '640px': '95vw' }}
                     >
-                        <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2 pt-2">
+                        <form id="admin-gallery-form" onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2 pt-1">
                             {/* Image Upload */}
                             <div
                                 onClick={() => fileRef.current?.click()}
@@ -250,13 +279,6 @@ export default function AdminGallery() {
                                 </div>
                                 {form.isActive ? 'Visible in client gallery' : 'Hidden from gallery'}
                             </label>
-
-                            <div className="sm:col-span-2 flex justify-end gap-2.5 pt-3 border-t border-stone-100 mt-2">
-                                <button type="button" onClick={closeForm} className="px-4 py-2 rounded-xl border border-stone-200 text-xs sm:text-sm font-semibold text-stone-600 hover:bg-stone-50 transition active:scale-95">Cancel</button>
-                                <button type="submit" disabled={saving} className="flex items-center gap-1.5 rounded-xl bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-5 py-2 text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95 disabled:bg-stone-400">
-                                    {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4 text-[#e1b382]" />{editId ? 'Update Item' : 'Add to Gallery'}</>)}
-                                </button>
-                            </div>
                         </form>
                     </Dialog>
 

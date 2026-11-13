@@ -74,7 +74,7 @@ function QuickOrderModal({ item, onClose }) {
       setDone(true);
       
       // WhatsApp notification
-      const adminPhone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917737510030"; // Fallback to a placeholder
+      const adminPhone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919079841327"; // Primary WhatsApp number (+91 9079841327)
       const message = `*New Quick Order from Gallery!*\n\n*Item:* ${item.title}\n*Quantity:* ${form.quantity}\n*Price:* ${item.price > 0 ? '₹' + item.price : 'On Inquiry'}\n\n*Customer Details:*\n*Name:* ${form.name.trim()}\n*Phone:* ${form.phone}\n*Address:* ${form.address.trim() || 'N/A'}\n*Notes:* ${form.notes.trim() || 'None'}`;
       
       window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`, '_blank');
@@ -102,58 +102,60 @@ function QuickOrderModal({ item, onClose }) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 60, opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col"
+          className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[85vh] flex flex-col border border-[#e1b382]/30"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-[#12343b]">
-            <div className="flex items-center gap-3">
-              <ShoppingBagIcon className="w-6 h-6 text-[#e1b382]" />
+          {/* Header Section (Sticky) */}
+          <div className="shrink-0 flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 bg-[#12343b] text-white">
+            <div className="flex items-center gap-2.5">
+              <ShoppingBagIcon className="w-5 h-5 text-[#e1b382]" />
               <div>
-                <p className="text-xs text-[#c89666] font-semibold uppercase tracking-wider">Quick Order</p>
-                <h3 className="text-base font-bold text-white leading-tight">{item.title}</h3>
+                <p className="text-[10px] text-[#e1b382] font-bold uppercase tracking-wider">Quick Order via WhatsApp</p>
+                <h3 className="text-sm sm:text-base font-bold font-serif text-white leading-tight line-clamp-1">{item.title}</h3>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition"
+              aria-label="Close dialog"
+              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 text-white/70 hover:text-white transition active:scale-95"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Body */}
-          <div className="overflow-y-auto flex-1">
-            {done ? (
-              <div className="flex flex-col items-center justify-center py-14 px-6 text-center gap-4">
-                <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircleIcon className="w-12 h-12 text-green-500" />
-                </div>
-                <h3 className="text-2xl font-black text-gray-800">Order Received! 🎉</h3>
-                <p className="text-gray-500 text-sm max-w-xs">
-                  Thank you <span className="font-bold text-gray-700">{form.name}</span>! We&apos;ve received your order for <strong>&quot;{item.title}&quot;</strong>. Our team will contact you shortly to confirm.
-                </p>
-                <button
-                  onClick={onClose}
-                  className="mt-4 px-8 py-3 rounded-full bg-[#12343b] text-white font-bold hover:bg-[#1a4a55] transition"
-                >
-                  Done
-                </button>
+          {/* Body & Footer */}
+          {done ? (
+            <div className="flex flex-col items-center justify-center py-12 px-6 text-center gap-3 flex-1 overflow-y-auto">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                <CheckCircleIcon className="w-10 h-10 text-green-600" />
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="p-5 space-y-4">
-                {/* Product Preview */}
-                <div className="flex gap-3 p-3 rounded-2xl bg-[#f9f5f0] border border-[#e1b382]/30">
+              <h3 className="text-xl font-serif font-bold text-gray-800">Order Received! 🎉</h3>
+              <p className="text-gray-500 text-xs sm:text-sm max-w-xs leading-relaxed">
+                Thank you <strong className="text-gray-700">{form.name}</strong>! We&apos;ve opened WhatsApp with your order details for <strong>&quot;{item.title}&quot;</strong>. Our artisan team will assist you shortly.
+              </p>
+              <button
+                onClick={onClose}
+                className="mt-3 px-7 py-2.5 rounded-xl bg-[#12343b] text-[#e1b382] font-semibold text-xs sm:text-sm hover:bg-[#1a4a55] transition shadow-sm"
+              >
+                Close Window
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+              {/* Scrollable Body Section */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 overscroll-contain">
+                {/* Product Preview Card */}
+                <div className="flex gap-3 p-2.5 rounded-xl bg-[#f9f5f0] border border-[#e1b382]/30 items-center">
                   <img
                     src={item.image?.url}
                     alt={item.title}
-                    className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
+                    className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                   />
-                  <div>
-                    <p className="font-bold text-gray-800 text-sm">{item.title}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-gray-800 text-xs sm:text-sm truncate">{item.title}</p>
                     {item.description && (
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">{item.description}</p>
                     )}
-                    <p className="mt-1 text-base font-extrabold text-[#c89666]">
+                    <p className="mt-0.5 text-xs sm:text-sm font-extrabold text-[#c89666]">
                       {item.price > 0 ? `₹${Number(item.price).toLocaleString("en-IN")}` : "Price on inquiry"}
                     </p>
                   </div>
@@ -166,20 +168,22 @@ function QuickOrderModal({ item, onClose }) {
                     <button
                       type="button"
                       onClick={() => setForm((p) => ({ ...p, quantity: Math.max(1, p.quantity - 1) }))}
-                      className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition text-sm sm:text-lg font-bold"
+                      className="w-9 h-9 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition text-base font-bold active:scale-95"
                     >
                       −
                     </button>
-                    <span className="w-10 text-center text-sm sm:text-lg font-bold text-gray-800">{form.quantity}</span>
+                    <span className="w-8 text-center text-sm sm:text-base font-bold text-gray-800">{form.quantity}</span>
                     <button
                       type="button"
                       onClick={() => setForm((p) => ({ ...p, quantity: p.quantity + 1 }))}
-                      className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition text-sm sm:text-lg font-bold"
+                      className="w-9 h-9 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition text-base font-bold active:scale-95"
                     >
                       +
                     </button>
                     {total && (
-                      <span className="ml-auto text-lg font-black text-[#12343b]">₹{Number(total).toLocaleString("en-IN")}</span>
+                      <span className="ml-auto text-sm sm:text-base font-black text-[#12343b]">
+                        ₹{Number(total).toLocaleString("en-IN")}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -205,10 +209,10 @@ function QuickOrderModal({ item, onClose }) {
                     country="in"
                     value={form.phone}
                     onChange={(phone) => setForm((p) => ({ ...p, phone }))}
-                    inputClass="!w-full !rounded-xl !border !border-gray-200 !bg-gray-50 !text-sm !text-gray-800 !py-3 !pl-14"
+                    inputClass="!w-full !rounded-xl !border !border-gray-200 !bg-gray-50 !text-sm !text-gray-800 !py-2.5 !pl-14"
                     containerClass="!w-full"
                     buttonClass="!rounded-l-xl !border !border-gray-200 !bg-gray-50"
-                    inputStyle={{ height: "46px" }}
+                    inputStyle={{ height: "42px" }}
                   />
                 </div>
 
@@ -235,25 +239,30 @@ function QuickOrderModal({ item, onClose }) {
                     placeholder="Customization wishes, color preferences..."
                   />
                 </label>
+              </div>
 
-                {/* Submit */}
+              {/* Sticky Footer Section */}
+              <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-3.5 border-t border-stone-100 bg-[#fcfaf7] flex flex-col gap-1.5">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-4 rounded-2xl bg-[#12343b] text-white font-bold text-base hover:bg-[#1a4a55] active:scale-[0.98] transition-all disabled:bg-gray-400 flex items-center justify-center gap-2 shadow-lg"
+                  className="w-full min-h-[44px] py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2 disabled:bg-gray-400"
                 >
                   {submitting ? (
-                    <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                    <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
                   ) : (
-                    <><ShoppingBagIcon className="w-5 h-5" /> Place Order</>
+                    <>
+                      <ShoppingBagIcon className="w-4 h-4 text-white" />
+                      <span>Send Order on WhatsApp {total ? `(₹${Number(total).toLocaleString("en-IN")})` : ""}</span>
+                    </>
                   )}
                 </button>
-                <p className="text-center text-xs text-gray-400">
-                  By placing this order you agree our team will contact you to confirm details.
+                <p className="text-center text-[10px] text-gray-400">
+                  Direct connection with Tohfabox artisan desk &bull; No advance required
                 </p>
-              </form>
-            )}
-          </div>
+              </div>
+            </form>
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>
@@ -580,49 +589,55 @@ export default function Gallery() {
         visible={!!viewDetailsItem}
         onHide={() => setViewDetailsItem(null)}
         showHeader={false}
-        className="w-[95vw] sm:max-w-md rounded-2xl shadow-2xl bg-white overflow-hidden"
+        className="w-[95vw] sm:max-w-md rounded-2xl sm:rounded-3xl shadow-2xl bg-white overflow-hidden border border-[#e1b382]/30"
         contentClassName="bg-white p-0 relative"
         breakpoints={{ '960px': '75vw', '640px': '95vw' }}
         dismissableMask
         draggable={false}
       >
         {viewDetailsItem && (
-          <div className="flex flex-col bg-white max-h-[85vh]">
+          <div className="flex flex-col bg-white max-h-[88vh] sm:max-h-[85vh]">
+            {/* Header Section (Image + Title + Close) */}
             <div className="relative shrink-0">
               <ArtisanImage 
                 src={viewDetailsItem.image?.url} 
                 alt={viewDetailsItem.title} 
                 aspectRatio="aspect-video"
-                className="w-full h-56 sm:h-64 object-cover"
+                className="w-full h-52 sm:h-64 object-cover"
               />
               <button 
                 onClick={() => setViewDetailsItem(null)}
-                className="absolute top-3 right-3 w-8 h-8 bg-black/40 backdrop-blur-sm text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-colors"
+                className="absolute top-3 right-3 w-8 h-8 bg-black/50 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors shadow-sm"
                 title="Close"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="p-4 sm:p-6 overflow-y-auto flex-1">
-                <h3 className="text-xl font-black text-gray-900 mb-1 leading-tight">{viewDetailsItem.title}</h3>
-                <p className="text-[#c89666] font-bold text-lg mb-3">
-                  {viewDetailsItem.price > 0 ? `₹${Number(viewDetailsItem.price).toLocaleString("en-IN")}` : "Price on inquiry"}
-                </p>
-                <div className="text-sm text-gray-600 mb-6 leading-relaxed">
-                    <p>{viewDetailsItem.description || "No description available for this masterpiece."}</p>
-                </div>
-                
-                <button 
-                  onClick={() => {
-                    setOrderItem(viewDetailsItem);
-                    setViewDetailsItem(null);
-                  }}
-                  className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 bg-[#12343b] hover:bg-[#1a4b57] text-white font-bold transition-colors shadow-md mt-auto"
-                >
-                  <ShoppingBagIcon className="w-5 h-5" />
-                  <span>Quick Order</span>
-                </button>
+            {/* Body Section (Scrollable) */}
+            <div className="p-4 sm:p-5 overflow-y-auto flex-1 overscroll-contain">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Handcrafted Creation</span>
+              <h3 className="text-lg sm:text-xl font-serif font-bold text-gray-900 mt-0.5 mb-1 leading-snug">{viewDetailsItem.title}</h3>
+              <p className="text-[#c89666] font-bold text-base sm:text-lg mb-2.5">
+                {viewDetailsItem.price > 0 ? `₹${Number(viewDetailsItem.price).toLocaleString("en-IN")}` : "Price on inquiry"}
+              </p>
+              <div className="text-xs sm:text-sm text-gray-600 leading-relaxed space-y-1.5">
+                <p>{viewDetailsItem.description || "Handmade with care and premium materials. Inquire directly on WhatsApp for personalization options and expedited dispatch."}</p>
+              </div>
+            </div>
+
+            {/* Footer Section (Sticky) */}
+            <div className="shrink-0 p-3 sm:p-4 border-t border-stone-100 bg-[#fcfaf7]">
+              <button 
+                onClick={() => {
+                  setOrderItem(viewDetailsItem);
+                  setViewDetailsItem(null);
+                }}
+                className="w-full min-h-[44px] py-2.5 rounded-xl flex items-center justify-center gap-2 bg-[#12343b] hover:bg-[#1a4b57] text-[#e1b382] font-semibold text-xs sm:text-sm transition-colors shadow-md active:scale-[0.98]"
+              >
+                <ShoppingBagIcon className="w-4 h-4 text-[#e1b382]" />
+                <span>Quick Order via WhatsApp</span>
+              </button>
             </div>
           </div>
         )}

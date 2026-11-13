@@ -214,7 +214,7 @@ const jsonLdSchema = {
       },
       "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": "+917737510030",
+        "telephone": "+919079841327",
         "contactType": "customer service",
         "areaServed": "IN",
         "availableLanguage": ["English", "Hindi"]

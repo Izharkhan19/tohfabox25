@@ -169,11 +169,38 @@ export default function Promos() {
             <Dialog 
                 visible={isModalOpen} 
                 onHide={handleCloseModal}
-                header="Create Promo Code"
-                className="w-[95vw] sm:w-full sm:max-w-2xl rounded-2xl shadow-2xl"
+                header={
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Marketing &amp; Discounts</p>
+                        <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">Create Promo Code</h3>
+                    </div>
+                }
+                footer={
+                    <div className="flex items-center justify-end gap-2.5 w-full">
+                        <button
+                            type="button"
+                            onClick={handleCloseModal}
+                            className="min-h-[40px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            form="promo-create-form"
+                            disabled={saving}
+                            className="min-h-[40px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl disabled:bg-stone-400 shadow-sm transition active:scale-95"
+                        >
+                            {saving ? 'Creating...' : 'Create Promo Code'}
+                        </button>
+                    </div>
+                }
+                className="w-[95vw] sm:w-full sm:max-w-2xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
+                headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
+                contentClassName="p-4 sm:p-6 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto overscroll-contain"
+                footerClassName="px-4 py-3 sm:px-6 sm:py-3.5 bg-[#fcfaf7]/70 border-t border-stone-100"
                 breakpoints={{ '960px': '75vw', '640px': '95vw' }}
             >
-                <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+                <form id="promo-create-form" onSubmit={handleSubmit} className="space-y-4 pt-1">
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div>
                             <label className="text-xs font-bold text-gray-700">Promo Code *</label>
@@ -275,23 +302,6 @@ export default function Promos() {
                                 className={inputClass} 
                             />
                         </div>
-                    </div>
-
-                    <div className="flex justify-end gap-2.5 pt-3 border-t border-stone-100 mt-5">
-                        <button
-                            type="button"
-                            onClick={handleCloseModal}
-                            className="px-3.5 py-2 text-xs sm:text-sm font-semibold text-stone-700 bg-stone-100 rounded-xl hover:bg-stone-200 transition active:scale-95"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={saving}
-                            className="px-4 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl disabled:bg-stone-400 shadow-sm transition active:scale-95"
-                        >
-                            {saving ? 'Creating...' : 'Create Promo Code'}
-                        </button>
                     </div>
                 </form>
             </Dialog>

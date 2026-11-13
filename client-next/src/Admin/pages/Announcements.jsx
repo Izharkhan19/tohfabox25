@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement } from '../../api-services/apiService';
 import { toast } from 'react-toastify';
-import { TrashIcon, PencilIcon, PlusIcon, MegaphoneIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, PencilIcon, PlusIcon, MegaphoneIcon, ArrowTopRightOnSquareIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import LogoLoader from '../../components/LogoLoader';
 
 export default function Announcements() {
@@ -221,58 +221,96 @@ export default function Announcements() {
 
             {/* Add / Edit Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-4 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto border border-[#e1b382]/30">
-                        <h3 className="text-base sm:text-xl font-serif font-bold mb-3 sm:mb-4 text-[#12343b]">{formData.id ? 'Edit Announcement' : 'Add Announcement'}</h3>
-                        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                <div 
+                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm"
+                    onMouseDown={(e) => {
+                        if (e.target === e.currentTarget) setShowModal(false);
+                    }}
+                    role="presentation"
+                >
+                    <div 
+                        className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md max-h-[92vh] sm:max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-[#e1b382]/30"
+                        role="dialog"
+                        aria-modal="true"
+                    >
+                        {/* Header Section (Sticky) */}
+                        <div className="shrink-0 flex items-center justify-between border-b border-stone-100 bg-[#fcfaf7] px-4 py-3 sm:px-6 sm:py-4">
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Message Text</label>
-                                <textarea
-                                    required
-                                    rows={3}
-                                    maxLength={200}
-                                    placeholder="e.g. 🎉 Flat 10% OFF on shopping of ₹1000 and above!"
-                                    value={formData.message}
-                                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                    className="w-full px-3 py-2 text-xs sm:text-sm border border-stone-300 rounded-xl focus:ring-2 focus:ring-[#12343b] focus:border-[#12343b] resize-none outline-none"
-                                />
-                                <span className="text-[10px] text-stone-400 text-right block mt-0.5">{formData.message.length}/200</span>
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Top Site Notice</p>
+                                <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
+                                    {formData.id ? 'Edit Announcement' : 'Add Announcement'}
+                                </h3>
                             </div>
-                            <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Target Link (Optional)</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. /products or /products?category=sale"
-                                    value={formData.link}
-                                    onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                                    className="w-full px-3 py-2 text-xs sm:text-sm border border-stone-300 rounded-xl focus:ring-2 focus:ring-[#12343b] focus:border-[#12343b] outline-none"
-                                />
-                            </div>
-                            <div className="flex items-start gap-2.5 mt-2 bg-[#fcfaf7] p-2.5 sm:p-3 rounded-xl border border-stone-200">
-                                <input
-                                    type="checkbox"
-                                    id="isActive"
-                                    checked={formData.isActive}
-                                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                                    className="w-4 h-4 mt-0.5 text-[#12343b] rounded border-stone-300 focus:ring-[#12343b]"
-                                />
-                                <label htmlFor="isActive" className="text-xs sm:text-sm text-stone-700 cursor-pointer leading-tight">
-                                    <strong className="block font-semibold text-[#12343b]">Set as Active Banner</strong>
-                                    Will immediately show at the top of the client website.
-                                </label>
+                            <button
+                                type="button"
+                                onClick={() => setShowModal(false)}
+                                aria-label="Close dialog"
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 active:scale-95 transition"
+                            >
+                                <XMarkIcon className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Form wrapping body + sticky footer */}
+                        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+                            {/* Body Section (Scrollable) */}
+                            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 overscroll-contain">
+                                <div>
+                                    <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                                        Message Text <span className="text-red-500">*</span>
+                                    </label>
+                                    <textarea
+                                        required
+                                        rows={3}
+                                        maxLength={200}
+                                        placeholder="e.g. 🎉 Flat 10% OFF on shopping of ₹1000 and above!"
+                                        value={formData.message}
+                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                        className="w-full px-3.5 py-2.5 text-sm border border-stone-200 bg-[#fcfaf7] rounded-xl focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b] focus:bg-white resize-none outline-none transition"
+                                    />
+                                    <span className="text-[10px] text-stone-400 text-right block mt-1">{formData.message.length}/200</span>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                                        Target Link <span className="font-normal text-stone-400">(Optional)</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. /products or /products?category=sale"
+                                        value={formData.link}
+                                        onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                                        className="w-full px-3.5 py-2.5 text-sm border border-stone-200 bg-[#fcfaf7] rounded-xl focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b] focus:bg-white outline-none transition"
+                                    />
+                                </div>
+
+                                <div className="flex items-start gap-3 bg-[#fcfaf7] p-3 rounded-xl border border-stone-200">
+                                    <input
+                                        type="checkbox"
+                                        id="isActive"
+                                        checked={formData.isActive}
+                                        onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                                        className="w-4 h-4 mt-0.5 text-[#12343b] rounded border-stone-300 focus:ring-[#12343b]"
+                                    />
+                                    <label htmlFor="isActive" className="text-xs sm:text-sm text-stone-700 cursor-pointer leading-tight">
+                                        <strong className="block font-semibold text-[#12343b]">Set as Active Banner</strong>
+                                        Will immediately show in the top announcement bar across client pages.
+                                    </label>
+                                </div>
                             </div>
                             
-                            <div className="flex justify-end gap-2 pt-3 border-t border-stone-100 mt-4">
+                            {/* Footer Section (Sticky) */}
+                            <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-3.5 border-t border-stone-100 bg-[#fcfaf7]/70 flex items-center justify-end gap-2.5">
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="px-3.5 py-2 text-xs sm:text-sm font-semibold text-stone-700 bg-stone-100 rounded-xl hover:bg-stone-200 active:scale-95 transition"
+                                    className="min-h-[40px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 active:scale-95 transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl active:scale-95 transition shadow-sm"
+                                    className="min-h-[40px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl active:scale-95 transition shadow-sm"
                                 >
                                     Save Banner
                                 </button>

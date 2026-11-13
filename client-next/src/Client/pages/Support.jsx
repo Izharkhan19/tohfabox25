@@ -29,8 +29,10 @@ export default function Support() {
   const [openFaq, setOpenFaq] = useState(0);
 
   const contactEmail = "tohfabox25@gmail.com";
-  const contactPhone = "+917737510030";
-  const contactPhoneDisplay = "+91 77375 10030";
+  const primaryWhatsApp = "+91 90798 41327";
+  const primaryWhatsAppRaw = "919079841327";
+  const fallbackPhone = "+91 77375 10030";
+  const fallbackPhoneRaw = "+917737510030";
 
   const faqs = [
     {
@@ -90,7 +92,7 @@ export default function Support() {
     const text = encodeURIComponent(
       `Hello Artistary Crafts Team!\nName: ${formData.name || "Customer"}\nInquiry: ${formData.subject}\nOrder ID: ${formData.orderId || "N/A"}\nMessage: ${formData.message || "I have an inquiry regarding your products."}`
     );
-    window.open(`https://wa.me/917737510030?text=${text}`, "_blank");
+    window.open(`https://wa.me/${primaryWhatsAppRaw}?text=${text}`, "_blank");
   };
 
   return (
@@ -121,30 +123,45 @@ export default function Support() {
                 <PhoneIcon className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold font-serif text-[#12343b] mb-1">
-                Call &amp; WhatsApp
+                WhatsApp &amp; Phone Helpline
               </h3>
               <p className="text-xs text-gray-500 mb-3">
-                Direct helpline for instant custom consultations and urgent order updates.
+                Reach us directly for instant inquiries, custom requests, and urgent order updates.
               </p>
-              <p className="text-sm font-bold text-[#12343b] tracking-wide">
-                {contactPhoneDisplay}
-              </p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Mon – Sat: 9:00 AM – 8:00 PM IST</p>
+              <div className="space-y-2 mb-2">
+                <div>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mb-0.5">
+                    Primary (WhatsApp &amp; Inquiry)
+                  </span>
+                  <p className="text-sm font-bold text-[#12343b] tracking-wide">
+                    {primaryWhatsApp}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full inline-block mb-0.5">
+                    Phone Calls Only (Fallback)
+                  </span>
+                  <p className="text-xs font-semibold text-stone-700 tracking-wide">
+                    {fallbackPhone}
+                  </p>
+                </div>
+              </div>
+              <p className="text-[11px] text-gray-400 mt-1">Mon – Sat: 9:00 AM – 8:00 PM IST</p>
             </div>
             <div className="mt-5 pt-3 border-t border-gray-100 flex items-center gap-2">
-              <a
-                href={`tel:${contactPhone}`}
-                className="flex-1 text-center py-2 px-3 rounded-xl bg-[#12343b] text-white text-xs font-bold hover:bg-[#1a4a55] transition-colors"
-              >
-                Call Now
-              </a>
               <button
                 type="button"
                 onClick={handleWhatsAppChat}
-                className="flex-1 text-center py-2 px-3 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors"
+                className="flex-1 text-center py-2.5 px-3 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors shadow-sm"
               >
                 WhatsApp
               </button>
+              <a
+                href={`tel:${fallbackPhoneRaw}`}
+                className="flex-1 text-center py-2.5 px-3 rounded-xl bg-[#12343b] text-white text-xs font-bold hover:bg-[#1a4a55] transition-colors shadow-sm"
+              >
+                Call Us
+              </a>
             </div>
           </div>
 

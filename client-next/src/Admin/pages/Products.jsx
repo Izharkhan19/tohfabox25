@@ -394,37 +394,49 @@ export default function Products() {
 
       {/* Bulk Update Price Modal */}
       <Dialog
-        header={`Update Price for ${selectedProducts.length} Products`}
+        header={
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Bulk Catalog Update</p>
+            <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
+              Update Price ({selectedProducts.length} Selected)
+            </h3>
+          </div>
+        }
         visible={isPriceModalOpen}
-        style={{ width: '90vw', maxWidth: '400px' }}
+        style={{ width: '92vw', maxWidth: '420px' }}
         onHide={() => !updatingPrice && setIsPriceModalOpen(false)}
         dismissableMask={!updatingPrice}
+        className="rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
+        headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
+        contentClassName="p-4 sm:p-6"
       >
-        <div className="flex flex-col gap-4 p-2">
+        <div className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New Price (₹)</label>
+            <label className="block text-xs font-bold text-stone-700 mb-1.5">
+              New Price for All Selected (₹) <span className="text-red-500">*</span>
+            </label>
             <input
               type="number"
               value={bulkNewPrice}
               onChange={(e) => setBulkNewPrice(e.target.value)}
-              placeholder="Enter new price"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              placeholder="e.g. 499"
+              className="w-full px-3.5 py-2.5 text-sm border border-stone-200 bg-[#fcfaf7] rounded-xl focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b] focus:bg-white outline-none transition"
               min="0"
               disabled={updatingPrice}
             />
           </div>
-          <div className="flex justify-end gap-3 mt-4">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-stone-100 mt-2">
             <button
               onClick={() => setIsPriceModalOpen(false)}
               disabled={updatingPrice}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+              className="min-h-[40px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95 disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={handleBulkUpdatePrice}
               disabled={updatingPrice || !bulkNewPrice}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="min-h-[40px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-sm transition active:scale-95 disabled:opacity-50 flex items-center gap-2"
             >
               {updatingPrice ? "Updating..." : "Update Prices"}
             </button>
@@ -434,18 +446,27 @@ export default function Products() {
 
       {/* Add / Edit Product Modal */}
       <Dialog
-        header={editingProductId ? "Edit Product" : "Add New Product"}
+        header={
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Catalog Manager</p>
+            <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
+              {editingProductId ? "Edit Product" : "Add New Product"}
+            </h3>
+          </div>
+        }
         visible={isProductModalOpen}
-        style={{ width: '95vw', maxWidth: '1100px' }}
+        style={{ width: '96vw', maxWidth: '1050px' }}
+        className="rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
+        headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
+        contentClassName="!p-0 bg-white"
         onHide={() => {
           setIsProductModalOpen(false);
           setEditingProductId(null);
         }}
         dismissableMask={false}
         maximizable
-        contentClassName="!p-0"
       >
-        <div className="max-h-[82vh] overflow-y-auto px-2 sm:px-6 py-4">
+        <div className="max-h-[82vh] overflow-y-auto overscroll-contain px-3 sm:px-6 py-4">
           <AddEditProduct
             key={editingProductId || 'new'}
             productId={editingProductId}

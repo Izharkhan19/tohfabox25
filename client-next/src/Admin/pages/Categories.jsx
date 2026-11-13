@@ -243,70 +243,86 @@ export default function Categories() {
       {/* Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-2 sm:p-4 backdrop-blur-sm"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) closeModal();
           }}
           role="presentation"
         >
-          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[#e1b382]/30 bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
-            <div className="flex items-center justify-between border-b border-stone-100 bg-[#fcfaf7] px-4 py-3 sm:px-6 sm:py-4">
+          <div 
+            className="w-full max-w-md max-h-[92vh] sm:max-h-[85vh] flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-[#e1b382]/30 bg-white shadow-2xl" 
+            role="dialog" 
+            aria-modal="true" 
+            aria-labelledby="category-modal-title"
+          >
+            {/* Header Section (Sticky) */}
+            <div className="shrink-0 flex items-center justify-between border-b border-stone-100 bg-[#fcfaf7] px-4 py-3 sm:px-6 sm:py-4">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Catalog Organization</p>
                 <h2 id="category-modal-title" className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
                   {editingCategory ? "Edit Category" : "Create Category"}
                 </h2>
               </div>
-              <button type="button" onClick={closeModal} aria-label="Close dialog" className="rounded-full p-1.5 text-stone-400 transition hover:bg-stone-100 hover:text-stone-700">
+              <button 
+                type="button" 
+                onClick={closeModal} 
+                aria-label="Close dialog" 
+                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 active:scale-95 transition"
+              >
                 <XMarkIcon className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">
-                  Category Name
-                </label>
-                <input
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full rounded-xl border border-stone-200 bg-[#fcfaf7] px-3.5 py-2 text-xs sm:text-sm text-[#12343b] outline-none transition focus:border-[#12343b] focus:bg-white focus:ring-2 focus:ring-[#12343b]/20"
-                  placeholder="e.g. Crochet Decor"
-                  required
-                  autoFocus
-                />
+            {/* Form wrapping body + sticky footer */}
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+              {/* Body Section (Scrollable) */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 overscroll-contain">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                    Category Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full rounded-xl border border-stone-200 bg-[#fcfaf7] px-3.5 py-2.5 text-sm text-[#12343b] outline-none transition focus:border-[#12343b] focus:bg-white focus:ring-2 focus:ring-[#12343b]/20"
+                    placeholder="e.g. Crochet Decor"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                    Category Type <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    className="w-full rounded-xl border border-stone-200 bg-[#fcfaf7] px-3.5 py-2.5 text-sm text-[#12343b] outline-none transition focus:border-[#12343b] focus:bg-white focus:ring-2 focus:ring-[#12343b]/20"
+                    required
+                  >
+                    <option value="Product">Product Category</option>
+                    <option value="Occasion">Occasion</option>
+                    <option value="Relationship">Relationship</option>
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">
-                  Category Type
-                </label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full rounded-xl border border-stone-200 bg-[#fcfaf7] px-3.5 py-2 text-xs sm:text-sm text-[#12343b] outline-none transition focus:border-[#12343b] focus:bg-white focus:ring-2 focus:ring-[#12343b]/20"
-                  required
-                >
-                  <option value="Product">Product Category</option>
-                  <option value="Occasion">Occasion</option>
-                  <option value="Relationship">Relationship</option>
-                </select>
-              </div>
-
-              <div className="pt-3 flex justify-end gap-2 border-t border-stone-100">
+              {/* Footer Section (Sticky) */}
+              <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-3.5 border-t border-stone-100 bg-[#fcfaf7]/70 flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-xl border border-stone-200 px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 transition hover:bg-stone-50 active:scale-95"
+                  className="min-h-[40px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-xl bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] shadow-sm transition active:scale-95 disabled:opacity-50"
+                  className="min-h-[40px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-sm transition active:scale-95 disabled:opacity-50"
                 >
-                  {saving ? "Saving..." : editingCategory ? "Update" : "Create"}
+                  {saving ? "Saving..." : editingCategory ? "Update Category" : "Create Category"}
                 </button>
               </div>
             </form>

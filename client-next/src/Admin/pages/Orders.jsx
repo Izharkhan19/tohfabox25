@@ -419,13 +419,49 @@ export default function Orders() {
 
       {/* Status Modal */}
       <Dialog 
-        header={`Order Details - ${selectedOrder?.orderNumber || (selectedOrder?._id && `#${selectedOrder._id.slice(-8)}`)}`}
+        header={
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Order Processing</p>
+            <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
+              Order Details &bull; {selectedOrder?.orderNumber || (selectedOrder?._id && `#${selectedOrder._id.slice(-8)}`)}
+            </h3>
+          </div>
+        }
         visible={isStatusModalOpen && !!selectedOrder} 
         onHide={() => setIsStatusModalOpen(false)}
-        className="w-[95vw] sm:w-full sm:max-w-xl rounded-2xl shadow-2xl"
+        footer={
+          <div className="flex items-center justify-end gap-2.5 w-full">
+            <button
+              type="button"
+              onClick={() => setIsStatusModalOpen(false)}
+              className="min-h-[40px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              disabled={updatingStatus || !newStatus}
+              onClick={handleStatusUpdate}
+              className="min-h-[40px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-sm transition active:scale-95 disabled:bg-stone-400 flex items-center gap-1.5"
+            >
+              {updatingStatus ? (
+                <>
+                  <span className="w-3.5 h-3.5 border-2 border-[#e1b382] border-t-transparent rounded-full animate-spin" />
+                  <span>Updating...</span>
+                </>
+              ) : (
+                <span>Update Status</span>
+              )}
+            </button>
+          </div>
+        }
+        className="w-[95vw] sm:w-full sm:max-w-xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
+        headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
+        contentClassName="p-4 sm:p-6 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto overscroll-contain"
+        footerClassName="px-4 py-3 sm:px-6 sm:py-3.5 bg-[#fcfaf7]/70 border-t border-stone-100"
         breakpoints={{ '960px': '75vw', '640px': '95vw' }}
       >
-        <div className="flex flex-col gap-4 mt-2">
+        <div className="flex flex-col gap-4">
           
           {/* ORDER ITEMS SECTION */}
           {selectedOrder?.items && selectedOrder.items.length > 0 && (
@@ -553,24 +589,8 @@ export default function Orders() {
             value={statusComment}
             onChange={(e) => setStatusComment(e.target.value)}
             placeholder="Optional note (e.g., Confirmed on WhatsApp, Dispatched...)"
-            className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2.5 text-sm border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b]"
           />
-
-          <div className="flex flex-col sm:flex-row gap-3 mt-4">
-            <Button
-              label="Close"
-              outlined
-              onClick={() => setIsStatusModalOpen(false)}
-              className="w-full sm:w-1/2 justify-center py-3"
-            />
-            <Button
-              label={updatingStatus ? "Updating..." : "Update Status"}
-              icon={updatingStatus ? "pi pi-spin pi-spinner" : "pi pi-check"}
-              disabled={updatingStatus || !newStatus}
-              onClick={handleStatusUpdate}
-              className="w-full sm:w-1/2 justify-center py-3 bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-            />
-          </div>
         </div>
       </Dialog>
     </div>

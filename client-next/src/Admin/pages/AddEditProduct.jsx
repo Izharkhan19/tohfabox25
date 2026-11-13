@@ -164,10 +164,12 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import LogoLoader from "../../components/LogoLoader";
 
-export default function AddEditProduct() {
-  const { id } = useParams();
+export default function AddEditProduct({ productId, embedded = false, onClose, onSuccess }) {
+  const params = useParams();
+  const id = params?.id;
   const router = useRouter();
-  const isEditMode = Boolean(id);
+  const activeId = productId || id;
+  const isEditMode = Boolean(activeId);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -231,7 +233,7 @@ export default function AddEditProduct() {
         setLoadingProduct(true);
         setError(null);
         try {
-          const res = await getProduct(id);
+          const res = await getProduct(activeId);
           if (res.success && res.data) {
             const product = res.data?.data;
 
@@ -268,7 +270,7 @@ export default function AddEditProduct() {
       };
       loadProduct();
     }
-  }, [id, isEditMode]);
+  }, [activeId, isEditMode]);
   const API_BASE_URL =
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
   const handleInputChange = (e) => {
@@ -396,7 +398,7 @@ export default function AddEditProduct() {
       if (isEditMode) {
         // Independent PUT call for update
         response = await axios.put(
-          `${API_BASE_URL}/products/${id}`,
+          `${API_BASE_URL}/products/${activeId}`,
           formDataToSend,
           {
             headers: {
@@ -429,7 +431,11 @@ export default function AddEditProduct() {
         toast.success(
           `Product ${isEditMode ? "updated" : "added"} successfully!`,
         );
-        router.push("/admin/products");
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.push("/admin/products");
+        }
       } else {
         setError(result.message || "Failed to save product");
       }
@@ -450,20 +456,23 @@ export default function AddEditProduct() {
   const getImageId = (img) => img._id || img.public_id || img.name;
 
   return (
-    <div className="max-w-5xl mx-auto p-3.5 sm:p-6">
-      <div className="flex items-center gap-4 mb-6 sm:mb-8">
-        <button
-          onClick={() => router.push("/admin/products")}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          <ArrowLeftIcon className="w-6 h-6" />
-        </button>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-          {isEditMode ? "Edit Product" : "Add New Product"}
-        </h1>
-      </div>
-
-      <hr />
+    <div className={embedded ? "w-full" : "max-w-5xl mx-auto p-3.5 sm:p-6"}>
+      {!embedded && (
+        <>
+          <div className="flex items-center gap-4 mb-6 sm:mb-8">
+            <button
+              onClick={() => router.push("/admin/products")}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeftIcon className="w-6 h-6" />
+            </button>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+              {isEditMode ? "Edit Product" : "Add New Product"}
+            </h1>
+          </div>
+          <hr />
+        </>
+      )}
 
       {loadingProduct ? (
         <div className="text-center py-12">
@@ -472,7 +481,7 @@ export default function AddEditProduct() {
       ) : error ? (
         <div className="text-center py-16 text-red-600">{error}</div>
       ) : (
-        <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-md border border-gray-100 mt-4 sm:mt-0">
+        <div className={embedded ? "bg-white" : "bg-white p-4 sm:p-8 rounded-2xl shadow-md border border-gray-100 mt-4 sm:mt-0"}>
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-3 sm:gap-6">
               <div>
@@ -748,26 +757,32 @@ export default function AddEditProduct() {
 
             {error && <p className="text-red-600 mt-4 text-center">{error}</p>}
 
-            <div className="mt-8 sm:mt-10 flex flex-row gap-3 sm:gap-4 justify-end">
+            <div className="sticky bottom-0 bg-white/95 backdrop-blur-md pt-3 pb-2 border-t border-stone-200 mt-8 z-20 flex items-center justify-end gap-2.5">
               <button
                 type="button"
-                onClick={() => router.push("/admin/products")}
-                className="w-1/2 sm:w-auto px-4 py-2.5 sm:px-8 sm:py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-xl shadow-sm font-medium"
+                onClick={() => {
+                  if (onClose) {
+                    onClose();
+                  } else {
+                    router.push("/admin/products");
+                  }
+                }}
+                className="min-h-[42px] px-5 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saving || loadingProduct}
-                className="w-1/2 sm:w-auto px-4 py-2.5 sm:px-8 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md disabled:opacity-70 font-medium"
+                className="min-h-[42px] px-6 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-md disabled:opacity-50 transition active:scale-95 flex items-center gap-2"
               >
                 {saving
                   ? isEditMode
                     ? "Updating..."
                     : "Saving..."
                   : isEditMode
-                    ? "Update"
-                    : "Save"}
+                    ? "Update Product"
+                    : "Save Product"}
               </button>
             </div>
           </form>

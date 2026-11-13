@@ -8,6 +8,7 @@ import {
     ShoppingBagIcon,
     HeartIcon,
     ShoppingCartIcon,
+    PhotoIcon,
     XMarkIcon,
     Bars3Icon
 } from "@heroicons/react/24/outline";
@@ -16,7 +17,8 @@ import {
     ShoppingBagIcon as ShoppingBagIconSolid,
     HeartIcon as HeartIconSolid,
     ShoppingCartIcon as ShoppingCartIconSolid,
-    UserIcon as UserIconSolid
+    UserIcon as UserIconSolid,
+    PhotoIcon as PhotoIconSolid
 } from "@heroicons/react/24/solid";
 import { useAppStore } from "../../stores/useAppStore";
 import confetti from "canvas-confetti";
@@ -283,9 +285,20 @@ export default function ClientLayout({ children }) {
                                 )}
                             </div>
 
-                            {/* Mobile: Quick Cart Icon */}
-                            <div className="md:hidden flex items-center justify-end">
-                                <Link href="/cart" className="relative p-2 -mr-2 text-[#e1b382]">
+                            {/* Mobile: Quick Account & Cart Icons */}
+                            <div className="md:hidden flex items-center justify-end gap-1">
+                                <Link
+                                    href={isLoggedIn ? "/orders" : "/login"}
+                                    className="p-2 text-[#e1b382] hover:bg-white/10 rounded-xl transition-colors"
+                                    title={isLoggedIn ? "Account / Orders" : "Sign In"}
+                                >
+                                    {isActive("/orders") || (!isLoggedIn && isActive("/login")) ? (
+                                        <UserIconSolid className="w-7 h-7" />
+                                    ) : (
+                                        <UserIcon className="w-7 h-7" />
+                                    )}
+                                </Link>
+                                <Link href="/cart" className="relative p-2 -mr-1 text-[#e1b382] hover:bg-white/10 rounded-xl transition-colors">
                                     {isActive("/cart") ? <ShoppingCartIconSolid className="w-7 h-7" /> : <ShoppingCartIcon className="w-7 h-7" />}
                                     {cartCount > 0 && (
                                         <span className="absolute top-0 right-0 bg-[#c89666] text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center border-2 border-brand-dark shadow-sm">
@@ -325,17 +338,24 @@ export default function ClientLayout({ children }) {
                         {/* User Info / Login */}
                         <div className="p-6 border-b border-white/10 bg-white/5">
                             {isLoggedIn ? (
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-[#e1b382] rounded-full flex items-center justify-center shadow-inner">
+                                <Link
+                                    href="/orders"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-4 group hover:bg-white/5 p-2 -m-2 rounded-xl transition-all"
+                                >
+                                    <div className="w-12 h-12 bg-[#e1b382] rounded-full flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
                                         <UserIconSolid className="w-6 h-6 text-[#12343b]" />
                                     </div>
-                                    <div>
-                                        <p className="text-sm text-[#7a8f94] font-medium">Welcome back,</p>
-                                        <p className="font-bold text-lg text-white truncate max-w-[150px]">
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs text-[#7a8f94] font-medium">Welcome back,</p>
+                                        <p className="font-bold text-lg text-white truncate">
                                             {user?.name || "User"}
                                         </p>
+                                        <p className="text-xs text-[#e1b382] font-semibold mt-0.5 flex items-center gap-1 group-hover:underline">
+                                            Manage Account &rarr;
+                                        </p>
                                     </div>
-                                </div>
+                                </Link>
                             ) : (
                                 <div className="text-center">
                                     <p className="text-[#fdfbf9]/80 text-sm mb-4">Sign in to track orders and save to wishlist.</p>
@@ -366,6 +386,21 @@ export default function ClientLayout({ children }) {
                                     {link.label}
                                 </Link>
                             ))}
+
+                            {isLoggedIn && (
+                                <Link
+                                    href="/orders"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={`flex items-center gap-3 px-4 py-4 rounded-xl font-bold text-base tracking-wide transition-colors ${
+                                        isActive("/orders")
+                                        ? "bg-[#e1b382] text-[#12343b]"
+                                        : "text-[#fdfbf9] hover:bg-white/10"
+                                    }`}
+                                >
+                                    <UserIcon className="w-5 h-5 text-[#e1b382]" />
+                                    <span>My Account & Orders</span>
+                                </Link>
+                            )}
 
                             <div className="h-px bg-white/10 my-4 mx-4"></div>
 
@@ -467,29 +502,20 @@ export default function ClientLayout({ children }) {
                     {isActive("/products") ? <ShoppingBagIconSolid className="w-7 h-7 text-[#12343b]" /> : <ShoppingBagIcon className="w-7 h-7 text-[#7a8f94] group-hover:text-[#12343b]" />}
                     <span className={`text-[11px] font-black tracking-wide ${isActive("/products") ? "text-[#12343b]" : "text-[#7a8f94]"}`}>Shop</span>
                 </Link>
-                {isLoggedIn ? (
-                    <>
-                        <Link href="/wishlist" className="relative flex flex-col items-center justify-center w-16 h-full gap-1.5 active:scale-95 transition-transform group">
-                            {isActive("/wishlist") ? <HeartIconSolid className="w-7 h-7 text-[#12343b]" /> : <HeartIcon className="w-7 h-7 text-[#7a8f94] group-hover:text-[#12343b]" />}
-                            {wishlistCount > 0 && <span className="absolute top-2 right-2 w-4 h-4 bg-[#c89666] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">{wishlistCount}</span>}
-                            <span className={`text-[11px] font-black tracking-wide ${isActive("/wishlist") ? "text-[#12343b]" : "text-[#7a8f94]"}`}>Wishlist</span>
-                        </Link>
-                        <Link href="/cart" className="relative flex flex-col items-center justify-center w-16 h-full gap-1.5 active:scale-95 transition-transform group">
-                            {isActive("/cart") ? <ShoppingCartIconSolid className="w-7 h-7 text-[#12343b]" /> : <ShoppingCartIcon className="w-7 h-7 text-[#7a8f94] group-hover:text-[#12343b]" />}
-                            {cartCount > 0 && <span className="absolute top-2 right-2 w-4 h-4 bg-[#c89666] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">{cartCount}</span>}
-                            <span className={`text-[11px] font-black tracking-wide ${isActive("/cart") ? "text-[#12343b]" : "text-[#7a8f94]"}`}>Cart</span>
-                        </Link>
-                        <Link href="/orders" className="flex flex-col items-center justify-center w-16 h-full gap-1.5 active:scale-95 transition-transform group">
-                            {isActive("/orders") ? <UserIconSolid className="w-7 h-7 text-[#12343b]" /> : <UserIcon className="w-7 h-7 text-[#7a8f94] group-hover:text-[#12343b]" />}
-                            <span className={`text-[11px] font-black tracking-wide ${isActive("/orders") ? "text-[#12343b]" : "text-[#7a8f94]"}`}>Account</span>
-                        </Link>
-                    </>
-                ) : (
-                    <Link href="/login" className="flex flex-col items-center justify-center w-16 h-full gap-1.5 active:scale-95 transition-transform group">
-                        <UserIcon className="w-7 h-7 text-[#7a8f94] group-hover:text-[#12343b]" />
-                        <span className="text-[11px] font-black tracking-wide text-[#7a8f94]">Sign In</span>
-                    </Link>
-                )}
+                <Link href="/gallery" className="flex flex-col items-center justify-center w-16 h-full gap-1.5 active:scale-95 transition-transform group">
+                    {isActive("/gallery") ? <PhotoIconSolid className="w-7 h-7 text-[#12343b]" /> : <PhotoIcon className="w-7 h-7 text-[#7a8f94] group-hover:text-[#12343b]" />}
+                    <span className={`text-[11px] font-black tracking-wide ${isActive("/gallery") ? "text-[#12343b]" : "text-[#7a8f94]"}`}>Gallery</span>
+                </Link>
+                <Link href="/wishlist" className="relative flex flex-col items-center justify-center w-16 h-full gap-1.5 active:scale-95 transition-transform group">
+                    {isActive("/wishlist") ? <HeartIconSolid className="w-7 h-7 text-[#12343b]" /> : <HeartIcon className="w-7 h-7 text-[#7a8f94] group-hover:text-[#12343b]" />}
+                    {wishlistCount > 0 && <span className="absolute top-2 right-2 w-4 h-4 bg-[#c89666] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">{wishlistCount}</span>}
+                    <span className={`text-[11px] font-black tracking-wide ${isActive("/wishlist") ? "text-[#12343b]" : "text-[#7a8f94]"}`}>Wishlist</span>
+                </Link>
+                <Link href="/cart" className="relative flex flex-col items-center justify-center w-16 h-full gap-1.5 active:scale-95 transition-transform group">
+                    {isActive("/cart") ? <ShoppingCartIconSolid className="w-7 h-7 text-[#12343b]" /> : <ShoppingCartIcon className="w-7 h-7 text-[#7a8f94] group-hover:text-[#12343b]" />}
+                    {cartCount > 0 && <span className="absolute top-2 right-2 w-4 h-4 bg-[#c89666] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">{cartCount}</span>}
+                    <span className={`text-[11px] font-black tracking-wide ${isActive("/cart") ? "text-[#12343b]" : "text-[#7a8f94]"}`}>Cart</span>
+                </Link>
             </div>
         </div>
     );

@@ -13,44 +13,69 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tohfabox25.vercel.app';
+
 export const metadata = {
   manifest: "/manifest.json",
-  metadataBase: new URL('https://artistarycrafts.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Artistary Crafts - Luxury Crochet Art & Bespoke Gifts",
-    template: "%s | Artistary Crafts",
+    default: "Tohfabox | Handmade Resin & Crochet Gifts | Personalized Hampers",
+    template: "%s | Tohfabox",
   },
-  description: "Discover handcrafted crochet art, personalized gift hampers, and timeless custom creations at Artistary Crafts. Perfect gifts for every special occasion.",
-  keywords: ["Crochet Art", "Handcrafted Gifts", "Gift Hampers", "Custom Crochet Creations", "Artistary Crafts", "Luxury Gifts", "Personalized Gifts", "Home Decor"],
-  authors: [{ name: "Artistary Crafts" }],
-  creator: "Artistary Crafts",
+  description: "Shop custom handmade resin art, luxury crochet creations, personalized gift hampers, and bespoke handcrafted treasures at Tohfabox. Perfect for birthdays, anniversaries, and special moments.",
+  keywords: [
+    "Tohfabox",
+    "Tohfabox25",
+    "Handmade Gifts",
+    "Resin Art",
+    "Crochet Art",
+    "Handmade Resin Gifts",
+    "Crochet Flowers",
+    "Personalized Gifts",
+    "Custom Gift Hampers",
+    "Artistary Crafts",
+    "Handcrafted Treasures",
+    "Resin Clocks",
+    "Resin Nameplates",
+    "Resin Keychains",
+    "Custom Gifts India"
+  ],
+  authors: [{ name: "Tohfabox", url: SITE_URL }],
+  creator: "Tohfabox",
+  publisher: "Tohfabox",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://artistarycrafts.vercel.app",
-    title: "Artistary Crafts - Luxury Crochet Art & Bespoke Gifts",
-    description: "Discover handcrafted crochet art, personalized gift hampers, and timeless custom creations at Artistary Crafts. Perfect gifts for every special occasion.",
-    siteName: "Artistary Crafts",
+    url: SITE_URL,
+    title: "Tohfabox | Handmade Resin & Crochet Gifts",
+    description: "Shop custom handmade resin art, luxury crochet creations, and personalized gift hampers crafted with love at Tohfabox.",
+    siteName: "Tohfabox",
     images: [
       {
         url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "Artistary Crafts",
+        alt: "Tohfabox Handmade Resin & Crochet Gifts",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Artistary Crafts - Luxury Crochet Art & Bespoke Gifts",
-    description: "Discover handcrafted crochet art, personalized gift hampers, and timeless custom creations at Artistary Crafts.",
+    title: "Tohfabox | Handmade Resin & Crochet Gifts",
+    description: "Shop custom handmade resin art, luxury crochet creations, and personalized gift hampers crafted with love at Tohfabox.",
     images: ["/logo.png"],
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Artistary Crafts",
+    title: "Tohfabox",
     startupImage: ["/splash.png"],
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
   },
   robots: {
     index: true,
@@ -72,12 +97,58 @@ export const viewport = {
   themeColor: '#12343b',
 };
 
+const jsonLdSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      "name": "Tohfabox",
+      "alternateName": ["Artistary Crafts", "Tohfabox25"],
+      "url": SITE_URL,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${SITE_URL}/logo.png`,
+        "width": 512,
+        "height": 512
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+917737510030",
+        "contactType": "customer service",
+        "areaServed": "IN",
+        "availableLanguage": ["English", "Hindi"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      "url": SITE_URL,
+      "name": "Tohfabox",
+      "publisher": {
+        "@id": `${SITE_URL}/#organization`
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": `${SITE_URL}/products?search={search_term_string}`,
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+};
+
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSchema) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <Providers>
           {children}

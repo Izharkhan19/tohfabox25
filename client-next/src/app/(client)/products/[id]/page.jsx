@@ -2,70 +2,115 @@ import PageComponent from "../../../../Client/pages/ProductDetail";
 
 export async function generateMetadata({ params }) {
   try {
-    const id = await params.id;
-    
-    // We fetch the product details server-side just for the Meta tags
+    const { id } = await params;
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tohfabox25.vercel.app';
     
-    // Using native fetch to avoid axios import issues in server components
     const res = await fetch(`${API_URL}/api/products/${id}`, { next: { revalidate: 3600 } });
-    if (!res.ok) throw new Error('Failed to fetch');
+    if (!res.ok) throw new Error('Failed to fetch product metadata');
     
     const data = await res.json();
-    const product = data.product || data;
+    const product = data.data || data.product || data;
 
-    // Get the first image URL or fallback to logo
     let imageUrl = product.images?.[0]?.url || product.image?.url || "/logo.png";
-    
-    // WhatsApp requires absolute URLs with https://
     if (imageUrl.startsWith('/')) {
-      if (imageUrl === '/logo.png') {
-        imageUrl = `https://artistarycrafts.vercel.app${imageUrl}`;
-      } else {
-        // If it's a relative path from the backend uploads
-        imageUrl = `${API_URL}${imageUrl}`;
-      }
+      imageUrl = `${SITE_URL}${imageUrl}`;
     } else if (imageUrl.startsWith('http://')) {
-      // Force HTTPS for Cloudinary or other external URLs
       imageUrl = imageUrl.replace('http://', 'https://');
     }
 
-    const title = `${product.title || product.name} | Artistary Crafts`;
-    // Strip HTML from description if any, otherwise it can break OG tags
-    const cleanDescription = (product.description || "Check out this beautiful handcrafted crochet item at Artistary Crafts.").replace(/<[^>]*>?/gm, '');
+    const title = `${product.title || product.name || 'Handmade Product'} | Tohfabox`;
+    const cleanDescription = (product.description || "Discover custom handcrafted resin art, luxury crochet creations, and personalized gift hampers at Tohfabox.")
+      .replace(/<[^>]*>?/gm, '')
+      .slice(0, 160);
 
     return {
-      title: title,
+      title,
       description: cleanDescription,
+      alternates: {
+        canonical: `/products/${id}`,
+      },
       openGraph: {
-        title: title,
+        title,
         description: cleanDescription,
-        url: `https://artistarycrafts.vercel.app/products/${id}`,
-        siteName: "Artistary Crafts",
+        url: `${SITE_URL}/products/${id}`,
+        siteName: "Tohfabox",
         images: [
           {
             url: imageUrl,
             width: 800,
             height: 800,
-            alt: product.title || product.name || "Artistary Crafts Product",
+            alt: product.title || product.name || "Tohfabox Handmade Gift",
           },
         ],
         type: 'website',
       },
       twitter: {
         card: "summary_large_image",
-        title: title,
+        title,
         description: cleanDescription,
         images: [imageUrl],
       },
     };
   } catch (error) {
-    console.error("Error fetching product metadata:", error);
-    // It will automatically fallback to the default layout.js metadata if this fails
-    return {};
+    console.error("Error generating product metadata:", error.message);
+    return {
+      title: "Handmade Product Details | Tohfabox",
+      description: "Discover custom handcrafted resin art and luxury crochet items at Tohfabox.",
+    };
   }
 }
 
-export default function Page(props) {
-  return <PageComponent {...props} />;
+export default async function Page(props) {
+  const { id } = await props.params;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tohfabox25.vercel.app';
+
+  let productSchema = null;
+  try {
+    const res = await fetch(`${API_URL}/api/products/${id}`, { next: { revalidate: 3600 } });
+    if (res.ok) {
+      const json = await res.json();
+      const product = json.data || json.product || json;
+      let imageUrl = product.images?.[0]?.url || product.image?.url || `${SITE_URL}/logo.png`;
+      if (imageUrl.startsWith('/')) imageUrl = `${SITE_URL}${imageUrl}`;
+
+      productSchema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.title || product.name,
+        "image": [imageUrl],
+        "description": (product.description || "").replace(/<[^>]*>?/gm, '').slice(0, 500),
+        "sku": product._id || id,
+        "brand": {
+          "@type": "Brand",
+          "name": "Tohfabox"
+        },
+        "offers": {
+          "@type": "Offer",
+          "url": `${SITE_URL}/products/${id}`,
+          "priceCurrency": "INR",
+          "price": product.price || 0,
+          "availability": (product.stock > 0 || product.inStock !== false)
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+          "itemCondition": "https://schema.org/NewCondition"
+        }
+      };
+    }
+  } catch (e) {
+    // Schema fetch is non-blocking
+  }
+
+  return (
+    <>
+      {productSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
+      )}
+      <PageComponent {...props} />
+    </>
+  );
 }

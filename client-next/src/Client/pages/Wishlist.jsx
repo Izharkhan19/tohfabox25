@@ -31,40 +31,54 @@ export default function Wishlist() {
   const isLoggedIn =
     !!(typeof window !== 'undefined' ? localStorage.getItem("token") : null) || !!(typeof window !== 'undefined' ? localStorage.getItem("adminToken") : null);
 
-  const fetchWishlist = async () => {
-    if (!isLoggedIn) {
-      setLoading(false);
-      return;
-    }
-
-    if (!cachedWishlistItems) {
-      setLoading(true);
-    }
-    setError(null);
-
-    try {
-      const result = cachedWishlistItems
-        ? { success: true, data: { data: cachedWishlistItems } }
-        : await fetchSharedWishlist();
-      if (result?.success && Array.isArray(result?.data?.data)) {
-        const validItems = result?.data?.data.filter(
-          (item) => item && (item._id || item.id),
-        );
-        setWishlistItems(validItems);
-      } else {
-        setWishlistItems([]);
-        if (result?.message) setError(result.message);
-      }
-    } catch {
-      setError("Failed to load wishlist");
-      setWishlistItems([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchWishlist();
+    let isMounted = true;
+
+    const loadData = async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
+
+      if (!isLoggedIn) {
+        setLoading(false);
+        return;
+      }
+
+      if (!cachedWishlistItems) {
+        setLoading(true);
+      }
+      setError(null);
+
+      try {
+        const result = cachedWishlistItems
+          ? { success: true, data: { data: cachedWishlistItems } }
+          : await fetchSharedWishlist();
+        if (!isMounted) return;
+        if (result?.success && Array.isArray(result?.data?.data)) {
+          const validItems = result?.data?.data.filter(
+            (item) => item && (item._id || item.id),
+          );
+          setWishlistItems(validItems);
+        } else {
+          setWishlistItems([]);
+          if (result?.message) setError(result.message);
+        }
+      } catch {
+        if (isMounted) {
+          setError("Failed to load wishlist");
+          setWishlistItems([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isLoggedIn, cachedWishlistItems, fetchSharedWishlist]);
 
   const handleRemove = async (productId) => {
@@ -205,29 +219,28 @@ export default function Wishlist() {
   return (
     <div className="bg-gray-50 min-h-screen pb-24">
       <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="flex min-w-0 flex-nowrap items-center gap-2 text-2xl font-bold text-resin-dark font-serif sm:gap-4 sm:text-3xl md:text-4xl">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-4 sm:py-6 md:py-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="flex min-w-0 flex-nowrap items-center gap-2 text-xl font-bold text-resin-dark font-serif sm:gap-3 sm:text-3xl md:gap-4 md:text-4xl">
               <span className="truncate">My Collection</span>
-              <span className="shrink-0 text-sm font-sans font-semibold text-gray-400 sm:text-lg">
+              <span className="shrink-0 text-xs font-sans font-semibold text-gray-400 sm:text-base md:text-lg">
                 ({wishlistItems.length}{" "}
                 {wishlistItems.length === 1 ? "item" : "items"})
               </span>
             </h1>
             <button
               onClick={handleClearAll}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95 self-start sm:self-auto"
             >
-              {/* <TrashIcon className="h-4 w-4" aria-hidden="true" /> */}
               Clear All
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-4 gap-12">
-          <div className="lg:col-span-3 space-y-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 md:py-12">
+        <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-12">
+          <div className="lg:col-span-3 space-y-3 sm:space-y-4 md:space-y-6">
             {wishlistItems.map((product) => {
               const id = product._id || product.id;
               const name = product.name || "Unnamed Product";
@@ -239,11 +252,11 @@ export default function Wishlist() {
               return (
                 <div
                   key={id}
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 transition-all hover:shadow-md"
+                  className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 sm:p-5 md:p-6 flex flex-row gap-3 sm:gap-5 md:gap-6 transition-all hover:shadow-md"
                 >
                   <Link
                     href={`/products/${id}`}
-                    className="w-full sm:w-40 h-40 flex-shrink-0"
+                    className="w-20 h-20 sm:w-28 sm:h-28 md:w-40 md:h-40 flex-shrink-0"
                   >
                     <img
                       src={image}
@@ -256,45 +269,45 @@ export default function Wishlist() {
                     />
                   </Link>
 
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div className="flex justify-between items-start gap-4 mb-4">
-                      <div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <div className="flex justify-between items-start gap-2 mb-2 sm:mb-4">
+                      <div className="min-w-0 flex-1">
                         <Link
                           href={`/products/${id}`}
-                          className="text-xl font-bold font-serif text-resin-dark hover:text-resin-blue transition-colors line-clamp-2"
+                          className="text-sm sm:text-lg md:text-xl font-bold font-serif text-resin-dark hover:text-resin-blue transition-colors line-clamp-1 sm:line-clamp-2"
                         >
                           {name}
                         </Link>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-[11px] sm:text-sm text-gray-400 mt-0.5 sm:mt-1">
                           {product.artist || "Master Artisan"}
                         </p>
                       </div>
                       <button
                         onClick={() => handleRemove(id)}
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                        className="p-1 sm:p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors shrink-0"
                       >
-                        <XMarkIcon className="w-5 h-5" />
+                        <XMarkIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-4 mb-6">
-                      <span className="text-2xl font-bold text-resin-dark">
+                    <div className="flex items-center gap-3 mb-2 sm:mb-4">
+                      <span className="text-base sm:text-xl md:text-2xl font-bold text-resin-dark">
                         ₹{Number(price).toFixed(2)}
                       </span>
                       {stock === 0 && (
-                        <span className="text-xs text-red-500 font-bold uppercase tracking-wider">
+                        <span className="text-[10px] sm:text-xs text-red-500 font-bold uppercase tracking-wider">
                           Out of Stock
                         </span>
                       )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-auto">
                       <button
                         onClick={() => handleAddToCart(id)}
                         disabled={stock === 0 || cartLoading[id]}
-                        className={`w-full py-3 md:py-4 rounded-full font-bold uppercase tracking-widest text-xs transition-all shadow-md shrink-0 ${
+                        className={`w-full py-2 sm:py-2.5 md:py-3.5 rounded-xl sm:rounded-full font-bold uppercase tracking-wider text-[11px] sm:text-xs transition-all shadow-md shrink-0 ${
                           stock > 0
-                            ? "bg-resin-dark hover:bg-resin-blue text-white"
+                            ? "bg-resin-dark hover:bg-resin-blue text-white active:scale-95"
                             : "bg-gray-100 text-gray-400 cursor-not-allowed"
                         }`}
                       >
@@ -318,7 +331,7 @@ export default function Wishlist() {
                 Curated Collection
               </h2>
               <p className="text-sm text-gray-600 mb-8 leading-relaxed">
-                You have {wishlistItems.length} handcrafted pieces saved. Don't
+                You have {wishlistItems.length} handcrafted pieces saved. Don&apos;t
                 wait too long, as our masterworks are often one-of-a-kind.
               </p>
               <Link

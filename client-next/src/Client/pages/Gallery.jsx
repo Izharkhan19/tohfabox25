@@ -129,7 +129,7 @@ function QuickOrderModal({ item, onClose }) {
                 </div>
                 <h3 className="text-2xl font-black text-gray-800">Order Received! 🎉</h3>
                 <p className="text-gray-500 text-sm max-w-xs">
-                  Thank you <span className="font-bold text-gray-700">{form.name}</span>! We've received your order for <strong>"{item.title}"</strong>. Our team will contact you shortly to confirm.
+                  Thank you <span className="font-bold text-gray-700">{form.name}</span>! We&apos;ve received your order for <strong>&quot;{item.title}&quot;</strong>. Our team will contact you shortly to confirm.
                 </p>
                 <button
                   onClick={onClose}
@@ -365,34 +365,34 @@ export default function Gallery() {
       {orderItem && <QuickOrderModal item={orderItem} onClose={() => setOrderItem(null)} />}
 
       {/* Hero Header */}
-      <section className="relative bg-[#12343b] py-20 md:py-28 overflow-hidden border-b border-[#c89666]/30">
+      <section className="relative bg-[#12343b] py-8 sm:py-14 md:py-24 overflow-hidden border-b border-[#c89666]/30">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=1920&fit=crop')] opacity-10 object-cover mix-blend-overlay" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#12343b] to-transparent" />
-        <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 font-serif tracking-wide drop-shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center relative z-10">
+          <h1 className="text-2xl sm:text-4xl md:text-6xl font-black text-white mb-2 sm:mb-4 font-serif tracking-wide drop-shadow-md">
             Our <span className="text-[#e1b382] italic">Gallery</span>
           </h1>
-          <p className="text-base md:text-xl text-[#fdfbf9]/90 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-sm">
+          <p className="text-xs sm:text-base md:text-xl text-[#fdfbf9]/90 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-sm">
             Browse our handcrafted collection. Click any image to view it in full — or tap{" "}
-            <strong className="text-[#e1b382]">"Quick Order"</strong> to place your order instantly.
+            <strong className="text-[#e1b382]">&quot;Quick Order&quot;</strong> to place your order instantly.
           </p>
         </div>
       </section>
 
       
       {/* Sleek Mobile & Desktop Filters Bar */}
-      <section className="sticky top-[56px] md:top-[76px] bg-[#fdfbf9]/95 backdrop-blur-xl shadow-md z-30 py-3 md:py-4 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+      <section className="sticky top-[68px] md:top-[76px] bg-[#fdfbf9]/95 backdrop-blur-xl shadow-md z-30 py-2.5 sm:py-3 md:py-4 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6">
+          <div className="flex flex-col md:flex-row gap-2 sm:gap-3 items-center justify-between">
             {/* Search Input */}
             <div className="relative w-full md:w-96 group">
-              <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#2d545e] transition-colors" />
+              <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#2d545e] transition-colors" />
               <input
                 type="text"
                 placeholder="Search art pieces..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 focus:border-[#2d545e] transition-all text-sm font-medium text-[#12343b] placeholder-gray-400"
+                className="w-full pl-10 pr-3.5 py-2 sm:py-2.5 md:py-3 bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 focus:border-[#2d545e] transition-all text-xs sm:text-sm font-medium text-[#12343b] placeholder-gray-400"
               />
             </div>
 
@@ -400,14 +400,14 @@ export default function Gallery() {
             <div className="grid grid-cols-2 md:hidden w-full gap-2">
                <button 
                   onClick={() => setIsMobileFiltersOpen(true)}
-                  className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm active:scale-95 transition-transform"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm active:scale-95 transition-transform"
                >
-                 <FunnelIcon className="w-4 h-4 text-[#e1b382]" /> Categories
+                 <FunnelIcon className="w-3.5 h-3.5 text-[#e1b382]" /> Categories
                </button>
                <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 appearance-none text-center"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 appearance-none text-center"
                 >
                   <option value="featured">Featured First</option>
                   <option value="price-low">Price: Low to High</option>
@@ -434,7 +434,7 @@ export default function Gallery() {
       </section>
 
       {/* Gallery Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20 bg-[#fdfbf9]">
+      <section className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 md:py-16 bg-[#fdfbf9]">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <LogoLoader label="Loading gallery..." />

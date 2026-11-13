@@ -59,57 +59,71 @@ export default function Products() {
   const user = storedUser ? JSON.parse(storedUser) : null;
   const isLoggedIn = !!(typeof window !== 'undefined' ? localStorage.getItem("token") : null);
 
-  const fetchCategories = async () => {
-    setLoadingCategories(true);
-    const result = await getCategories();
+  useEffect(() => {
+    let isMounted = true;
+    const loadCategories = async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
+      setLoadingCategories(true);
+      const result = await getCategories();
 
-    if (result?.success) {
-      setCategories(Array.isArray(result?.data?.data) ? result.data.data : []);
-    } else {
-      setCategories([]);
-    }
-    setLoadingCategories(false);
-  };
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    const filters = {
-      search: searchTerm || undefined,
-      category: selectedFilter.type === 'Product' ? selectedFilter.id : undefined,
-      occasion: selectedFilter.type === 'Occasion' ? selectedFilter.id : undefined,
-      relationship: selectedFilter.type === 'Relationship' ? selectedFilter.id : undefined,
-      sort:
-        sortBy === "featured"
-          ? "-createdAt"
-          : sortBy === "price-low"
-          ? "price"
-          : sortBy === "price-high"
-          ? "-price"
-          : sortBy === "name"
-          ? "name"
-          : "-rating",
-      limit: 50,
+      if (!isMounted) return;
+      if (result?.success) {
+        setCategories(Array.isArray(result?.data?.data) ? result.data.data : []);
+      } else {
+        setCategories([]);
+      }
+      setLoadingCategories(false);
     };
 
-    const result = await getProducts(filters);
-    if (result?.success) {
-      const transformed = result?.data?.data?.map((p) => ({
-        ...p,
-        isWishlisted: user?.wishlist?.includes(p._id) || false,
-      }));
-      setProducts(transformed);
-    } else {
-      setProducts([]);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchCategories();
+    loadCategories();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
-    fetchProducts();
+    let isMounted = true;
+    const loadProducts = async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
+      setLoading(true);
+      const filters = {
+        search: searchTerm || undefined,
+        category: selectedFilter.type === 'Product' ? selectedFilter.id : undefined,
+        occasion: selectedFilter.type === 'Occasion' ? selectedFilter.id : undefined,
+        relationship: selectedFilter.type === 'Relationship' ? selectedFilter.id : undefined,
+        sort:
+          sortBy === "featured"
+            ? "-createdAt"
+            : sortBy === "price-low"
+            ? "price"
+            : sortBy === "price-high"
+            ? "-price"
+            : sortBy === "name"
+            ? "name"
+            : "-rating",
+        limit: 50,
+      };
+
+      const result = await getProducts(filters);
+      if (!isMounted) return;
+      if (result?.success) {
+        const transformed = result?.data?.data?.map((p) => ({
+          ...p,
+          isWishlisted: user?.wishlist?.includes(p._id) || false,
+        }));
+        setProducts(transformed);
+      } else {
+        setProducts([]);
+      }
+      setLoading(false);
+    };
+
+    loadProducts();
+    return () => {
+      isMounted = false;
+    };
   }, [searchTerm, selectedFilter, sortBy]);
 
   const toggleWishlist = async (productId) => {
@@ -164,35 +178,35 @@ export default function Products() {
   return (
     <>
       {/* Premium Hero Header */}
-      <section className="relative bg-[#12343b] py-20 md:py-28 overflow-hidden border-b border-[#c89666]/30 soft-grid">
+      <section className="relative bg-[#12343b] py-8 sm:py-14 md:py-24 overflow-hidden border-b border-[#c89666]/30 soft-grid">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1549490349-8643362247b5?w=1920&fit=crop')] opacity-10 object-cover mix-blend-overlay" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#12343b] to-transparent" />
-        <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
-          <p className="text-[#e1b382] uppercase tracking-[0.28em] text-xs md:text-sm font-black mb-5">Made slowly. Chosen thoughtfully.</p>
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-white mb-6 font-serif tracking-wide drop-shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center relative z-10">
+          <p className="text-[#e1b382] uppercase tracking-[0.2em] text-[10px] sm:text-xs md:text-sm font-black mb-2 sm:mb-4">Made slowly. Chosen thoughtfully.</p>
+          <h1 className="text-2xl sm:text-4xl md:text-6xl font-black text-white mb-2 sm:mb-4 font-serif tracking-wide drop-shadow-md">
             The <span className="text-[#e1b382] italic">Collection</span>
           </h1>
-          <p className="text-base md:text-xl text-[#fdfbf9]/90 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-sm">
+          <p className="text-xs sm:text-base md:text-xl text-[#fdfbf9]/90 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-sm">
             Explore our curated gallery of exquisite crochet art and personalized gifts, handcrafted to perfection.
           </p>
         </div>
       </section>
 
       {/* Sleek Mobile & Desktop Filters Bar */}
-      <section className="sticky top-[56px] md:top-[76px] bg-[#fdfbf9]/95 backdrop-blur-xl shadow-md z-30 py-3 md:py-4 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section className="sticky top-[68px] md:top-[76px] bg-[#fdfbf9]/95 backdrop-blur-xl shadow-md z-30 py-2.5 sm:py-3 md:py-4 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6">
           {/* Mobile Layout: Search full width, then buttons side-by-side */}
-          <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+          <div className="flex flex-col md:flex-row gap-2 sm:gap-3 items-center justify-between">
             
             {/* Search Input */}
             <div className="relative w-full md:w-96 group">
-              <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#2d545e] transition-colors" />
+              <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#2d545e] transition-colors" />
               <input
                 type="text"
                 placeholder="Search art pieces..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 focus:border-[#2d545e] transition-all text-sm font-medium text-[#12343b] placeholder-gray-400"
+                className="w-full pl-10 pr-3.5 py-2 sm:py-2.5 md:py-3 bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 focus:border-[#2d545e] transition-all text-xs sm:text-sm font-medium text-[#12343b] placeholder-gray-400"
               />
             </div>
 
@@ -200,14 +214,14 @@ export default function Products() {
             <div className="grid grid-cols-2 md:hidden w-full gap-2">
                <button 
                   onClick={() => setIsMobileFiltersOpen(true)}
-                  className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm active:scale-95 transition-transform"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm active:scale-95 transition-transform"
                >
-                 <FunnelIcon className="w-4 h-4 text-[#e1b382]" /> Categories
+                 <FunnelIcon className="w-3.5 h-3.5 text-[#e1b382]" /> Categories
                </button>
                <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 appearance-none text-center"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-[#12343b] font-bold text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2d545e]/50 appearance-none text-center"
                 >
                   <option value="featured">Featured First</option>
                   <option value="price-low">Price: Low to High</option>
@@ -258,7 +272,7 @@ export default function Products() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 bg-[#fdfbf9]">
+      <section className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 md:py-12 bg-[#fdfbf9]">
         <div className="flex flex-col md:flex-row gap-8">
           
           {/* Desktop Sidebar Filters */}
@@ -451,13 +465,13 @@ export default function Products() {
                   viewMode === "grid"
                     ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-3"
                     : "grid-cols-1"
-                } gap-4 md:gap-8`}
+                } gap-2.5 sm:gap-4 md:gap-8`}
               >
                 {products.map((product) => (
                   <motion.div variants={itemVariants} key={product._id} className="h-full">
                       <Tilt tiltMaxAngleX={5} tiltMaxAngleY={5} scale={1.01} transitionSpeed={1000} className="h-full">
                           <div
-                            className={`h-full group bg-white rounded-3xl shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all duration-300 overflow-hidden border border-[#c89666]/20 flex ${viewMode === 'list' ? 'flex-row h-48 md:h-64' : 'flex-col'}`}
+                            className={`h-full group bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all duration-300 overflow-hidden border border-[#c89666]/20 flex ${viewMode === 'list' ? 'flex-row h-40 sm:h-48 md:h-64' : 'flex-col'}`}
                           >
                             <Link href={`/products/${product._id}`} className={`block overflow-hidden relative bg-gray-100 ${viewMode === 'list' ? 'w-2/5 md:w-1/3' : 'w-full aspect-square flex items-center justify-center'}`}>
                               {(product.images && product.images.length > 0 && product.images[0].url) ? (
@@ -473,41 +487,41 @@ export default function Products() {
                               )}
                               {!product.stock && (
                                 <div className="absolute inset-0 bg-[#12343b]/70 backdrop-blur-sm flex items-center justify-center z-20">
-                                  <span className="bg-white/10 text-white border border-white/30 px-4 md:px-6 py-2 rounded-full font-black tracking-widest uppercase text-xs md:text-sm shadow-lg">
+                                  <span className="bg-white/10 text-white border border-white/30 px-3 md:px-6 py-1.5 md:py-2 rounded-full font-black tracking-widest uppercase text-[10px] md:text-sm shadow-lg">
                                     Sold Out
                                   </span>
                                 </div>
                               )}
                             </Link>
 
-                            <div className={`p-3 md:p-6 flex flex-col justify-between flex-1 relative ${viewMode === 'list' ? 'justify-center' : ''}`}>
+                            <div className={`p-2.5 sm:p-4 md:p-6 flex flex-col justify-between flex-1 relative ${viewMode === 'list' ? 'justify-center' : ''}`}>
                               <button
                                 onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
-                                className={`absolute z-20 p-2 md:p-3 rounded-full bg-white shadow-md hover:bg-gray-50 transition-all active:scale-90 ${viewMode === 'list' ? 'top-4 right-4' : '-top-5 md:-top-6 right-3 md:right-4'}`}
+                                className={`absolute z-20 p-1.5 sm:p-2 md:p-3 rounded-full bg-white shadow-md hover:bg-gray-50 transition-all active:scale-90 ${viewMode === 'list' ? 'top-3 right-3' : '-top-3 sm:-top-5 md:-top-6 right-2 sm:right-3 md:right-4'}`}
                               >
                                 {product.isWishlisted ? (
-                                  <HeartSolidIcon className="w-5 h-5 md:w-6 md:h-6 text-red-500" />
+                                  <HeartSolidIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-500" />
                                 ) : (
-                                  <HeartIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-400 hover:text-red-500" />
+                                  <HeartIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-400 hover:text-red-500" />
                                 )}
                               </button>
 
                               <div>
                                   <Link href={`/products/${product._id}`}>
-                                    <h3 className="text-xs md:text-base sm:text-xl font-black text-[#12343b] mb-1 md:mb-2 group-hover:text-[#2d545e] transition-colors line-clamp-2 leading-tight">
+                                    <h3 className="text-xs sm:text-base md:text-lg font-bold text-[#12343b] mb-1 md:mb-2 group-hover:text-[#2d545e] transition-colors line-clamp-1 sm:line-clamp-2 leading-tight">
                                       {product.name}
                                     </h3>
                                   </Link>
 
-                                  <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-4">
+                                  <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 mb-1.5 sm:mb-2 md:mb-4">
                                     <div className="flex text-[#e1b382]">
                                       {[...Array(5)].map((_, i) => (
-                                        <svg key={i} className={`w-3.5 h-3.5 md:w-4 md:h-4 ${i < Math.round(product.rating?.average || 0) ? "fill-current" : "fill-gray-200"}`} viewBox="0 0 20 20">
+                                        <svg key={i} className={`w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 ${i < Math.round(product.rating?.average || 0) ? "fill-current" : "fill-gray-200"}`} viewBox="0 0 20 20">
                                           <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                                         </svg>
                                       ))}
                                     </div>
-                                    <span className="text-[10px] md:text-xs font-bold text-gray-500">
+                                    <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-gray-500">
                                       ({product.rating?.average?.toFixed(1) || "0.0"})
                                     </span>
                                   </div>
@@ -519,13 +533,13 @@ export default function Products() {
                                   )}
                               </div>
 
-                              <div className="mt-auto pt-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                                <span className="text-base md:text-2xl font-black text-[#12343b]">
+                              <div className="mt-auto pt-1.5 sm:pt-2 flex justify-between items-center gap-1">
+                                <span className="text-xs sm:text-lg md:text-2xl font-black text-[#12343b]">
                                   ₹{Number(product.price).toFixed(2)}
                                 </span>
                                 <Link
                                   href={`/products/${product._id}`}
-                                  className="w-full md:w-auto text-center bg-[#2d545e]/10 text-[#2d545e] hover:bg-[#2d545e] hover:text-white px-3 md:px-5 py-2 rounded-xl text-[10px] md:text-xs font-black tracking-widest uppercase transition-colors shrink-0"
+                                  className="text-center bg-[#2d545e]/10 text-[#2d545e] hover:bg-[#2d545e] hover:text-white px-2.5 sm:px-4 md:px-5 py-1 sm:py-1.5 md:py-2 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] md:text-xs font-black tracking-wider uppercase transition-colors shrink-0"
                                 >
                                   View
                                 </Link>

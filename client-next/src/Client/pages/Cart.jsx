@@ -37,42 +37,57 @@ export default function Cart() {
   const isLoggedIn =
     !!(typeof window !== 'undefined' ? localStorage.getItem("token") : null) || !!(typeof window !== 'undefined' ? localStorage.getItem("adminToken") : null);
 
-  const fetchCart = async () => {
-    if (!isLoggedIn) {
-      setLoading(false);
-      return;
-    }
-
-    if (!cachedCartItems) {
-      setLoading(true);
-    }
-    setError(null);
-
-    try {
-      const result = cachedCartItems
-        ? { success: true, data: { data: cachedCartItems } }
-        : await fetchSharedCart();
-
-      if (result?.success && Array.isArray(result?.data?.data)) {
-        const validItems = result?.data?.data.filter(
-          (item) => item && item.product && (item._id || item.product._id),
-        );
-        setCartItems(validItems);
-      } else {
-        setCartItems([]);
-        if (result?.message) setError(result.message);
-      }
-    } catch (err) {
-      console.error("Cart fetch error:", err);
-      setError("Failed to load your cart. Please try again.");
-      setCartItems([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchCart();
+    let isMounted = true;
+
+    const loadCart = async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
+
+      if (!isLoggedIn) {
+        setLoading(false);
+        return;
+      }
+
+      if (!cachedCartItems) {
+        setLoading(true);
+      }
+      setError(null);
+
+      try {
+        const result = cachedCartItems
+          ? { success: true, data: { data: cachedCartItems } }
+          : await fetchSharedCart();
+
+        if (!isMounted) return;
+
+        if (result?.success && Array.isArray(result?.data?.data)) {
+          const validItems = result?.data?.data.filter(
+            (item) => item && item.product && (item._id || item.product._id),
+          );
+          setCartItems(validItems);
+        } else {
+          setCartItems([]);
+          if (result?.message) setError(result.message);
+        }
+      } catch (err) {
+        console.error("Cart fetch error:", err);
+        if (isMounted) {
+          setError("Failed to load your cart. Please try again.");
+          setCartItems([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadCart();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isLoggedIn, cachedCartItems, fetchSharedCart]);
 
   const updateQuantity = async (productId, newQty) => {
@@ -330,31 +345,28 @@ export default function Cart() {
     <div className="bg-brand-light min-h-screen pb-24">
       {/* Header */}
       <div className="bg-white/90 border-b border-resin-gold/20 soft-grid">
-        {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 py-7 md:py-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"> */}
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="flex min-w-0 flex-nowrap items-center gap-2 text-2xl font-bold text-resin-dark font-serif sm:gap-3 sm:text-3xl md:gap-4 md:text-4xl">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-4 sm:py-6 md:py-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="flex min-w-0 flex-nowrap items-center gap-2 text-xl font-bold text-resin-dark font-serif sm:gap-3 sm:text-3xl md:gap-4 md:text-4xl">
               <span className="truncate">Your Cart</span>
-              <span className="shrink-0 rounded-full bg-resin-gold/10 px-2.5 py-1 text-xs font-sans font-semibold text-resin-blue sm:px-3 sm:text-sm md:text-lg">
+              <span className="shrink-0 rounded-full bg-resin-gold/10 px-2.5 py-0.5 text-xs font-sans font-semibold text-resin-blue sm:px-3 sm:py-1 sm:text-sm md:text-lg">
                 ({totalItemsCount} {totalItemsCount === 1 ? "item" : "items"})
               </span>
             </h1>
             <button
               onClick={clearAll}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95 self-start sm:self-auto"
             >
-              {/* <TrashIcon className="h-4 w-4" aria-hidden="true" /> */}
               Clear Cart
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 md:py-12">
+        <div className="grid lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-12">
           {/* Cart Items List */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-3 sm:space-y-4 md:space-y-6">
             {cartItems.map((item) => {
               const product = item.product;
               const inStock = product?.stock > 0;
@@ -362,11 +374,11 @@ export default function Cart() {
               return (
                 <div
                   key={item._id || product._id}
-                  className={`bg-white rounded-2xl shadow-sm border border-resin-gold/15 p-4 sm:p-6 flex flex-col sm:flex-row gap-5 sm:gap-6 transition-opacity ${!inStock ? "opacity-60" : ""}`}
+                  className={`bg-white rounded-2xl shadow-sm border border-resin-gold/15 p-3 sm:p-5 md:p-6 flex flex-row gap-3 sm:gap-5 md:gap-6 transition-opacity ${!inStock ? "opacity-60" : ""}`}
                 >
                   <Link
                     href={`/products/${product._id}`}
-                    className="w-full sm:w-32 h-32 flex-shrink-0"
+                    className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 flex-shrink-0"
                   >
                     <img
                       src={product.images?.[0]?.url || "/logo.png"}
@@ -379,45 +391,45 @@ export default function Cart() {
                     />
                   </Link>
 
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div className="flex justify-between items-start gap-4">
-                      <div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0 flex-1">
                         <Link
                           href={`/products/${product._id}`}
-                          className="text-xl font-bold font-serif text-resin-dark hover:text-resin-blue transition-colors line-clamp-2"
+                          className="text-sm sm:text-lg md:text-xl font-bold font-serif text-resin-dark hover:text-resin-blue transition-colors line-clamp-1 sm:line-clamp-2"
                         >
                           {product.name}
                         </Link>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-[11px] sm:text-sm text-gray-400 mt-0.5 sm:mt-1">
                           {product.artist || "Artisan"}
                         </p>
                       </div>
                       <button
                         onClick={() => removeItem(product._id)}
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                        className="p-1 sm:p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors shrink-0"
                       >
-                        <XMarkIcon className="w-5 h-5" />
+                        <XMarkIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </button>
                     </div>
 
                     {!inStock && (
-                      <p className="text-xs text-red-500 font-bold uppercase tracking-wider mt-2">
+                      <p className="text-[10px] sm:text-xs text-red-500 font-bold uppercase tracking-wider mt-1">
                         Out of Stock
                       </p>
                     )}
 
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6">
-                      <div className="flex items-center border border-gray-200 rounded-full h-10 w-32 bg-gray-50">
+                    <div className="flex flex-row items-center justify-between gap-2 mt-2 sm:mt-4">
+                      <div className="flex items-center border border-gray-200 rounded-full h-8 sm:h-9 md:h-10 w-24 sm:w-28 md:w-32 bg-gray-50">
                         <button
                           onClick={() =>
                             updateQuantity(product._id, item.quantity - 1)
                           }
                           disabled={item.quantity <= 1 || !inStock}
-                          className="px-3 h-full hover:bg-gray-100 disabled:opacity-50 transition-colors rounded-l-full text-gray-600"
+                          className="px-2.5 sm:px-3 h-full hover:bg-gray-100 disabled:opacity-50 transition-colors rounded-l-full text-gray-600 text-xs sm:text-sm"
                         >
-                          <MinusIcon className="w-4 h-4" />
+                          <MinusIcon className="w-3.5 h-3.5" />
                         </button>
-                        <span className="flex-1 text-center font-bold text-sm">
+                        <span className="flex-1 text-center font-bold text-xs sm:text-sm">
                           {item.quantity}
                         </span>
                         <button
@@ -425,19 +437,19 @@ export default function Cart() {
                             updateQuantity(product._id, item.quantity + 1)
                           }
                           disabled={!inStock}
-                          className="px-3 h-full hover:bg-gray-100 disabled:opacity-50 transition-colors rounded-r-full text-gray-600"
+                          className="px-2.5 sm:px-3 h-full hover:bg-gray-100 disabled:opacity-50 transition-colors rounded-r-full text-gray-600 text-xs sm:text-sm"
                         >
-                          <PlusIcon className="w-4 h-4" />
+                          <PlusIcon className="w-3.5 h-3.5" />
                         </button>
                       </div>
 
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-resin-dark">
+                        <p className="text-base sm:text-xl md:text-2xl font-bold text-resin-dark">
                           ₹{(product.price * item.quantity).toFixed(2)}
                         </p>
                         {item.quantity > 1 && (
-                          <p className="text-xs text-gray-500 mt-1">
-                            ₹{product.price.toFixed(2)} each
+                          <p className="text-[10px] sm:text-xs text-gray-400">
+                            ₹{product.price.toFixed(2)} ea
                           </p>
                         )}
                       </div>
@@ -450,12 +462,12 @@ export default function Cart() {
 
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-4">
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sticky top-24">
-              <h2 className="text-sm sm:text-lg font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-100 p-4 sm:p-6 md:p-8 sticky top-24">
+              <h2 className="text-base sm:text-lg font-bold font-serif text-resin-dark mb-4 sm:mb-6 border-b border-gray-100 pb-3 sm:pb-4">
                 Order Summary
               </h2>
 
-              <div className="space-y-4 mb-6">
+              <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6 text-sm">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
                   <span className="font-semibold text-gray-900">
@@ -478,42 +490,42 @@ export default function Cart() {
                 </div>
               </div>
 
-              <div className="border-t border-gray-100 pt-4 mb-8">
+              <div className="border-t border-gray-100 pt-3 sm:pt-4 mb-5 sm:mb-8">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-900 font-medium">Total</span>
-                  <span className="text-3xl font-bold text-resin-dark">
+                  <span className="text-2xl sm:text-3xl font-bold text-resin-dark">
                     ₹{total.toFixed(2)}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400 mt-2 text-right">
+                <p className="text-[11px] sm:text-xs text-gray-400 mt-1 text-right">
                   Taxes calculated at checkout
                 </p>
               </div>
 
               <button
                 onClick={() => router.push("/checkout")}
-                className="w-full bg-resin-dark hover:bg-resin-blue text-white font-bold tracking-widest uppercase text-sm h-14 rounded-full transition-all shadow-md transform hover:-translate-y-0.5 mb-4"
+                className="w-full bg-resin-dark hover:bg-resin-blue text-white font-bold tracking-wider uppercase text-xs sm:text-sm h-12 sm:h-14 rounded-xl sm:rounded-full transition-all shadow-md active:scale-95 mb-3 sm:mb-4"
               >
                 Secure Checkout
               </button>
 
               <button
                 onClick={handleWhatsAppOrder}
-                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold tracking-widest uppercase text-sm h-14 rounded-full transition-all shadow-md transform hover:-translate-y-0.5 mb-6 flex items-center justify-center gap-2"
+                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold tracking-wider uppercase text-xs sm:text-sm h-12 sm:h-14 rounded-xl sm:rounded-full transition-all shadow-md active:scale-95 mb-4 sm:mb-6 flex items-center justify-center gap-2"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
                 </svg>
                 Order via WhatsApp
               </button>
 
-              <div className="space-y-4 pt-6 border-t border-gray-100">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <ShieldCheckIcon className="w-5 h-5 text-resin-gold" />
+              <div className="space-y-3 pt-4 sm:pt-6 border-t border-gray-100">
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm text-gray-600">
+                  <ShieldCheckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-resin-gold shrink-0" />
                   <span>Secure, encrypted payment processing</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <TruckIcon className="w-5 h-5 text-resin-gold" />
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm text-gray-600">
+                  <TruckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-resin-gold shrink-0" />
                   <span>Complimentary shipping on orders over ₹100</span>
                 </div>
               </div>

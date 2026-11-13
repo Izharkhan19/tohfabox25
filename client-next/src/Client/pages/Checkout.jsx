@@ -49,48 +49,62 @@ export default function Checkout() {
     phone: "",
   });
 
-  const fetchCart = async () => {
-    setLoadingCart(true);
-    const result = cachedCartItems
-      ? { success: true, data: { data: cachedCartItems } }
-      : await fetchSharedCart();
-    if (result.success && Array.isArray(result?.data?.data)) {
-      const validItems = result.data.data.filter(
-        (item) => item && item.product && (item._id || item.product._id),
-      );
-      setCartItems(validItems);
-    } else {
-      setCartItems([]);
-    }
-    setLoadingCart(false);
-  };
-
-  const fetchUser = async () => {
-    setLoadingUser(true);
-    const result = await getCurrentUser();
-    if (result.success && result.data) {
-      const user = result.data;
-      setFormData({
-        email: user.email || "",
-        firstName: user.name?.split(" ")[0] || "",
-        lastName: user.name?.split(" ").slice(1).join(" ") || "",
-        phone: user.phone || "",
-        address: user.address?.street || "",
-        apartment: user.address?.apartment || "",
-        city: user.address?.city || "",
-        state: user.address?.state || "",
-        pincode: user.address?.zipCode || "",
-      });
-    }
-    setLoadingUser(false);
-  };
-
   useEffect(() => {
-    fetchUser();
+    let isMounted = true;
+    const loadUser = async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
+      setLoadingUser(true);
+      const result = await getCurrentUser();
+      if (!isMounted) return;
+      if (result.success && result.data) {
+        const user = result.data;
+        setFormData({
+          email: user.email || "",
+          firstName: user.name?.split(" ")[0] || "",
+          lastName: user.name?.split(" ").slice(1).join(" ") || "",
+          phone: user.phone || "",
+          address: user.address?.street || "",
+          apartment: user.address?.apartment || "",
+          city: user.address?.city || "",
+          state: user.address?.state || "",
+          pincode: user.address?.zipCode || "",
+        });
+      }
+      setLoadingUser(false);
+    };
+
+    loadUser();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
-    fetchCart();
+    let isMounted = true;
+    const loadCart = async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
+      setLoadingCart(true);
+      const result = cachedCartItems
+        ? { success: true, data: { data: cachedCartItems } }
+        : await fetchSharedCart();
+      if (!isMounted) return;
+      if (result.success && Array.isArray(result?.data?.data)) {
+        const validItems = result.data.data.filter(
+          (item) => item && item.product && (item._id || item.product._id),
+        );
+        setCartItems(validItems);
+      } else {
+        setCartItems([]);
+      }
+      setLoadingCart(false);
+    };
+
+    loadCart();
+    return () => {
+      isMounted = false;
+    };
   }, [cachedCartItems, fetchSharedCart]);
 
   const subtotal = cartItems.reduce(
@@ -364,46 +378,41 @@ export default function Checkout() {
     <div className="bg-gray-50 min-h-screen pb-24">
       {/* Header */}
       <div className="bg-white/90 border-b border-resin-gold/20 soft-grid">
-        {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-8 flex flex-row md:flex-row justify-between items-start md:items-center gap-4">
-          <div> */}
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            {/* <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.24em] text-resin-gold">Almost there</p> */}
-            <h1 className="mt-1 text-2xl sm:text-3xl md:text-4xl font-bold text-resin-dark font-serif flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-4 sm:py-6 md:py-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-resin-dark font-serif flex items-center gap-3">
               Secure Checkout
             </h1>
             <button
               onClick={() => router.push("/cart")}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95 self-start sm:self-auto"
             >
-              {/* <ArrowLeftIcon className="w-4 h-4" /> */}
-              {/* <TrashIcon className="h-4 w-4" aria-hidden="true" /> */}
               Back to cart
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-8 pb-36 lg:pb-12 md:py-12">
+      <div className="max-w-7xl mx-auto w-full px-3 sm:px-6 py-4 sm:py-6 md:py-12 pb-28 lg:pb-12">
         <form
           onSubmit={handlePlaceOrder}
-          className="grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12"
+          className="grid min-w-0 grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12 lg:gap-12"
         >
           {/* Left: Form */}
-          <div className="lg:col-span-7 space-y-10">
+          <div className="lg:col-span-7 space-y-4 sm:space-y-6 md:space-y-8">
             {/* Contact Information */}
-            <div className="min-w-0 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
-              <h2 className="text-xl font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">
+            <div className="min-w-0 rounded-2xl md:rounded-3xl border border-gray-100 bg-white p-4 sm:p-6 md:p-8 shadow-sm">
+              <h2 className="text-base sm:text-xl font-bold font-serif text-resin-dark mb-4 sm:mb-6 border-b border-gray-100 pb-3 sm:pb-4">
                 Contact Information
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <input
                   type="email"
                   name="email"
                   placeholder="Email address"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
+                  className="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-xs sm:text-sm"
                   required
                 />
                 <input
@@ -412,27 +421,27 @@ export default function Checkout() {
                   placeholder="Phone number"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
+                  className="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-xs sm:text-sm"
                   required
                 />
               </div>
             </div>
 
             {/* Shipping Address */}
-            <div className="min-w-0 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
-              <h2 className="text-xl font-bold font-serif text-resin-dark mb-6 border-b border-gray-100 pb-4">
+            <div className="min-w-0 rounded-2xl md:rounded-3xl border border-gray-100 bg-white p-4 sm:p-6 md:p-8 shadow-sm">
+              <h2 className="text-base sm:text-xl font-bold font-serif text-resin-dark mb-4 sm:mb-6 border-b border-gray-100 pb-3 sm:pb-4">
                 Shipping Address
               </h2>
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <input
                     type="text"
                     name="firstName"
                     placeholder="First name"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
+                    className="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-xs sm:text-sm"
                     required
                   />
                   <input
@@ -441,7 +450,7 @@ export default function Checkout() {
                     placeholder="Last name"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all"
+                    className="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-resin-blue transition-all text-xs sm:text-sm"
                     required
                   />
                 </div>

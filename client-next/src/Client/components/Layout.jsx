@@ -10,7 +10,8 @@ import {
     ShoppingCartIcon,
     PhotoIcon,
     XMarkIcon,
-    Bars3Icon
+    Bars3Icon,
+    MagnifyingGlassIcon
 } from "@heroicons/react/24/outline";
 import {
     HomeIcon as HomeIconSolid,
@@ -174,13 +175,13 @@ export default function ClientLayout({ children }) {
             {/* Premium Header */}
             <header className={`fixed w-full top-0 z-40 transition-all duration-500 border-b ${
                 scrolled 
-                ? "bg-[#0f2b31]/95 backdrop-blur-xl shadow-[0_12px_35px_rgba(18,52,59,0.18)] border-[#e1b382]/25 py-2 md:py-3" 
-                : "bg-[#12343b] border-[#e1b382]/15 py-4 md:py-5"
+                ? "bg-[#0f2b31]/95 backdrop-blur-xl shadow-[0_12px_35px_rgba(18,52,59,0.18)] border-[#e1b382]/25 py-1.5 md:py-3" 
+                : "bg-[#12343b] border-[#e1b382]/15 py-2 md:py-4"
             }`}>
                 {announcement && (
-                    <div className="bg-[#e1b382] text-[#12343b] text-[11px] md:text-sm font-bold py-1.5 px-4 text-center absolute top-0 left-0 w-full shadow-sm z-50">
+                    <div className="bg-[#e1b382] text-[#12343b] text-[10px] sm:text-xs md:text-sm font-bold py-1 px-3 text-center absolute top-0 left-0 w-full shadow-sm z-50">
                         {announcement.link ? (
-                            <Link href={announcement.link} className="hover:underline inline-flex items-center gap-2">
+                            <Link href={announcement.link} className="hover:underline inline-flex items-center gap-1.5">
                                 {announcement.message} <span aria-hidden="true">&rarr;</span>
                             </Link>
                         ) : (
@@ -188,21 +189,39 @@ export default function ClientLayout({ children }) {
                         )}
                     </div>
                 )}
-                <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${announcement ? 'mt-6 md:mt-8' : ''}`}>
-                    <div className="flex justify-between items-center h-14 md:h-16">
+                <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 ${announcement ? 'mt-5 md:mt-7' : ''}`}>
+                    <div className="flex justify-between items-center h-12 md:h-16">
                         
-                        {/* Mobile: Hamburger Left */}
-                        <div className="flex-1 md:hidden flex justify-start">
+                        {/* Mobile: Hamburger Left + Brand */}
+                        <div className="md:hidden flex items-center gap-2 flex-1">
                             <button
                                 onClick={() => setMobileMenuOpen(true)}
-                                className="p-2 -ml-2 text-[#e1b382] hover:bg-white/10 rounded-xl transition-colors"
+                                className="p-1.5 -ml-1 text-[#e1b382] hover:bg-white/10 rounded-lg transition-colors"
+                                aria-label="Open menu"
                             >
-                                <Bars3Icon className="w-8 h-8" />
+                                <Bars3Icon className="w-6 h-6" />
                             </button>
+                            <Link 
+                                href="/" 
+                                className="flex items-center gap-2 group"
+                                onClick={() => {
+                                    confetti({
+                                        particleCount: 100,
+                                        spread: 70,
+                                        origin: { y: 0.2, x: 0.1 },
+                                        colors: ['#e1b382', '#c89666', '#ffffff']
+                                    });
+                                }}
+                            >
+                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-8 h-8 rounded-lg object-cover shadow-[0_0_15px_rgba(225,179,130,0.3)] transform group-hover:scale-105 active:scale-95 transition-all duration-300" />
+                                <span className="text-base font-extrabold text-[#e1b382] tracking-tight drop-shadow-md font-serif">
+                                    Artistary Crafts
+                                </span>
+                            </Link>
                         </div>
 
-                        {/* Logo: Center on Mobile, Left on Desktop */}
-                        <div className="flex-1 md:flex-none flex justify-center md:justify-start">
+                        {/* Desktop: Logo Left */}
+                        <div className="hidden md:flex flex-none justify-start">
                             <Link 
                                 href="/" 
                                 className="flex items-center gap-3 group"
@@ -216,14 +235,14 @@ export default function ClientLayout({ children }) {
                                 }}
                             >
                                 <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-10 h-10 md:w-11 md:h-11 rounded-lg object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)] transform group-hover:scale-105 active:scale-95 transition-all duration-300" />
-                                <h1 className="text-2xl md:text-3xl font-extrabold text-[#e1b382] tracking-tight drop-shadow-md font-serif hidden sm:block">
+                                <h1 className="text-2xl md:text-3xl font-extrabold text-[#e1b382] tracking-tight drop-shadow-md font-serif">
                                     Artistary Crafts
                                 </h1>
                             </Link>
                         </div>
 
                         {/* Desktop Navigation (Center) */}
-                            <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
+                        <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.to}
@@ -242,7 +261,7 @@ export default function ClientLayout({ children }) {
                         </nav>
 
                         {/* Desktop Actions (Right) & Mobile Cart (Right) */}
-                        <div className="flex-1 flex justify-end items-center gap-4 md:gap-6">
+                        <div className="flex justify-end items-center gap-2 md:gap-6">
                             
                             {/* Desktop: Icons */}
                             <div className="hidden md:flex items-center gap-6">
@@ -267,7 +286,6 @@ export default function ClientLayout({ children }) {
                                 {!isLoggedIn && (
                                     <Link
                                         href="/login"
-
                                         className="ml-2 text-sm font-bold text-[#12343b] bg-[#e1b382] hover:bg-[#c89666] hover:text-white px-6 py-2.5 rounded-full transition-all shadow-[0_0_15px_rgba(225,179,130,0.4)] hover:shadow-[0_0_20px_rgba(200,150,102,0.6)]"
                                     >
                                         Sign In
@@ -285,23 +303,23 @@ export default function ClientLayout({ children }) {
                                 )}
                             </div>
 
-                            {/* Mobile: Quick Account & Cart Icons */}
+                            {/* Mobile: Account & Cart Icons */}
                             <div className="md:hidden flex items-center justify-end gap-1">
                                 <Link
                                     href={isLoggedIn ? "/orders" : "/login"}
-                                    className="p-2 text-[#e1b382] hover:bg-white/10 rounded-xl transition-colors"
+                                    className="p-1.5 text-[#e1b382] hover:bg-white/10 rounded-lg transition-colors"
                                     title={isLoggedIn ? "Account / Orders" : "Sign In"}
                                 >
                                     {isActive("/orders") || (!isLoggedIn && isActive("/login")) ? (
-                                        <UserIconSolid className="w-7 h-7" />
+                                        <UserIconSolid className="w-6 h-6" />
                                     ) : (
-                                        <UserIcon className="w-7 h-7" />
+                                        <UserIcon className="w-6 h-6" />
                                     )}
                                 </Link>
-                                <Link href="/cart" className="relative p-2 -mr-1 text-[#e1b382] hover:bg-white/10 rounded-xl transition-colors">
-                                    {isActive("/cart") ? <ShoppingCartIconSolid className="w-7 h-7" /> : <ShoppingCartIcon className="w-7 h-7" />}
+                                <Link href="/cart" className="relative p-1.5 -mr-1 text-[#e1b382] hover:bg-white/10 rounded-lg transition-colors">
+                                    {isActive("/cart") ? <ShoppingCartIconSolid className="w-6 h-6" /> : <ShoppingCartIcon className="w-6 h-6" />}
                                     {cartCount > 0 && (
-                                        <span className="absolute top-0 right-0 bg-[#c89666] text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center border-2 border-brand-dark shadow-sm">
+                                        <span className="absolute -top-0.5 -right-0.5 bg-[#c89666] text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center border-2 border-[#12343b] shadow-sm">
                                             {cartCount}
                                         </span>
                                     )}
@@ -309,6 +327,17 @@ export default function ClientLayout({ children }) {
                             </div>
 
                         </div>
+                    </div>
+
+                    {/* Mobile: Quick Search Pill Bar */}
+                    <div className="md:hidden pt-1.5 pb-0.5">
+                        <Link
+                            href="/products"
+                            className="flex items-center gap-2 bg-black/25 hover:bg-black/35 border border-[#e1b382]/25 rounded-full px-3 py-1.5 text-xs text-[#fdfbf9]/75 backdrop-blur-md shadow-inner transition-colors"
+                        >
+                            <MagnifyingGlassIcon className="w-3.5 h-3.5 text-[#e1b382] shrink-0" />
+                            <span className="font-medium truncate">Search gifts, resin art, crochet...</span>
+                        </Link>
                     </div>
                 </div>
             </header>

@@ -67,16 +67,26 @@ export default function ProductDetail() {
     };
 
     useEffect(() => {
-        if (id) {
+        let isMounted = true;
+        if (!id) return;
+
+        (async () => {
+            await Promise.resolve();
+            if (!isMounted) return;
             fetchProduct();
             getProductReviews(id).then((result) => {
+                if (!isMounted) return;
                 if (result?.success && result?.data?.data) {
                     setReviews(result.data.data);
                     const ownReview = result.data.data.find((review) => String(review.user?._id) === String(user?._id));
                     if (ownReview) setSelectedRating(ownReview.rating);
                 }
             });
-        }
+        })();
+
+        return () => {
+            isMounted = false;
+        };
     }, [id]);
 
     const handleRatingSubmit = async () => {
@@ -172,7 +182,7 @@ export default function ProductDetail() {
     }
 
     return (
-        <div className="bg-gray-100 pb-28 lg:pb-20 pt-0 lg:pt-8 min-h-screen relative">
+        <div className="bg-gray-100 pb-44 lg:pb-20 pt-0 lg:pt-8 min-h-screen relative">
             {/* Mobile Back Button */}
             <button 
                 onClick={() => router.back()}
@@ -357,35 +367,35 @@ export default function ProductDetail() {
                 </div>
             </div>
 
-            {/* Sticky Bottom Bar for Mobile & Desktop Action */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 lg:p-0 lg:static lg:bg-transparent lg:border-none lg:mt-6 z-50 lg:z-auto shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] lg:shadow-none">
+            {/* Sticky Action Bar for Mobile & Desktop */}
+            <div className="fixed bottom-[72px] lg:bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 p-2.5 sm:p-3 lg:p-0 lg:static lg:bg-transparent lg:border-none lg:mt-6 z-40 lg:z-auto shadow-[0_-4px_12px_rgba(0,0,0,0.06)] lg:shadow-none">
                 <div className="max-w-7xl mx-auto lg:px-6">
                     <div className="flex justify-end lg:justify-start">
                         {product.stock === 0 ? (
-                            <div className="w-full lg:w-auto bg-red-50 border border-red-100 text-red-600 p-4 lg:p-6 rounded-xl lg:rounded-2xl text-center font-bold uppercase tracking-widest text-sm">
+                            <div className="w-full lg:w-auto bg-red-50 border border-red-100 text-red-600 p-3 sm:p-4 lg:p-6 rounded-xl lg:rounded-2xl text-center font-bold uppercase tracking-widest text-xs sm:text-sm">
                                 Currently Out of Stock
                             </div>
                         ) : (
-                            <div className="flex items-center gap-3 w-full lg:w-auto">
-                                <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl lg:rounded-full overflow-hidden h-12 lg:h-14">
+                            <div className="flex items-center gap-2 sm:gap-3 w-full lg:w-auto">
+                                <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl lg:rounded-full overflow-hidden h-11 sm:h-12 lg:h-14">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="px-4 lg:px-6 h-full hover:bg-gray-100 transition-colors text-lg text-gray-500"
+                                        className="px-3 sm:px-4 lg:px-6 h-full hover:bg-gray-100 transition-colors text-base sm:text-lg text-gray-500 font-bold"
                                     >−</button>
-                                    <span className="w-8 lg:w-12 text-center font-bold text-base lg:text-lg text-resin-dark">{quantity}</span>
+                                    <span className="w-7 sm:w-8 lg:w-12 text-center font-bold text-sm sm:text-base lg:text-lg text-resin-dark">{quantity}</span>
                                     <button
                                         onClick={() => setQuantity(quantity + 1)}
-                                        className="px-4 lg:px-6 h-full hover:bg-gray-100 transition-colors text-lg text-gray-500"
+                                        className="px-3 sm:px-4 lg:px-6 h-full hover:bg-gray-100 transition-colors text-base sm:text-lg text-gray-500 font-bold"
                                     >+</button>
                                 </div>
 
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={cartLoading}
-                                    className="flex-1 lg:flex-none lg:px-12 bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold tracking-widest uppercase text-sm h-12 lg:h-14 rounded-xl lg:rounded-full transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 disabled:transform-none flex items-center justify-center gap-2"
+                                    className="flex-1 lg:flex-none lg:px-12 bg-resin-dark hover:bg-resin-blue disabled:bg-gray-400 text-white font-bold tracking-wider uppercase text-xs sm:text-sm h-11 sm:h-12 lg:h-14 rounded-xl lg:rounded-full transition-all shadow-md hover:shadow-lg transform active:scale-95 disabled:transform-none flex items-center justify-center gap-2"
                                 >
                                     {cartLoading ? (
-                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                     ) : (
                                         "Add to Cart"
                                     )}

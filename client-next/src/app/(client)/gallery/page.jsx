@@ -3,7 +3,7 @@ import PageComponent from "../../../Client/pages/Gallery";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ searchParams }) {
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tohfabox25.vercel.app';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://artistarycrafts.vercel.app';
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
 
   try {

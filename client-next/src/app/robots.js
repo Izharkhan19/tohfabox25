@@ -1,5 +1,5 @@
 export default function robots() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tohfabox25.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://artistarycrafts.vercel.app';
 
   return {
     rules: [

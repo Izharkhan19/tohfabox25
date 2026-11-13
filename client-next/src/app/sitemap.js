@@ -1,5 +1,5 @@
 export default async function sitemap() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tohfabox25.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://artistarycrafts.vercel.app';
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
 
   const staticRoutes = [

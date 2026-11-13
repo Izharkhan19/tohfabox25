@@ -4,7 +4,7 @@ export async function generateMetadata({ params }) {
   try {
     const { id } = await params;
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tohfabox25.vercel.app';
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://artistarycrafts.vercel.app';
     
     const res = await fetch(`${API_URL}/api/products/${id}`, { next: { revalidate: 3600 } });
     if (!res.ok) throw new Error('Failed to fetch product metadata');
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }) {
 export default async function Page(props) {
   const { id } = await props.params;
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tohfabox25.vercel.app';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://artistarycrafts.vercel.app';
 
   let productSchema = null;
   try {

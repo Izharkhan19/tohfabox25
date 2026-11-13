@@ -103,30 +103,30 @@ export default function Sidebar({ onClose }) {
   };
 
   return (
-    <div className="w-64 bg-gray-900 text-white flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.5)] h-screen overflow-y-auto">
+    <div className="w-60 sm:w-64 bg-gray-900 text-white flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.5)] h-screen overflow-y-auto">
       {/* Logo */}
-      <div className="p-6 border-b border-gray-800 bg-gray-900/50 backdrop-blur-md relative">
-        <div className="flex items-center gap-3">
-          <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-12 h-12 rounded-xl object-cover shadow-[0_0_15px_rgba(20,184,166,0.5)] hover:scale-105 transition-all duration-300" />
-          <h1 className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-orange-400">
+      <div className="p-3.5 border-b border-gray-800 bg-gray-900/50 backdrop-blur-md relative">
+        <div className="flex items-center gap-2.5">
+          <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-8 h-8 rounded-lg object-cover shadow-[0_0_15px_rgba(20,184,166,0.5)] shrink-0" />
+          <h1 className="text-base sm:text-lg font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-orange-400 truncate">
             Artistary Crafts
           </h1>
         </div>
-        <div className="mt-2 text-xs font-semibold text-gray-400 tracking-widest uppercase flex justify-between items-center w-full">
+        <div className="mt-1 text-[10px] font-semibold text-gray-400 tracking-wider uppercase flex justify-between items-center w-full">
             <span>Admin Portal</span>
             {onClose && (
                 <button 
                   onClick={onClose}
                   className="md:hidden p-1 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
                 >
-                  <XMarkIcon className="w-5 h-5" />
+                  <XMarkIcon className="w-4 h-4" />
                 </button>
             )}
         </div>
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-2.5 space-y-0.5">
         {menu.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.path;
@@ -135,27 +135,21 @@ export default function Sidebar({ onClose }) {
             <Link
               key={item.name}
               href={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg group transition-all
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg group transition-all text-xs font-semibold
                                 ${
                                   isActive
-                                    ? "bg-blue-600 border-l-4 border-blue-300"
-                                    : "hover:bg-gray-800 border-l-4 border-transparent"
+                                    ? "bg-blue-600 text-white shadow-sm"
+                                    : "text-gray-300 hover:bg-gray-800 hover:text-white"
                                 }`}
             >
               <Icon
-                className={`w-6 h-6 transition ${
+                className={`w-4 h-4 shrink-0 transition ${
                   isActive
                     ? "text-white"
                     : "text-gray-400 group-hover:text-white"
                 }`}
               />
-              <span
-                className={`text-sm font-medium transition ${
-                  isActive
-                    ? "text-white"
-                    : "text-gray-300 group-hover:text-white"
-                }`}
-              >
+              <span className="truncate">
                 {item.name}
               </span>
             </Link>
@@ -164,13 +158,13 @@ export default function Sidebar({ onClose }) {
       </nav>
 
       {/* Logout */}
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-2.5 border-t border-gray-800">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/20 transition-all"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-red-600/20 text-red-400 transition-all text-xs font-semibold"
         >
-          <ArrowRightOnRectangleIcon className="w-6 h-6 text-red-400" />
-          <span className="text-sm font-medium text-red-400">Logout</span>
+          <ArrowRightOnRectangleIcon className="w-4 h-4 shrink-0" />
+          <span>Logout</span>
         </button>
       </div>
     </div>

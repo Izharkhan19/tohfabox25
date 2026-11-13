@@ -26,17 +26,31 @@ import { toast } from 'react-toastify';
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 
+const defaultOccasionsList = [
+  { _id: "anniversary", name: "Anniversary", image: { url: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500&q=80" } },
+  { _id: "baby-shower", name: "Baby Shower", image: { url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=500&q=80" } },
+  { _id: "birthday", name: "Birthday", image: { url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=500&q=80" } },
+  { _id: "diwali", name: "Diwali", image: { url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&q=80" } }
+];
+
+const defaultRelationshipsList = [
+  { _id: "boyfriend", name: "Boyfriend", image: { url: "https://images.unsplash.com/photo-1480455624313-e29b44bbfde1?w=500&q=80" } },
+  { _id: "brother", name: "Brother", image: { url: "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?w=500&q=80" } },
+  { _id: "girlfriend", name: "Girlfriend", image: { url: "https://images.unsplash.com/photo-1522098635833-216c03d81fbe?w=500&q=80" } },
+  { _id: "family", name: "Family", image: { url: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=500&q=80" } }
+];
+
 const containerVariants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 0.8 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.15 }
+    transition: { staggerChildren: 0.05 }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+  hidden: { opacity: 0.8, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } }
 };
 
 export default function Home() {
@@ -44,14 +58,16 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [dbOccasions, setDbOccasions] = useState([]);
-  const [dbRelationships, setDbRelationships] = useState([]);
+  const [dbOccasions, setDbOccasions] = useState(defaultOccasionsList);
+  const [dbRelationships, setDbRelationships] = useState(defaultRelationshipsList);
   const [wishlistLoading, setWishlistLoading] = useState({});
   const [cartLoading, setCartLoading] = useState({});
   const [localCartCounts, setLocalCartCounts] = useState({});
   const cachedFeaturedProducts = useAppStore((state) => state.featuredProducts);
   const cachedCartItems = useAppStore((state) => state.cartItems);
+  const cachedCategories = useAppStore((state) => state.categories);
   const fetchFeaturedProductsFromStore = useAppStore((state) => state.fetchFeaturedProducts);
+  const fetchCategoriesFromStore = useAppStore((state) => state.fetchCategories);
   const fetchCart = useAppStore((state) => state.fetchCart);
 
   const cartCounts = useMemo(() => {
@@ -138,16 +154,37 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    const fetchDynamicCategories = async () => {
-      const result = await getCategories();
-      if (result?.success) {
-        const allCats = result.data?.data || [];
-        setDbOccasions(allCats.filter(c => c.type === 'Occasion'));
-        setDbRelationships(allCats.filter(c => c.type === 'Relationship'));
-      }
+    let isMounted = true;
+    (async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
+      // Parallelize categories and featured products fetching using store caching & deduplication
+      Promise.allSettled([
+        fetchCategoriesFromStore(),
+        fetchFeaturedProductsFromStore(),
+      ]);
+    })();
+    return () => {
+      isMounted = false;
     };
-    fetchDynamicCategories();
-  }, []);
+  }, [fetchCategoriesFromStore, fetchFeaturedProductsFromStore]);
+
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
+      if (Array.isArray(cachedCategories) && cachedCategories.length > 0) {
+        const occs = cachedCategories.filter(c => c.type === 'Occasion');
+        const rels = cachedCategories.filter(c => c.type === 'Relationship');
+        if (occs.length > 0) setDbOccasions(occs);
+        if (rels.length > 0) setDbRelationships(rels);
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
+  }, [cachedCategories]);
 
   // Fallback product images
   const productImages = [
@@ -373,14 +410,14 @@ export default function Home() {
                   variants={containerVariants}
                   initial="hidden"
                   whileInView="show"
-                  viewport={{ once: true, margin: "-50px" }}
+                  viewport={{ once: true, margin: "250px" }}
                   className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 md:gap-8"
               >
                   {dbOccasions.length > 0 ? dbOccasions.map((occ, i) => (
                       <motion.div variants={itemVariants} key={occ._id}>
                           <Link href={`/products?occasion=${occ._id}`} className="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-md aspect-square block">
                               <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10} scale={1.03} transitionSpeed={2000} className="w-full h-full">
-                                  <img referrerPolicy="no-referrer" src={occ.image?.url || defaultOccasionImages[i % defaultOccasionImages.length]} alt={occ.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                  <img referrerPolicy="no-referrer" src={occ.image?.url || defaultOccasionImages[i % defaultOccasionImages.length]} alt={occ.name} loading={i < 2 ? "eager" : "lazy"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                   <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/25 to-transparent"></div>
                                   <div className="absolute bottom-0 left-0 w-full p-2.5 sm:p-4 md:p-6 text-center sm:text-left">
                                       <h3 className="text-brand-secondary font-black text-xs sm:text-lg md:text-2xl tracking-tight drop-shadow-md truncate">{occ.name}</h3>
@@ -406,14 +443,14 @@ export default function Home() {
                   variants={containerVariants}
                   initial="hidden"
                   whileInView="show"
-                  viewport={{ once: true, margin: "-50px" }}
+                  viewport={{ once: true, margin: "250px" }}
                   className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-10"
               >
                   {dbRelationships.length > 0 ? dbRelationships.map((rel, i) => (
                       <motion.div variants={itemVariants} key={rel._id}>
                           <Link href={`/products?relationship=${rel._id}`} className="group flex flex-col items-center gap-2 sm:gap-4">
                               <Tilt tiltMaxAngleX={15} tiltMaxAngleY={15} scale={1.05} transitionSpeed={1000} className="w-24 h-24 sm:w-36 sm:h-36 md:w-52 md:h-52 rounded-full overflow-hidden shadow-md border-4 sm:border-6 md:border-8 border-white group-hover:border-brand-primary transition-colors">
-                                  <img referrerPolicy="no-referrer" src={rel.image?.url || defaultRelationshipImages[i % defaultRelationshipImages.length]} alt={rel.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                  <img referrerPolicy="no-referrer" src={rel.image?.url || defaultRelationshipImages[i % defaultRelationshipImages.length]} alt={rel.name} loading={i < 2 ? "eager" : "lazy"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                               </Tilt>
                               <h3 className="font-black text-brand-dark text-xs sm:text-base md:text-xl group-hover:text-brand-primary transition-colors tracking-tight text-center truncate max-w-full">{rel.name}</h3>
                           </Link>
@@ -457,7 +494,7 @@ export default function Home() {
                 variants={containerVariants}
                 initial="hidden"
                 whileInView="show"
-                viewport={{ once: true, margin: "-50px" }}
+                viewport={{ once: true, margin: "250px" }}
                 className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 md:gap-8"
             >
               {featuredProducts.slice(0,4).map((product) => (
@@ -548,7 +585,7 @@ export default function Home() {
             variants={containerVariants}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: "250px" }}
             className="max-w-7xl mx-auto px-3.5 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 md:gap-10"
         >
           {[

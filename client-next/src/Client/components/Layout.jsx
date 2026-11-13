@@ -11,8 +11,10 @@ import {
     PhotoIcon,
     XMarkIcon,
     Bars3Icon,
-    MagnifyingGlassIcon
+    MagnifyingGlassIcon,
+    ChevronDownIcon
 } from "@heroicons/react/24/outline";
+import HeaderSearch from "./HeaderSearch";
 import {
     HomeIcon as HomeIconSolid,
     ShoppingBagIcon as ShoppingBagIconSolid,
@@ -34,6 +36,7 @@ export default function ClientLayout({ children }) {
     const [deferredPrompt, setDeferredPrompt] = useState(null);
     const [showInstallBanner, setShowInstallBanner] = useState(false);
     const [announcement, setAnnouncement] = useState(null);
+    const [openFooterSection, setOpenFooterSection] = useState(null);
 
     const storedUser = (typeof window !== 'undefined' ? localStorage.getItem("user") : null);
     const user = storedUser ? JSON.parse(storedUser) : null;
@@ -242,12 +245,12 @@ export default function ClientLayout({ children }) {
                         </div>
 
                         {/* Desktop Navigation (Center) */}
-                        <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
+                        <nav className="hidden md:flex flex-1 justify-center items-center gap-6 lg:gap-8">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.to}
                                     href={link.to}
-                                    className={`relative text-sm font-bold transition-colors tracking-[0.08em] uppercase ${isActive(link.to)
+                                    className={`relative text-xs lg:text-sm font-bold transition-colors tracking-[0.08em] uppercase ${isActive(link.to)
                                         ? "text-[#e1b382]"
                                         : "text-[#fdfbf9] hover:text-[#e1b382]"
                                         }`}
@@ -260,18 +263,23 @@ export default function ClientLayout({ children }) {
                             ))}
                         </nav>
 
+                        {/* Desktop Live Search */}
+                        <div className="hidden lg:block w-48 xl:w-64 mx-2">
+                            <HeaderSearch />
+                        </div>
+
                         {/* Desktop Actions (Right) & Mobile Cart (Right) */}
-                        <div className="flex justify-end items-center gap-2 md:gap-6">
+                        <div className="flex justify-end items-center gap-2 md:gap-4 lg:gap-6">
                             
                             {/* Desktop: Icons */}
-                            <div className="hidden md:flex items-center gap-6">
+                            <div className="hidden md:flex items-center gap-4 lg:gap-6">
                                 {actionLinks.map((link) => (
                                     (!link.protected || isLoggedIn) && (
                                         <Link key={link.to} href={link.to} className="relative group p-2">
                                             {isActive(link.to) ? (
-                                                <link.solidIcon className="w-6 h-6 text-[#e1b382]" />
+                                                <link.solidIcon className="w-5 h-5 lg:w-6 lg:h-6 text-[#e1b382]" />
                                             ) : (
-                                                <link.icon className="w-6 h-6 text-[#fdfbf9] group-hover:text-[#e1b382] transition-colors" />
+                                                <link.icon className="w-5 h-5 lg:w-6 lg:h-6 text-[#fdfbf9] group-hover:text-[#e1b382] transition-colors" />
                                             )}
                                             {link.badge > 0 && (
                                                 <span className="absolute top-0 right-0 bg-[#c89666] text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center border-2 border-brand-dark shadow-sm">
@@ -286,7 +294,7 @@ export default function ClientLayout({ children }) {
                                 {!isLoggedIn && (
                                     <Link
                                         href="/login"
-                                        className="ml-2 text-sm font-bold text-[#12343b] bg-[#e1b382] hover:bg-[#c89666] hover:text-white px-6 py-2.5 rounded-full transition-all shadow-[0_0_15px_rgba(225,179,130,0.4)] hover:shadow-[0_0_20px_rgba(200,150,102,0.6)]"
+                                        className="ml-2 text-xs lg:text-sm font-bold text-[#12343b] bg-[#e1b382] hover:bg-[#c89666] hover:text-white px-5 lg:px-6 py-2 lg:py-2.5 rounded-full transition-all shadow-[0_0_15px_rgba(225,179,130,0.4)] hover:shadow-[0_0_20px_rgba(200,150,102,0.6)]"
                                     >
                                         Sign In
                                     </Link>
@@ -296,7 +304,7 @@ export default function ClientLayout({ children }) {
                                 {isAdminLoggedIn && (
                                     <Link
                                         href="/admin"
-                                        className="ml-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 px-5 py-2.5 rounded-full transition-all shadow-[0_0_15px_rgba(220,38,38,0.4)]"
+                                        className="ml-2 text-xs lg:text-sm font-bold text-white bg-red-600 hover:bg-red-700 px-4 lg:px-5 py-2 lg:py-2.5 rounded-full transition-all shadow-[0_0_15px_rgba(220,38,38,0.4)]"
                                     >
                                         Admin Panel
                                     </Link>
@@ -329,15 +337,9 @@ export default function ClientLayout({ children }) {
                         </div>
                     </div>
 
-                    {/* Mobile: Quick Search Pill Bar */}
-                    <div className="md:hidden pt-1.5 pb-0.5">
-                        <Link
-                            href="/products"
-                            className="flex items-center gap-2 bg-black/25 hover:bg-black/35 border border-[#e1b382]/25 rounded-full px-3 py-1.5 text-xs text-[#fdfbf9]/75 backdrop-blur-md shadow-inner transition-colors"
-                        >
-                            <MagnifyingGlassIcon className="w-3.5 h-3.5 text-[#e1b382] shrink-0" />
-                            <span className="font-medium truncate">Search gifts, resin art, crochet...</span>
-                        </Link>
+                    {/* Mobile: Functional Live Search Input */}
+                    <div className="md:hidden pt-1 pb-1">
+                        <HeaderSearch isMobile />
                     </div>
                 </div>
             </header>
@@ -352,46 +354,46 @@ export default function ClientLayout({ children }) {
                     ></div>
                     
                     {/* Drawer Content */}
-                    <div className="relative flex-1 flex flex-col max-w-xs w-full bg-[#12343b] shadow-2xl border-r border-[#c89666]/20 animate-slide-in-left">
+                    <div className="relative flex-1 flex flex-col w-[260px] max-w-[80vw] bg-[#12343b] shadow-2xl border-r border-[#c89666]/20 animate-slide-in-left">
                         {/* Drawer Header */}
-                        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl" />
-                                <span className="text-xl font-black text-[#e1b382] font-serif">Artistary Crafts</span>
+                        <div className="px-3.5 py-2.5 border-b border-white/10 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <img referrerPolicy="no-referrer" src="/logo.png" alt="Logo" className="w-7 h-7 rounded-lg" />
+                                <span className="text-sm font-bold text-[#e1b382] font-serif truncate">Artistary Crafts</span>
                             </div>
-                            <button onClick={() => setMobileMenuOpen(false)} className="p-2 bg-white/5 rounded-full text-[#fdfbf9] hover:text-white hover:bg-[#c89666] transition-colors">
-                                <XMarkIcon className="w-6 h-6" />
+                            <button onClick={() => setMobileMenuOpen(false)} className="p-1 bg-white/5 rounded-full text-[#fdfbf9] hover:text-white hover:bg-[#c89666] transition-colors">
+                                <XMarkIcon className="w-4 h-4" />
                             </button>
                         </div>
 
                         {/* User Info / Login */}
-                        <div className="p-6 border-b border-white/10 bg-white/5">
+                        <div className="px-3.5 py-2 border-b border-white/10 bg-white/5">
                             {isLoggedIn ? (
                                 <Link
                                     href="/orders"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-4 group hover:bg-white/5 p-2 -m-2 rounded-xl transition-all"
+                                    className="flex items-center gap-2.5 group hover:bg-white/5 p-1 -m-1 rounded-lg transition-all"
                                 >
-                                    <div className="w-12 h-12 bg-[#e1b382] rounded-full flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
-                                        <UserIconSolid className="w-6 h-6 text-[#12343b]" />
+                                    <div className="w-8 h-8 bg-[#e1b382] rounded-full flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                                        <UserIconSolid className="w-4 h-4 text-[#12343b]" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-xs text-[#7a8f94] font-medium">Welcome back,</p>
-                                        <p className="font-bold text-lg text-white truncate">
+                                        <p className="text-[10px] text-[#7a8f94] font-medium leading-none">Welcome back,</p>
+                                        <p className="font-bold text-xs text-white truncate mt-0.5">
                                             {user?.name || "User"}
                                         </p>
-                                        <p className="text-xs text-[#e1b382] font-semibold mt-0.5 flex items-center gap-1 group-hover:underline">
+                                        <p className="text-[10px] text-[#e1b382] font-semibold flex items-center gap-1 group-hover:underline">
                                             Manage Account &rarr;
                                         </p>
                                     </div>
                                 </Link>
                             ) : (
-                                <div className="text-center">
-                                    <p className="text-[#fdfbf9]/80 text-sm mb-4">Sign in to track orders and save to wishlist.</p>
+                                <div className="text-center py-1">
+                                    <p className="text-[#fdfbf9]/80 text-[11px] mb-1.5 leading-tight">Sign in to track orders and save wishlist.</p>
                                     <Link
                                         href="/login"
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className="block w-full py-3 bg-[#e1b382] text-[#12343b] rounded-xl font-bold tracking-wide shadow-lg active:scale-95 transition-transform"
+                                        className="block w-full py-1.5 bg-[#e1b382] text-[#12343b] rounded-lg font-bold text-xs tracking-wide shadow-md active:scale-95 transition-transform"
                                     >
                                         Sign In / Register
                                     </Link>
@@ -400,19 +402,19 @@ export default function ClientLayout({ children }) {
                         </div>
 
                         {/* Navigation Links */}
-                        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                        <nav className="flex-1 px-2.5 py-1.5 space-y-0.5 overflow-y-auto">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.to}
                                     href={link.to}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center px-4 py-4 rounded-xl font-bold text-base tracking-wide transition-colors ${
+                                    className={`flex items-center px-3 py-1.5 rounded-lg font-semibold text-xs tracking-wide transition-colors ${
                                         isActive(link.to)
                                         ? "bg-[#e1b382] text-[#12343b]"
                                         : "text-[#fdfbf9] hover:bg-white/10"
                                     }`}
                                 >
-                                    {link.label}
+                                    <span className="truncate">{link.label}</span>
                                 </Link>
                             ))}
 
@@ -420,29 +422,29 @@ export default function ClientLayout({ children }) {
                                 <Link
                                     href="/orders"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-4 rounded-xl font-bold text-base tracking-wide transition-colors ${
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-semibold text-xs tracking-wide transition-colors ${
                                         isActive("/orders")
                                         ? "bg-[#e1b382] text-[#12343b]"
                                         : "text-[#fdfbf9] hover:bg-white/10"
                                     }`}
                                 >
-                                    <UserIcon className="w-5 h-5 text-[#e1b382]" />
-                                    <span>My Account & Orders</span>
+                                    <UserIcon className="w-3.5 h-3.5 text-[#e1b382] shrink-0" />
+                                    <span className="truncate">My Account & Orders</span>
                                 </Link>
                             )}
 
-                            <div className="h-px bg-white/10 my-4 mx-4"></div>
+                            <div className="h-px bg-white/10 my-1 mx-1"></div>
 
                             {/* Additional Links */}
-                            <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors">Our Story</Link>
-                            <Link href="/custom-orders" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors">Custom Orders</Link>
-                            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors">Support & FAQ</Link>
+                            <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-1 text-[11px] text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors truncate">Our Story</Link>
+                            <Link href="/custom-orders" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-1 text-[11px] text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors truncate">Custom Orders</Link>
+                            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-1 text-[11px] text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors truncate">Support & FAQ</Link>
                             
                             {isAdminLoggedIn && (
                                 <Link 
                                     href="/admin" 
                                     onClick={() => setMobileMenuOpen(false)} 
-                                    className="block px-4 py-3 mt-2 text-white bg-red-600/90 rounded-xl font-bold transition-colors"
+                                    className="block px-3 py-1.5 mt-1 text-white bg-red-600/90 rounded-lg font-bold text-xs transition-colors truncate text-center"
                                 >
                                     Go to Admin Panel
                                 </Link>
@@ -451,10 +453,10 @@ export default function ClientLayout({ children }) {
 
                         {/* Logout at bottom if logged in */}
                         {isLoggedIn && (
-                            <div className="p-6 border-t border-white/10 bg-[#12343b]">
+                            <div className="p-2.5 border-t border-white/10 bg-[#12343b]">
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full flex justify-center items-center gap-2 py-4 bg-[#c89666]/20 text-brand-accent hover:bg-[#c89666] hover:text-white rounded-xl font-bold tracking-wide transition-colors"
+                                    className="w-full flex justify-center items-center gap-2 py-1.5 bg-[#c89666]/20 text-brand-accent hover:bg-[#c89666] hover:text-white rounded-lg font-bold text-xs tracking-wide transition-colors"
                                 >
                                     Sign Out
                                 </button>
@@ -465,7 +467,7 @@ export default function ClientLayout({ children }) {
             )}
 
             {/* Main Content */}
-            <main className="flex-1 w-full mt-20 md:mt-24">
+            <main className={`flex-1 w-full ${announcement ? 'pt-[124px] md:pt-[92px]' : 'pt-[96px] md:pt-[76px]'}`}>
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={pathname}
@@ -481,40 +483,58 @@ export default function ClientLayout({ children }) {
             </main>
 
             {/* Premium Footer */}
-            <footer className="bg-[#0b1c24] text-[#fdfbf9] pt-20 pb-12 border-t-2 border-[#c89666]/30 shadow-[0_-10px_50px_rgba(45,84,94,0.3)]">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-8 text-center lg:text-left mb-16">
-                    <div className="lg:col-span-2">
-                        <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
-                            <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-14 h-14 rounded-xl object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)]" />
-                            <h2 className="text-4xl font-extrabold text-[#e1b382] drop-shadow-md font-serif">
+            <footer className="bg-[#0b1c24] text-[#fdfbf9] pt-6 pb-6 md:pt-14 md:pb-10 border-t-2 border-[#c89666]/30 shadow-[0_-10px_50px_rgba(45,84,94,0.3)]">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8 mb-4 md:mb-10">
+                    <div className="md:col-span-2 text-left">
+                        <div className="flex items-center gap-2.5 mb-2">
+                            <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-8 h-8 md:w-12 md:h-12 rounded-xl object-cover shadow-[0_0_20px_rgba(225,179,130,0.3)]" />
+                            <h2 className="text-lg md:text-2xl font-extrabold text-[#e1b382] drop-shadow-md font-serif">
                                 Artistary Crafts
                             </h2>
                         </div>
-                        <p className="text-[#fdfbf9]/70 font-light leading-relaxed text-lg max-w-md mx-auto lg:mx-0">
+                        <p className="text-[#fdfbf9]/70 font-light leading-relaxed text-xs md:text-sm max-w-md">
                             Handcrafted luxury. We create mesmerizing crochet art and personalized gifts that capture beautiful memories in perfect clarity.
                         </p>
                     </div>
-                    <div>
-                        <h3 className="text-lg font-bold mb-6 tracking-widest uppercase text-[#e1b382]">Explore</h3>
-                        <div className="flex flex-col gap-4 text-[#fdfbf9]/80 font-medium">
-                            <Link href="/products" className="hover:text-[#e1b382] transition-colors">All Art Pieces</Link>
-                            <Link href="/gallery" className="hover:text-[#e1b382] transition-colors">Gallery</Link>
-                            <Link href="/custom-orders" className="hover:text-[#e1b382] transition-colors">Custom Orders</Link>
-                            <Link href="/about" className="hover:text-[#e1b382] transition-colors">Our Story</Link>
+
+                    {/* Explore Column - Collapsible on Mobile */}
+                    <div className="border-t border-white/5 md:border-t-0 pt-2.5 md:pt-0">
+                        <button
+                            type="button"
+                            onClick={() => setOpenFooterSection(prev => prev === 'explore' ? null : 'explore')}
+                            className="w-full flex items-center justify-between text-xs md:text-sm font-bold tracking-wider uppercase text-[#e1b382] mb-1.5 md:mb-2.5 cursor-pointer py-1"
+                        >
+                            <span>Explore</span>
+                            <ChevronDownIcon className={`w-3.5 h-3.5 md:hidden transition-transform duration-200 ${openFooterSection === 'explore' ? 'rotate-180' : ''}`} />
+                        </button>
+                        <div className={`flex flex-col gap-1.5 text-xs text-[#fdfbf9]/75 font-medium transition-all ${openFooterSection === 'explore' ? 'block' : 'hidden md:flex'}`}>
+                            <Link href="/products" className="hover:text-[#e1b382] transition-colors py-0.5">All Art Pieces</Link>
+                            <Link href="/gallery" className="hover:text-[#e1b382] transition-colors py-0.5">Gallery</Link>
+                            <Link href="/custom-orders" className="hover:text-[#e1b382] transition-colors py-0.5">Custom Orders</Link>
+                            <Link href="/about" className="hover:text-[#e1b382] transition-colors py-0.5">Our Story</Link>
                         </div>
                     </div>
-                    <div>
-                        <h3 className="text-lg font-bold mb-6 tracking-widest uppercase text-[#e1b382]">Support</h3>
-                        <div className="flex flex-col gap-4 text-[#fdfbf9]/80 font-medium">
-                            <Link href="/contact" className="hover:text-[#e1b382] transition-colors">Contact Us</Link>
-                            <Link href="/shipping" className="hover:text-[#e1b382] transition-colors">Shipping Policy</Link>
-                            <Link href="/returns" className="hover:text-[#e1b382] transition-colors">Returns & Exchanges</Link>
+
+                    {/* Support Column - Collapsible on Mobile */}
+                    <div className="border-t border-white/5 md:border-t-0 pt-2.5 md:pt-0">
+                        <button
+                            type="button"
+                            onClick={() => setOpenFooterSection(prev => prev === 'support' ? null : 'support')}
+                            className="w-full flex items-center justify-between text-xs md:text-sm font-bold tracking-wider uppercase text-[#e1b382] mb-1.5 md:mb-2.5 cursor-pointer py-1"
+                        >
+                            <span>Support</span>
+                            <ChevronDownIcon className={`w-3.5 h-3.5 md:hidden transition-transform duration-200 ${openFooterSection === 'support' ? 'rotate-180' : ''}`} />
+                        </button>
+                        <div className={`flex flex-col gap-1.5 text-xs text-[#fdfbf9]/75 font-medium transition-all ${openFooterSection === 'support' ? 'block' : 'hidden md:flex'}`}>
+                            <Link href="/contact" className="hover:text-[#e1b382] transition-colors py-0.5">Contact Us</Link>
+                            <Link href="/shipping" className="hover:text-[#e1b382] transition-colors py-0.5">Shipping Policy</Link>
+                            <Link href="/returns" className="hover:text-[#e1b382] transition-colors py-0.5">Returns & Exchanges</Link>
                         </div>
                     </div>
                 </div>
-                <div className="max-w-7xl mx-auto px-6 border-t border-brand-light/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-[#7a8f94] font-medium">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 border-t border-brand-light/10 pt-3 flex flex-col sm:flex-row justify-between items-center text-[10px] md:text-xs text-[#7a8f94] font-medium gap-1.5">
                     <p>© {new Date().getFullYear()} Artistary Crafts. All rights reserved.</p>
-                    <div className="flex gap-6 mt-6 md:mt-0">
+                    <div className="flex gap-4">
                         <Link href="/privacy" className="hover:text-[#e1b382] transition-colors">Privacy Policy</Link>
                         <Link href="/terms" className="hover:text-[#e1b382] transition-colors">Terms of Service</Link>
                     </div>

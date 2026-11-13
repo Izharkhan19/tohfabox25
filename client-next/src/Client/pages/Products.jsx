@@ -20,6 +20,7 @@ import { toast } from 'react-toastify';
 import LogoLoader from "../../components/LogoLoader";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
+import { useAppStore } from "../../stores/useAppStore";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -44,14 +45,30 @@ export default function Products() {
     
   const initialFilterId = searchParams.get('occasion') || searchParams.get('relationship') || searchParams.get('category') || 'all';
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const urlSearch = searchParams.get('search') || searchParams.get('q') || "";
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
   const [selectedFilter, setSelectedFilter] = useState({ type: initialFilterType, id: initialFilterId });
+
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
+      const q = searchParams.get('search') || searchParams.get('q') || "";
+      setSearchTerm(q);
+    })();
+    return () => {
+      isMounted = false;
+    };
+  }, [searchParams]);
   const [sortBy, setSortBy] = useState("featured");
   const [viewMode, setViewMode] = useState("grid");
+  const cachedCategories = useAppStore((state) => state.categories);
+  const fetchCategoriesFromStore = useAppStore((state) => state.fetchCategories);
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(cachedCategories || []);
   const [loading, setLoading] = useState(true);
-  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(!cachedCategories);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
@@ -64,8 +81,13 @@ export default function Products() {
     const loadCategories = async () => {
       await Promise.resolve();
       if (!isMounted) return;
+      if (cachedCategories) {
+        setCategories(cachedCategories);
+        setLoadingCategories(false);
+        return;
+      }
       setLoadingCategories(true);
-      const result = await getCategories();
+      const result = await fetchCategoriesFromStore();
 
       if (!isMounted) return;
       if (result?.success) {
@@ -80,7 +102,7 @@ export default function Products() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [cachedCategories, fetchCategoriesFromStore]);
 
   useEffect(() => {
     let isMounted = true;

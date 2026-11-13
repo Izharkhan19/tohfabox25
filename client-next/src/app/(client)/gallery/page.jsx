@@ -59,15 +59,26 @@ export async function generateMetadata({ searchParams }) {
   }
   
   return {
-    title: "Handcrafted Creations Gallery | Tohfabox",
-    description: "Browse our beautiful gallery of handmade resin art, bespoke crochet creations, and personalized gift hampers crafted with love.",
+    title: "Handcrafted Creations Gallery | Artistary Crafts",
+    description: "Browse our beautiful gallery of handmade resin art, bespoke crochet creations, and personalized gift hampers crafted with love at Artistary Crafts.",
+    keywords: [
+      "Artistary Crafts Gallery",
+      "Handmade Crafts Portfolio",
+      "Resin Art Showcase",
+      "Crochet Creations Gallery",
+      "Handmade Art Designs",
+      "Resin Clock Designs",
+      "Crochet Flower Designs",
+      "Tohfabox Gallery"
+    ],
     alternates: {
       canonical: "/gallery",
     },
     openGraph: {
-      title: "Handcrafted Creations Gallery | Tohfabox",
-      description: "Browse our beautiful gallery of handmade resin art, bespoke crochet creations, and personalized gift hampers crafted with love.",
+      title: "Handcrafted Creations Gallery | Artistary Crafts",
+      description: "Browse our beautiful gallery of handmade resin art, bespoke crochet creations, and personalized gift hampers crafted with love at Artistary Crafts.",
       url: "/gallery",
+      siteName: "Artistary Crafts",
     },
   };
 }

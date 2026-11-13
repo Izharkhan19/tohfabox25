@@ -1,17 +1,36 @@
 import PageComponent from "../../../Client/pages/Products";
 
 export const metadata = {
-  title: "Shop All Handmade Products | Resin Art & Crochet Collections",
+  title: "Artistary Crafts | Shop All Handmade Products & Collections",
   description:
-    "Explore our complete collection of handmade resin art, crochet flowers, luxury accessories, customized frames, and personalized gifts crafted by Tohfabox.",
+    "Explore our complete collection of handmade resin art, crochet flowers, luxury accessories, customized frames, and personalized gifts crafted by Artistary Crafts.",
+  keywords: [
+    "Shop Handmade Gifts",
+    "Buy Resin Art Online",
+    "Buy Crochet Flowers",
+    "Handmade Resin Coasters",
+    "Resin Wall Clocks",
+    "Custom Resin Trays",
+    "Resin Nameplates",
+    "Resin Keychains",
+    "Crochet Bouquets",
+    "Crochet Soft Toys",
+    "Personalized Gift Hampers",
+    "Custom Gifts India",
+    "Artistary Crafts Products",
+    "Tohfabox Catalog",
+    "Handcrafted Treasures",
+    "Unique Gifts Shop"
+  ],
   alternates: {
     canonical: "/products",
   },
   openGraph: {
-    title: "Shop All Handmade Products | Resin Art & Crochet Collections | Tohfabox",
+    title: "Artistary Crafts | Shop All Handmade Products & Collections",
     description:
-      "Explore our complete collection of handmade resin art, crochet flowers, luxury accessories, customized frames, and personalized gifts crafted by Tohfabox.",
+      "Explore our complete collection of handmade resin art, crochet flowers, luxury accessories, customized frames, and personalized gifts crafted by Artistary Crafts.",
     url: "/products",
+    siteName: "Artistary Crafts",
   },
 };
 

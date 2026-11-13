@@ -19,14 +19,32 @@ export async function generateMetadata({ params }) {
       imageUrl = imageUrl.replace('http://', 'https://');
     }
 
-    const title = `${product.title || product.name || 'Handmade Product'} | Tohfabox`;
-    const cleanDescription = (product.description || "Discover custom handcrafted resin art, luxury crochet creations, and personalized gift hampers at Tohfabox.")
+    const title = `${product.title || product.name || 'Handmade Product'} | Artistary Crafts`;
+    const cleanDescription = (product.description || "Discover custom handcrafted resin art, luxury crochet creations, and personalized gift hampers at Artistary Crafts.")
       .replace(/<[^>]*>?/gm, '')
       .slice(0, 160);
+
+    const productName = product.title || product.name || 'Handmade Gift';
+    const categoryName = product.category?.name || (typeof product.category === 'string' ? product.category : 'Handcrafted');
+    const productKeywords = [
+      productName,
+      `buy ${productName}`,
+      `${productName} price`,
+      categoryName,
+      `handmade ${categoryName}`,
+      "Artistary Crafts",
+      "Artistarycraft",
+      "Tohfabox",
+      "Handmade Gifts",
+      "Customized Gifts Online",
+      "Resin Art India",
+      "Handcrafted Treasures"
+    ];
 
     return {
       title,
       description: cleanDescription,
+      keywords: productKeywords,
       alternates: {
         canonical: `/products/${id}`,
       },
@@ -34,13 +52,13 @@ export async function generateMetadata({ params }) {
         title,
         description: cleanDescription,
         url: `${SITE_URL}/products/${id}`,
-        siteName: "Tohfabox",
+        siteName: "Artistary Crafts",
         images: [
           {
             url: imageUrl,
             width: 800,
             height: 800,
-            alt: product.title || product.name || "Tohfabox Handmade Gift",
+            alt: product.title || product.name || "Artistary Crafts Handmade Gift",
           },
         ],
         type: 'website',
@@ -55,8 +73,8 @@ export async function generateMetadata({ params }) {
   } catch (error) {
     console.error("Error generating product metadata:", error.message);
     return {
-      title: "Handmade Product Details | Tohfabox",
-      description: "Discover custom handcrafted resin art and luxury crochet items at Tohfabox.",
+      title: "Handmade Product Details | Artistary Crafts",
+      description: "Discover custom handcrafted resin art and luxury crochet items at Artistary Crafts.",
     };
   }
 }
@@ -84,7 +102,7 @@ export default async function Page(props) {
         "sku": product._id || id,
         "brand": {
           "@type": "Brand",
-          "name": "Tohfabox"
+          "name": "Artistary Crafts"
         },
         "offers": {
           "@type": "Offer",

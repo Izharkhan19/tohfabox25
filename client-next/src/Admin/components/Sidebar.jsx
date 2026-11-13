@@ -103,21 +103,21 @@ export default function Sidebar({ onClose }) {
   };
 
   return (
-    <div className="w-60 sm:w-64 bg-gray-900 text-white flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.5)] h-screen overflow-y-auto">
+    <div className="w-60 sm:w-64 bg-[#0f2c32] text-stone-200 flex flex-col shadow-[4px_0_24px_rgba(15,44,50,0.5)] h-screen overflow-y-auto border-r border-[#12343b]/60">
       {/* Logo */}
-      <div className="p-3.5 border-b border-gray-800 bg-gray-900/50 backdrop-blur-md relative">
+      <div className="p-3.5 border-b border-white/10 bg-[#0c2429] relative">
         <div className="flex items-center gap-2.5">
-          <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-8 h-8 rounded-lg object-cover shadow-[0_0_15px_rgba(20,184,166,0.5)] shrink-0" />
-          <h1 className="text-base sm:text-lg font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-orange-400 truncate">
+          <img referrerPolicy="no-referrer" src="/logo.png" alt="Artistary Crafts Logo" className="w-8 h-8 rounded-lg object-cover ring-1 ring-[#e1b382]/40 shrink-0" />
+          <h1 className="text-base sm:text-lg font-serif font-bold tracking-tight text-[#e1b382] truncate">
             Artistary Crafts
           </h1>
         </div>
-        <div className="mt-1 text-[10px] font-semibold text-gray-400 tracking-wider uppercase flex justify-between items-center w-full">
+        <div className="mt-1 text-[10px] font-semibold text-[#8ba3a8] tracking-wider uppercase flex justify-between items-center w-full">
             <span>Admin Portal</span>
             {onClose && (
                 <button 
                   onClick={onClose}
-                  className="md:hidden p-1 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+                  className="md:hidden p-1 rounded-full text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   <XMarkIcon className="w-4 h-4" />
                 </button>
@@ -126,7 +126,7 @@ export default function Sidebar({ onClose }) {
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 p-2.5 space-y-0.5">
+      <nav className="flex-1 p-2.5 space-y-1">
         {menu.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.path;
@@ -135,18 +135,18 @@ export default function Sidebar({ onClose }) {
             <Link
               key={item.name}
               href={item.path}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg group transition-all text-xs font-semibold
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-xl group transition-all text-xs font-semibold
                                 ${
                                   isActive
-                                    ? "bg-blue-600 text-white shadow-sm"
-                                    : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                                    ? "bg-[#12343b] text-[#e1b382] border-l-2 border-[#e1b382] shadow-sm"
+                                    : "text-stone-300 hover:bg-white/5 hover:text-white"
                                 }`}
             >
               <Icon
                 className={`w-4 h-4 shrink-0 transition ${
                   isActive
-                    ? "text-white"
-                    : "text-gray-400 group-hover:text-white"
+                    ? "text-[#e1b382]"
+                    : "text-stone-400 group-hover:text-[#e1b382]"
                 }`}
               />
               <span className="truncate">
@@ -158,10 +158,10 @@ export default function Sidebar({ onClose }) {
       </nav>
 
       {/* Logout */}
-      <div className="p-2.5 border-t border-gray-800">
+      <div className="p-2.5 border-t border-white/10 bg-[#0c2429]">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-red-600/20 text-red-400 transition-all text-xs font-semibold"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-red-500/15 text-red-400 transition-all text-xs font-semibold"
         >
           <ArrowRightOnRectangleIcon className="w-4 h-4 shrink-0" />
           <span>Logout</span>

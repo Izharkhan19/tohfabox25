@@ -95,19 +95,18 @@ export default function Promos() {
     const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100';
 
     return (
-        <div className="w-full space-y-6 p-4 sm:p-6">
+        <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-[#e1b382]/20">
                 <div>
-                    <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-600">Campaigns</p>
-                    <h1 className="mt-1 text-2xl sm:text-3xl font-bold text-gray-800">Promo Codes</h1>
-                    <p className="mt-1 text-xs sm:text-sm text-gray-500">Create discount offers that automatically apply at checkout.</p>
+                    <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">Promo Codes</h1>
+                    <p className="mt-0.5 text-xs sm:text-sm text-stone-500">Create discount coupons and checkout offers.</p>
                 </div>
                 <button
                     onClick={handleOpenModal}
-                    className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2.5 rounded-xl shadow-sm active:scale-95 transition text-sm self-start sm:self-auto"
+                    className="inline-flex items-center justify-center gap-1.5 bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 font-semibold px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl shadow-sm active:scale-95 transition text-xs sm:text-sm self-start sm:self-auto"
                 >
-                    <PlusIcon className="w-5 h-5" />
+                    <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 text-[#e1b382]" />
                     <span>Create Promo Code</span>
                 </button>
             </div>
@@ -152,7 +151,7 @@ export default function Promos() {
                                 <span className={`mt-3 inline-flex rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${active ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-500'}`}>
                                     {active ? 'Active now' : 'Inactive'}
                                 </span>
-                                <p className="mt-3 text-xl sm:text-2xl font-bold text-blue-600">
+                                <p className="mt-2.5 text-lg sm:text-2xl font-serif font-bold text-[#12343b]">
                                     {promo.discountType === 'percentage' ? `${promo.discountValue}% off` : `₹${promo.discountValue} off`}
                                 </p>
                                 <div className="mt-3 pt-3 border-t border-gray-100 space-y-1 text-xs sm:text-sm text-gray-500">
@@ -278,18 +277,18 @@ export default function Promos() {
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+                    <div className="flex justify-end gap-2.5 pt-3 border-t border-stone-100 mt-5">
                         <button
                             type="button"
                             onClick={handleCloseModal}
-                            className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
+                            className="px-3.5 py-2 text-xs sm:text-sm font-semibold text-stone-700 bg-stone-100 rounded-xl hover:bg-stone-200 transition active:scale-95"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={saving}
-                            className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:bg-gray-400 shadow-sm transition"
+                            className="px-4 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl disabled:bg-stone-400 shadow-sm transition active:scale-95"
                         >
                             {saving ? 'Creating...' : 'Create Promo Code'}
                         </button>

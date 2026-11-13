@@ -39,7 +39,10 @@ export default function Transactions() {
   };
 
   useEffect(() => {
-    fetchTransactions();
+    (async () => {
+      await Promise.resolve();
+      fetchTransactions();
+    })();
   }, []);
 
   const filteredTransactions = transactions.filter((t) => {
@@ -61,41 +64,49 @@ export default function Transactions() {
   };
 
   return (
-    <div className="p-4 sm:px-3 py-4 sm:p-6">
-
+    <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 pb-2 border-b border-[#e1b382]/20">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">
+            Transactions Ledger
+          </h1>
+          <p className="text-stone-500 text-xs sm:text-sm mt-0.5">Real-time payment audit and processed order revenue.</p>
+        </div>
+      </div>
 
       {/* Search */}
-      <div className="mb-6 max-w-md relative">
-        <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+      <div className="max-w-md w-full relative">
+        <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
         <input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by Txn ID, Order ID, name, email..."
-          className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500"
+          placeholder="Search Txn ID, Order ID, client, email..."
+          className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-stone-200 rounded-xl focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b] outline-none shadow-sm bg-white"
         />
       </div>
 
-      {/* Stats Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-8">
-        <div className="p-4 sm:p-5 rounded-xl border border-gray-200 bg-white flex items-center gap-3 sm:gap-4">
-          <div className="p-2 sm:p-3 bg-blue-100 rounded-lg text-blue-600">
-             <CurrencyDollarIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="p-3.5 sm:p-5 rounded-2xl border border-stone-200/80 bg-white flex items-center gap-3.5 shadow-sm">
+          <div className="p-2.5 bg-[#e1b382]/20 text-[#12343b] rounded-xl shrink-0">
+             <CurrencyDollarIcon className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <div className="text-xs sm:text-sm text-gray-500">Total Revenue (Paid)</div>
-            <div className="text-xl sm:text-2xl font-bold">
+            <div className="text-[11px] sm:text-xs font-medium text-stone-500">Total Settled Revenue (Paid)</div>
+            <div className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">
               ₹{transactions.reduce((sum, t) => sum + (t.total || 0), 0).toFixed(2)}
             </div>
           </div>
         </div>
         
-        <div className="p-4 sm:p-5 rounded-xl border border-gray-200 bg-white flex items-center gap-3 sm:gap-4">
-          <div className="p-2 sm:p-3 bg-green-100 rounded-lg text-green-600">
-             <CheckCircleIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+        <div className="p-3.5 sm:p-5 rounded-2xl border border-stone-200/80 bg-white flex items-center gap-3.5 shadow-sm">
+          <div className="p-2.5 bg-emerald-50 text-emerald-700 rounded-xl shrink-0">
+             <CheckCircleIcon className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <div className="text-xs sm:text-sm text-gray-500">Successful Transactions</div>
-            <div className="text-xl sm:text-2xl font-bold">{transactions.length}</div>
+            <div className="text-[11px] sm:text-xs font-medium text-stone-500">Successful Transactions</div>
+            <div className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">{transactions.length}</div>
           </div>
         </div>
       </div>

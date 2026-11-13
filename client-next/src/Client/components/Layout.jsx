@@ -467,7 +467,7 @@ export default function ClientLayout({ children }) {
             )}
 
             {/* Main Content */}
-            <main className={`flex-1 w-full ${announcement ? 'pt-[124px] md:pt-[92px]' : 'pt-[96px] md:pt-[76px]'}`}>
+            <main className={`flex-1 w-full ${announcement ? 'pt-[136px] sm:pt-[128px] md:pt-[96px]' : 'pt-[108px] sm:pt-[100px] md:pt-[76px]'}`}>
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={pathname}

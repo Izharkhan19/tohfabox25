@@ -167,7 +167,10 @@ export default function Orders() {
 
   /* ---------------- EFFECT ---------------- */
   useEffect(() => {
-    fetchOrders();
+    (async () => {
+      await Promise.resolve();
+      fetchOrders();
+    })();
   }, []);
 
   /* ---------------- FILTERING ---------------- */
@@ -201,27 +204,26 @@ export default function Orders() {
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="p-4 sm:px-3 py-4 sm:p-6">
-      {/* Search & Source Filter */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6 items-stretch sm:items-center justify-between">
-        <div className="max-w-md w-full relative">
-          <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by order ID, name, email, phone..."
-            className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500"
-          />
+    <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 pb-2 border-b border-[#e1b382]/20">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">
+            Orders Management
+          </h1>
+          <p className="text-stone-500 text-xs sm:text-sm mt-0.5">Track, review, and fulfill customer purchases.</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        {/* Source Filter Chips */}
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {["all", "website", "whatsapp", "other"].map((src) => (
             <button
               key={src}
               onClick={() => setSourceFilter(src)}
-              className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border transition ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition active:scale-95 ${
                 sourceFilter === src
-                  ? "bg-gray-900 text-white border-gray-900"
-                  : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
+                  ? "bg-[#12343b] text-[#e1b382] border-[#12343b] shadow-sm"
+                  : "bg-white text-stone-700 border-stone-200 hover:border-stone-400"
               }`}
             >
               {src === "all" ? "All Sources" : sourceConfig[src]?.label || src}
@@ -230,28 +232,40 @@ export default function Orders() {
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="max-w-md w-full relative">
+        <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+        <input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search order ID, name, email, phone..."
+          className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-stone-200 rounded-xl focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b] outline-none shadow-sm bg-white"
+        />
+      </div>
+
       {/* Status Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-7 gap-3 sm:gap-4 mb-8">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2 sm:gap-3">
         {["all", ...Object.keys(statusConfig)].map((status) => {
           const config =
             status === "all"
               ? { icon: InboxIcon, label: "Total" }
               : statusConfig[status];
           const Icon = config.icon;
+          const isSelected = filter === status;
 
           return (
             <button
               key={status}
               onClick={() => setFilter(status)}
-              className={`p-2 sm:p-5 rounded-xl border-2 transition ${
-                filter === status
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "bg-white border-gray-200 hover:border-blue-400"
+              className={`p-2.5 sm:p-3.5 rounded-2xl border transition active:scale-95 text-center ${
+                isSelected
+                  ? "bg-[#12343b] text-[#e1b382] border-[#12343b] shadow-sm"
+                  : "bg-white border-stone-200/80 hover:border-[#e1b382]/60 text-stone-700 shadow-sm"
               }`}
             >
-              <Icon className="w-6 h-6 sm:w-10 sm:h-10 mx-auto mb-1 sm:mb-3" />
-              <div className="text-lg sm:text-2xl font-bold">{statusCounts[status]}</div>
-              <div className="text-[10px] sm:text-sm mt-0.5 sm:mt-1">{config.label}</div>
+              <Icon className={`w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 ${isSelected ? "text-[#e1b382]" : "text-stone-400"}`} />
+              <div className="text-base sm:text-xl font-serif font-bold">{statusCounts[status]}</div>
+              <div className="text-[10px] sm:text-xs mt-0.5 truncate">{config.label}</div>
             </button>
           );
         })}

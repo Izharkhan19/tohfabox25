@@ -42,7 +42,10 @@ export default function Clients() {
   };
 
   useEffect(() => {
-    fetchAllUsers();
+    (async () => {
+      await Promise.resolve();
+      fetchAllUsers();
+    })();
   }, []);
 
   /* -------------------- DELETE PRODUCT -------------------- */
@@ -73,7 +76,19 @@ export default function Clients() {
 
   /* -------------------- UI -------------------- */
   return (
-    <div className="p-4 sm:px-3 py-4 sm:p-6">
+    <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 pb-2 border-b border-[#e1b382]/20">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">
+            Registered Clients
+          </h1>
+          <p className="text-stone-500 text-xs sm:text-sm mt-0.5">Directory of registered store customers and direct contact channels.</p>
+        </div>
+        <div className="bg-[#12343b]/10 px-3.5 py-1.5 rounded-xl border border-[#12343b]/10">
+          <span className="text-xs font-semibold text-[#12343b]">Total Clients: <strong className="font-serif">{users?.length || 0}</strong></span>
+        </div>
+      </div>
 
 
       {/* Loading State */}
@@ -135,7 +150,7 @@ export default function Clients() {
               return (
               <div key={product._id} className="bg-white p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col gap-3 transition hover:shadow-md">
                 <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
-                  <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xl shrink-0 border border-blue-100">
+                  <div className="w-10 h-10 rounded-full bg-[#12343b]/10 text-[#12343b] ring-1 ring-[#e1b382]/40 flex items-center justify-center font-bold font-serif text-lg shrink-0">
                     {initial}
                   </div>
                   <div className="flex flex-col">

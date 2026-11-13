@@ -51,8 +51,11 @@ export default function Products() {
   };
 
   useEffect(() => {
-    fetchAllProducts();
-    fetchAllCategories();
+    (async () => {
+      await Promise.resolve();
+      fetchAllProducts();
+      fetchAllCategories();
+    })();
   }, []);
 
   /* -------------------- DELETE PRODUCT -------------------- */
@@ -152,34 +155,14 @@ export default function Products() {
 
   /* -------------------- UI -------------------- */
   return (
-    <div className="p-4 sm:px-3 py-4 sm:p-6">
-      {/* Top Actions */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4 sm:mb-6">
-        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4">
-          {/* Search Input */}
-          <div className="w-full sm:w-72 relative">
-            <input 
-              type="text" 
-              placeholder="Search products..." 
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-            />
-            <svg className="w-5 h-5 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          </div>
-
-          {/* Category Filter */}
-          <div className="w-full sm:w-64">
-            <Select
-              value={selectedCategory ? { value: selectedCategory, label: categories.find(c => c._id === selectedCategory)?.name } : null}
-              onChange={(selectedOption) => setSelectedCategory(selectedOption ? selectedOption.value : "")}
-              options={[{ value: "", label: "All Categories" }, ...categories.map(cat => ({ value: cat._id, label: cat.name }))]}
-              className="basic-single w-full"
-              classNamePrefix="select"
-              placeholder="All Categories"
-              isClearable
-            />
-          </div>
+    <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 pb-2 border-b border-[#e1b382]/20">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">
+            Product Catalog
+          </h1>
+          <p className="text-stone-500 text-xs sm:text-sm mt-0.5">Manage resin art, crochet creations, and custom gift inventory.</p>
         </div>
 
         <div className="flex w-full sm:w-auto flex-col sm:flex-row justify-end items-center gap-2 sm:gap-3">
@@ -187,17 +170,17 @@ export default function Products() {
             <>
               <button
                 onClick={() => setIsPriceModalOpen(true)}
-                className="w-full sm:w-auto bg-blue-500 text-white px-4 py-3 sm:px-5 sm:py-2.5 rounded-xl shadow-sm hover:bg-blue-600 transition-all flex items-center justify-center gap-2 font-medium"
+                className="w-full sm:w-auto bg-[#c89666] text-white px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl shadow-sm hover:bg-[#b07f50] transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold active:scale-95"
               >
-                <PencilIcon className="w-5 h-5" />
+                <PencilIcon className="w-4 h-4" />
                 <span>Update Price ({selectedProducts.length})</span>
               </button>
               <button
                 onClick={deleteSelectedProducts}
-                className="w-full sm:w-auto bg-red-500 text-white px-4 py-3 sm:px-5 sm:py-2.5 rounded-xl shadow-sm hover:bg-red-600 transition-all flex items-center justify-center gap-2 font-medium"
+                className="w-full sm:w-auto bg-red-600 text-white px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl shadow-sm hover:bg-red-700 transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold active:scale-95"
               >
-                <TrashIcon className="w-5 h-5" />
-                <span>Delete Selected ({selectedProducts.length})</span>
+                <TrashIcon className="w-4 h-4" />
+                <span>Delete ({selectedProducts.length})</span>
               </button>
             </>
           )}
@@ -207,11 +190,39 @@ export default function Products() {
               setEditingProductId(null);
               setIsProductModalOpen(true);
             }}
-            className="w-full sm:w-auto bg-gray-900 text-white px-4 py-3 sm:px-5 sm:py-2.5 rounded-xl shadow-md hover:bg-gray-800 hover:shadow-lg transition-all flex items-center justify-center gap-2 font-medium"
+            className="w-full sm:w-auto bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold active:scale-95"
           >
-            <PlusIcon className="w-5 h-5" />
+            <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 text-[#e1b382]" />
             <span>Add Product</span>
           </button>
+        </div>
+      </div>
+
+      {/* Top Search & Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        {/* Search Input */}
+        <div className="w-full sm:w-72 relative">
+          <input 
+            type="text" 
+            placeholder="Search products..." 
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b] shadow-sm"
+          />
+          <svg className="w-4 h-4 absolute left-3 top-2.5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        </div>
+
+        {/* Category Filter */}
+        <div className="w-full sm:w-64 text-xs sm:text-sm">
+          <Select
+            value={selectedCategory ? { value: selectedCategory, label: categories.find(c => c._id === selectedCategory)?.name } : null}
+            onChange={(selectedOption) => setSelectedCategory(selectedOption ? selectedOption.value : "")}
+            options={[{ value: "", label: "All Categories" }, ...categories.map(cat => ({ value: cat._id, label: cat.name }))]}
+            className="basic-single w-full"
+            classNamePrefix="select"
+            placeholder="All Categories"
+            isClearable
+          />
         </div>
       </div>
 
@@ -326,14 +337,14 @@ export default function Products() {
                   
                   {/* Info */}
                   <div className="flex flex-col flex-1 py-0 min-w-0">
-                    <span className="font-bold text-gray-800 text-sm sm:text-lg leading-tight line-clamp-2 mb-0.5">{product.name}</span>
-                    <span className="text-gray-500 text-xs sm:text-sm font-medium mb-1.5">{product.category?.name || "Uncategorized"}</span>
+                    <span className="font-serif font-bold text-[#12343b] text-sm sm:text-base leading-tight line-clamp-2 mb-0.5">{product.name}</span>
+                    <span className="text-stone-500 text-[11px] sm:text-xs font-medium mb-1.5">{product.category?.name || "Uncategorized"}</span>
                     
                     <div className="flex justify-between items-center mt-auto">
-                      <span className="font-bold text-blue-600 text-base sm:text-lg">₹{product.price}</span>
-                      <span className={`text-[10px] sm:text-sm font-medium px-2 py-0.5 rounded-full ${
-                        product.stock > 10 ? "bg-green-100 text-green-700" :
-                        product.stock > 0 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"
+                      <span className="font-serif font-bold text-[#12343b] text-sm sm:text-base">₹{product.price}</span>
+                      <span className={`text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full ${
+                        product.stock > 10 ? "bg-emerald-100 text-emerald-800" :
+                        product.stock > 0 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"
                       }`}>
                         {product.stock > 0 ? `${product.stock} in stock` : "Out"}
                       </span>
@@ -342,23 +353,23 @@ export default function Products() {
                 </div>
 
                 {/* Actions */}
-                <div className="bg-gray-50/50 px-3 py-2 sm:px-4 sm:py-3 border-t border-gray-100 flex justify-end gap-2">
+                <div className="bg-[#fcfaf7] px-3 py-2 border-t border-stone-100 flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => {
                       setEditingProductId(product._id);
                       setIsProductModalOpen(true);
                     }}
-                    className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 bg-white border border-gray-200 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition shadow-sm"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-[#12343b] hover:bg-[#e1b382]/15 transition shadow-sm active:scale-95"
                   >
-                    <PencilIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span className="hidden sm:inline">Edit</span>
+                    <PencilIcon className="w-3.5 h-3.5 text-[#12343b]" /> <span>Edit</span>
                   </button>
                   <button
                     onClick={() => deleteProductById(product._id)}
                     disabled={deletingId === product._id}
-                    className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 bg-white border border-gray-200 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-red-600 hover:bg-red-50 transition shadow-sm disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-white border border-red-200 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition shadow-sm disabled:opacity-50 active:scale-95"
                   >
-                    {deletingId === product._id ? "..." : <><TrashIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span className="hidden sm:inline">Delete</span></>}
+                    {deletingId === product._id ? "..." : <><TrashIcon className="w-3.5 h-3.5" /> <span>Delete</span></>}
                   </button>
                 </div>
                 </div>

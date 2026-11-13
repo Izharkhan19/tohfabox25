@@ -1,311 +1,6 @@
 "use client";
-// import { useEffect, useState } from "react";
-// import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
-// import { useApi } from "../../api-services/hooks/useApi";
-// import {
-//     getCategories,
-//     createCategory,
-//     updateCategory,
-//     deleteCategory,
-// } from "../../api-services/apiService";
-
-// export default function Categories() {
-//     const {
-//         data: categories = [],
-//         loading: loadingCategories,
-//         error: categoriesError,
-//         request: fetchCategories,
-//     } = useApi(getCategories);
-
-//     const { request: saveCategory, loading: saving } = useApi((data) =>
-//         editingCategory
-//             ? updateCategory(editingCategory._id, data)
-//             : createCategory(data)
-//     );
-
-//     const { request: removeCategory, loading: deletingId } =
-//         useApi(deleteCategory);
-
-//     const [isModalOpen, setIsModalOpen] = useState(false);
-//     const [editingCategory, setEditingCategory] = useState(null);
-//     const [formData, setFormData] = useState({ name: "" });
-
-//     // Load categories on mount
-//     useEffect(() => {
-//         fetchCategories();
-//     }, []);
-
-//     const openModal = (category = null) => {
-//         setEditingCategory(category);
-//         setFormData({ name: category?.name || "" });
-//         setIsModalOpen(true);
-//     };
-
-//     const closeModal = () => {
-//         setIsModalOpen(false);
-//         setEditingCategory(null);
-//         setFormData({ name: "" });
-//     };
-
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-//         if (!formData.name.trim()) return;
-
-//         const result = await saveCategory({ name: formData.name.trim() });
-
-//         if (result.success) {
-//             fetchCategories(); // Refresh list
-//             closeModal();
-//         }
-//     };
-
-//     const handleDelete = async (id) => {
-//         if (
-//             !window.confirm(
-//                 "Delete this category? Products will become uncategorized."
-//             )
-//         )
-//             return;
-
-//         const result = await removeCategory(id);
-//         if (result.success) {
-//             fetchCategories();
-//         }
-//     };
-
-//     return (
-//         // <div className="max-w-7xl mx-auto px-3 py-4 sm:p-6">
-//         <div className="px-3 py-4 sm:p-6">
-//             {/* Header */}
-//             <div className="flex justify-between items-center mb-8">
-//                 <div>
-//                     <h1 className="text-3xl font-bold text-gray-900">Categories</h1>
-//                     <p className="text-gray-600 mt-1">
-//                         Organize your products effectively
-//                     </p>
-//                 </div>
-
-//                 <button
-//                     onClick={() => openModal()}
-//                     className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-3 shadow-lg transition"
-//                 >
-//                     <PlusIcon className="w-5 h-5" />
-//                     Add Category
-//                 </button>
-//             </div>
-
-//             {/* Loading State */}
-//             {loadingCategories && (
-//                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gapx-3 py-4 sm:p-6">
-//                     {[...Array(6)].map((_, i) => (
-//                         <div
-//                             key={i}
-//                             className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-sm border animate-pulse"
-//                         >
-//                             <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-//                             <div className="h-20 bg-gray-100 rounded"></div>
-//                         </div>
-//                     ))}
-//                 </div>
-//             )}
-
-//             {/* Error State */}
-//             {categoriesError && !loadingCategories && (
-//                 <div className="text-center py-16">
-//                     <p className="text-red-600 text-lg">Failed to load categories</p>
-//                     <button
-//                         onClick={fetchCategories}
-//                         className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-//                     >
-//                         Try Again
-//                     </button>
-//                 </div>
-//             )}
-
-//             {/* Categories Grid */}
-//             {!loadingCategories && categories?.length > 0 && (
-//                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gapx-3 py-4 sm:p-6">
-//                     {categories?.map((category) => (
-//                         <div
-//                             key={category._id}
-//                             className="bg-white rounded-2xl shadow-md border border-gray-200 px-3 py-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-//                         >
-//                             <div className="flex justify-between items-start mb-5">
-//                                 <div>
-//                                     <h3 className="text-xl font-bold text-gray-800">
-//                                         {category.name}
-//                                     </h3>
-//                                     <p className="text-sm text-gray-500 mt-1">
-//                                         /{category.slug || "no-slug"}
-//                                     </p>
-//                                 </div>
-
-//                                 <div className="flex gap-2">
-//                                     <button
-//                                         onClick={() => openModal(category)}
-//                                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-//                                     >
-//                                         <PencilIcon className="w-5 h-5" />
-//                                     </button>
-
-//                                     <button
-//                                         onClick={() => handleDelete(category._id)}
-//                                         disabled={
-//                                             deletingId === category._id ||
-//                                             (category.productCount ?? 0) > 0
-//                                         }
-//                                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-40"
-//                                         title={
-//                                             category.productCount > 0
-//                                                 ? "Cannot delete: has products"
-//                                                 : "Delete"
-//                                         }
-//                                     >
-//                                         {deletingId === category._id ? (
-//                                             <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24">
-//                                                 <circle
-//                                                     cx="12"
-//                                                     cy="12"
-//                                                     r="10"
-//                                                     stroke="currentColor"
-//                                                     strokeWidth="4"
-//                                                     fill="none"
-//                                                     className="opacity-25"
-//                                                 />
-//                                                 <path
-//                                                     fill="currentColor"
-//                                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-//                                                     className="opacity-75"
-//                                                 />
-//                                             </svg>
-//                                         ) : (
-//                                             <TrashIcon className="w-5 h-5" />
-//                                         )}
-//                                     </button>
-//                                 </div>
-//                             </div>
-
-//                             <div className="pt-4 border-t border-gray-100">
-//                                 <div className="flex items-end justify-between">
-//                                     <div>
-//                                         <p className="text-3xl font-bold text-gray-800">
-//                                             {category.productCount || 0}
-//                                         </p>
-//                                         <p className="text-sm text-gray-500">products</p>
-//                                     </div>
-//                                     {category.productCount > 0 && (
-//                                         <span className="text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full">
-//                                             Active
-//                                         </span>
-//                                     )}
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     ))}
-//                 </div>
-//             )}
-
-//             {/* Empty State */}
-//             {!loadingCategories && categories?.length === 0 && (
-//                 <div className="text-center py-20">
-//                     <div className="bg-gray-200 border-2 border-dashed rounded-xl w-32 h-32 mx-auto mb-8 opacity-50" />
-//                     <h3 className="text-2xl font-semibold text-gray-700">
-//                         No categories found
-//                     </h3>
-//                     <p className="text-gray-500 mt-3 mb-8">
-//                         Start by creating your first category
-//                     </p>
-//                     <button
-//                         onClick={() => openModal()}
-//                         className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl shadow-lg flex items-center gap-3 mx-auto"
-//                     >
-//                         <PlusIcon className="w-6 h-6" />
-//                         Create First Category
-//                     </button>
-//                 </div>
-//             )}
-
-//             {/* Modal */}
-//             {isModalOpen && (
-//                 <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-//                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in fade-in zoom-in duration-200">
-//                         <h2 className="text-2xl font-bold text-gray-800 mb-6">
-//                             {editingCategory ? "Edit Category" : "Create New Category"}
-//                         </h2>
-
-//                         <form onSubmit={handleSubmit}>
-//                             <div className="mb-6">
-//                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-//                                     Category Name
-//                                 </label>
-//                                 <input
-//                                     type="text"
-//                                     value={formData.name}
-//                                     onChange={(e) => setFormData({ name: e.target.value })}
-//                                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
-//                                     placeholder="e.g., Electronics, Fashion"
-//                                     autoFocus
-//                                     required
-//                                 />
-//                                 <p className="text-xs text-gray-500 mt-2">
-//                                     Slug:{" "}
-//                                     <span className="font-mono">
-//                                         {formData.name.toLowerCase().replace(/\s+/g, "-") ||
-//                                             "your-slug-will-appear-here"}
-//                                     </span>
-//                                 </p>
-//                             </div>
-
-//                             <div className="flex gap-4 justify-end">
-//                                 <button
-//                                     type="button"
-//                                     onClick={closeModal}
-//                                     className="px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
-//                                 >
-//                                     Cancel
-//                                 </button>
-//                                 <button
-//                                     type="submit"
-//                                     disabled={saving}
-//                                     className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg disabled:opacity-70 transition flex items-center gap-2"
-//                                 >
-//                                     {saving ? (
-//                                         <>
-//                                             <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-//                                                 <circle
-//                                                     className="opacity-25"
-//                                                     cx="12"
-//                                                     cy="12"
-//                                                     r="10"
-//                                                     stroke="currentColor"
-//                                                     strokeWidth="4"
-//                                                 />
-//                                                 <path
-//                                                     className="opacity-75"
-//                                                     fill="currentColor"
-//                                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-//                                                 />
-//                                             </svg>
-//                                             Saving...
-//                                         </>
-//                                     ) : editingCategory ? (
-//                                         "Update Category"
-//                                     ) : (
-//                                         "Create Category"
-//                                     )}
-//                                 </button>
-//                             </div>
-//                         </form>
-//                     </div>
-//                 </div>
-//             )}
-//         </div>
-//     );
-// }
-
 import { useEffect, useState } from "react";
-import Swal from 'sweetalert2';
-import { PencilIcon, TrashIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon, PlusIcon, XMarkIcon, TagIcon } from "@heroicons/react/24/outline";
 import {
   getCategories,
   createCategory,
@@ -313,10 +8,7 @@ import {
   deleteCategory,
 } from "../../api-services/apiService";
 import { toast } from "react-toastify";
-import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
+import Swal from "sweetalert2";
 
 export default function Categories() {
   /* -------------------- STATE -------------------- */
@@ -332,7 +24,6 @@ export default function Categories() {
   const [formData, setFormData] = useState({ name: "", type: "Product" });
 
   /* -------------------- API CALLS -------------------- */
-
   const fetchCategories = async () => {
     setLoadingCategories(true);
     setCategoriesError(null);
@@ -371,11 +62,13 @@ export default function Categories() {
 
   /* -------------------- EFFECT -------------------- */
   useEffect(() => {
-    fetchCategories();
+    (async () => {
+      await Promise.resolve();
+      fetchCategories();
+    })();
   }, []);
 
   /* -------------------- HANDLERS -------------------- */
-
   const openModal = (category = null) => {
     setEditingCategory(category);
     setFormData({ name: category?.name || "", type: category?.type || "Product" });
@@ -426,35 +119,35 @@ export default function Categories() {
 
   /* -------------------- UI -------------------- */
   return (
-    <div className="p-4 sm:px-3 py-4 sm:p-6">
+    <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gapx-3 py-4 sm:p-6 mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 pb-2 border-b border-[#e1b382]/20">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">
             Product Categories
           </h1>
-          <p className="text-gray-500 mt-1">Organize your products into logical collections</p>
+          <p className="text-stone-500 text-xs sm:text-sm mt-0.5">Organize handcrafted items into store collections and curated themes.</p>
         </div>
 
         <button
           onClick={() => openModal()}
-          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg font-medium"
+          className="w-full sm:w-auto bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm font-semibold text-xs sm:text-sm active:scale-95 transition"
         >
-          <PlusIcon className="w-5 h-5" />
+          <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 text-[#e1b382]" />
           <span>Add Category</span>
         </button>
       </div>
 
       {/* Loading */}
       {loadingCategories && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gapx-3 py-4 sm:p-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="bg-white rounded-xl px-3 py-4 sm:p-6 shadow-sm border animate-pulse"
+              className="bg-white rounded-2xl p-4 shadow-sm border border-stone-200 animate-pulse"
             >
-              <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
-              <div className="h-20 bg-gray-100 rounded" />
+              <div className="h-6 bg-stone-200 rounded w-3/4 mb-3" />
+              <div className="h-10 bg-stone-100 rounded" />
             </div>
           ))}
         </div>
@@ -462,69 +155,68 @@ export default function Categories() {
 
       {/* Error */}
       {categoriesError && !loadingCategories && (
-        <div className="text-center py-16">
-          <p className="text-red-600 text-lg">{categoriesError}</p>
+        <div className="text-center py-12 bg-white rounded-2xl border border-stone-200 p-6">
+          <p className="text-red-600 text-sm font-medium">{categoriesError}</p>
           <button
             onClick={fetchCategories}
-            className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg"
+            className="mt-3 px-4 py-2 bg-[#12343b] text-[#e1b382] rounded-xl text-xs sm:text-sm font-semibold"
           >
             Try Again
           </button>
         </div>
       )}
 
-      {/* Categories */}
+      {/* Categories Grid */}
       {!loadingCategories && categories.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gapx-3 py-4 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4">
           {categories.map((category) => (
             <div
               key={category._id}
-              className="bg-white rounded-xl sm:rounded-2xl shadow-md border p-4 sm:px-3 py-4 sm:p-6 hover:shadow-xl transition"
+              className="bg-white rounded-2xl shadow-sm border border-stone-200/80 p-3.5 sm:p-5 hover:border-[#e1b382]/50 transition"
             >
-              <div className="flex justify-between mb-4 sm:mb-5">
-                <div>
-                  <h3 className="text-xl font-bold">{category.name}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-medium">
+              <div className="flex justify-between items-start mb-3">
+                <div className="min-w-0 flex-1 pr-2">
+                  <h3 className="text-base sm:text-lg font-serif font-bold text-[#12343b] truncate">{category.name}</h3>
+                  <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                    <span className="text-[10px] bg-[#12343b]/10 text-[#12343b] px-2 py-0.5 rounded-full font-bold">
                       {category.type || 'Product'}
                     </span>
-                    <p className="text-sm text-gray-500">
-                      /{category.slug || "no-slug"}
-                    </p>
+                    <span className="text-[11px] text-stone-400 truncate">
+                      /{category.slug || "slug"}
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => openModal(category)}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                    className="p-1.5 text-[#12343b] hover:bg-[#e1b382]/20 rounded-lg active:scale-95 transition"
+                    title="Edit Category"
                   >
-                    <PencilIcon className="w-5 h-5" />
+                    <PencilIcon className="w-4 h-4" />
                   </button>
 
                   <button
                     onClick={() => handleDelete(category._id)}
                     disabled={deletingId === category._id}
-                    title={category.productCount > 0 ? "Cannot delete a category that contains products" : "Delete category"}
+                    title={category.productCount > 0 ? "Contains products" : "Delete category"}
                     aria-label={`Delete ${category.name}`}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-40"
+                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-40 active:scale-95 transition"
                   >
                     {deletingId === category._id ? (
-                      <span className="block h-5 w-5 animate-spin rounded-full border-2 border-red-200 border-t-red-600" aria-hidden="true" />
+                      <span className="block h-4 w-4 animate-spin rounded-full border-2 border-red-200 border-t-red-600" />
                     ) : (
-                      <TrashIcon className="w-5 h-5" />
+                      <TrashIcon className="w-4 h-4" />
                     )}
                   </button>
                 </div>
               </div>
 
-              <div className="border-t pt-3 sm:pt-4 flex justify-between">
-                <div>
-                  <p className="text-2xl sm:text-3xl font-bold">
-                    {category.productCount || 0}
-                  </p>
-                  <p className="text-sm text-gray-500">products</p>
-                </div>
+              <div className="border-t border-stone-100 pt-2.5 flex justify-between items-baseline">
+                <span className="text-[11px] text-stone-400">Catalog items:</span>
+                <span className="font-serif font-bold text-[#12343b] text-base">
+                  {category.productCount || 0}
+                </span>
               </div>
             </div>
           ))}
@@ -533,13 +225,15 @@ export default function Categories() {
 
       {/* Empty */}
       {!loadingCategories && categories.length === 0 && (
-        <div className="text-center py-20">
-          <h3 className="text-2xl font-semibold text-gray-700">
+        <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-stone-300 p-6">
+          <TagIcon className="w-10 h-10 text-stone-300 mx-auto mb-2" />
+          <h3 className="text-base font-serif font-bold text-stone-700">
             No categories found
           </h3>
+          <p className="text-xs text-stone-500 mt-1">Add your first product or collection category to begin.</p>
           <button
             onClick={() => openModal()}
-            className="mt-6 bg-blue-600 text-white px-8 py-4 rounded-xl"
+            className="mt-4 bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold active:scale-95 transition"
           >
             Create First Category
           </button>
@@ -549,64 +243,68 @@ export default function Categories() {
       {/* Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#12343b]/45 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-sm"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) closeModal();
           }}
           role="presentation"
         >
-          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-white/60 bg-white shadow-[0_24px_70px_rgba(18,52,59,0.28)]" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
-            <div className="flex items-start justify-between border-b border-gray-100 bg-[#f8fbfa] px-4 py-4 sm:px-6 sm:py-5">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[#e1b382]/30 bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+            <div className="flex items-center justify-between border-b border-stone-100 bg-[#fcfaf7] px-4 py-3 sm:px-6 sm:py-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#2d545e]">Catalog</p>
-                <h2 id="category-modal-title" className="mt-1 text-xl sm:text-2xl font-bold text-[#12343b]">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Catalog Organization</p>
+                <h2 id="category-modal-title" className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
                   {editingCategory ? "Edit Category" : "Create Category"}
                 </h2>
               </div>
-              <button type="button" onClick={closeModal} aria-label="Close category dialog" className="rounded-full p-1.5 sm:p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-500">
+              <button type="button" onClick={closeModal} aria-label="Close dialog" className="rounded-full p-1.5 text-stone-400 transition hover:bg-stone-100 hover:text-stone-700">
                 <XMarkIcon className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-4 sm:px-3 py-4 sm:p-6">
-              <label className="block text-xs font-black uppercase tracking-wider text-gray-600">
-                Category name
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
+                  Category Name
+                </label>
                 <input
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#12343b] outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-stone-200 bg-[#fcfaf7] px-3.5 py-2 text-xs sm:text-sm text-[#12343b] outline-none transition focus:border-[#12343b] focus:bg-white focus:ring-2 focus:ring-[#12343b]/20"
                   placeholder="e.g. Crochet Decor"
                   required
                   autoFocus
                 />
-              </label>
+              </div>
 
-              <label className="block text-xs font-black uppercase tracking-wider text-gray-600 mt-4">
-                Category Type
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
+                  Category Type
+                </label>
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#12343b] outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-xl border border-stone-200 bg-[#fcfaf7] px-3.5 py-2 text-xs sm:text-sm text-[#12343b] outline-none transition focus:border-[#12343b] focus:bg-white focus:ring-2 focus:ring-[#12343b]/20"
                   required
                 >
                   <option value="Product">Product Category</option>
                   <option value="Occasion">Occasion</option>
                   <option value="Relationship">Relationship</option>
                 </select>
-              </label>
+              </div>
 
-              <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <div className="pt-3 flex justify-end gap-2 border-t border-stone-100">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-xl border border-gray-200 px-6 py-3 text-sm font-bold text-gray-600 transition hover:bg-gray-50"
+                  className="rounded-xl border border-stone-200 px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 transition hover:bg-stone-50 active:scale-95"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-xl bg-blue-600 px-8 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:bg-gray-400"
+                  className="rounded-xl bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] shadow-sm transition active:scale-95 disabled:opacity-50"
                 >
                   {saving ? "Saving..." : editingCategory ? "Update" : "Create"}
                 </button>

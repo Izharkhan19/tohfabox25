@@ -30,7 +30,10 @@ export default function CustomRequests() {
   };
 
   useEffect(() => {
-    fetchRequests();
+    (async () => {
+      await Promise.resolve();
+      fetchRequests();
+    })();
   }, []);
 
   const handleDelete = async (id) => {
@@ -82,12 +85,12 @@ export default function CustomRequests() {
   };
 
   return (
-    <div className="p-4 sm:px-3 py-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white px-3 py-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-3.5 sm:p-6 rounded-2xl shadow-sm border border-gray-100">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Custom Requests</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage custom orders and inquiries from clients</p>
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">Custom Requests</h1>
+          <p className="text-stone-500 text-xs sm:text-sm mt-0.5">Manage custom orders and inquiries from clients</p>
         </div>
         <div className="bg-gray-100 px-4 py-2 rounded-xl border border-gray-200">
           <span className="text-sm font-semibold text-gray-600">Total Requests: <span className="text-gray-900">{requests.length}</span></span>

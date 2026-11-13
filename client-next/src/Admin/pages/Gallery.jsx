@@ -57,7 +57,13 @@ export default function AdminGallery() {
         setOrdersLoading(false);
     };
 
-    useEffect(() => { loadGallery(); loadOrders(); }, []);
+    useEffect(() => {
+        (async () => {
+            await Promise.resolve();
+            loadGallery();
+            loadOrders();
+        })();
+    }, []);
 
     const openCreate = () => {
         setForm(emptyForm);
@@ -149,42 +155,41 @@ export default function AdminGallery() {
     const pendingCount = orders.filter(o => o.status === 'Pending').length;
 
     return (
-        <div className="w-full space-y-8">
+        <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-[#e1b382]/20">
                 <div>
-                    <p className="text-xs font-black uppercase tracking-[0.25em] text-purple-600">Visual Showcase</p>
-                    <h1 className="mt-1 text-3xl font-bold text-gray-800">Gallery Manager</h1>
-                    <p className="mt-2 max-w-xl text-sm text-gray-500">
-                        Manage your gallery images and view quick orders placed by users.
+                    <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#12343b]">Gallery Manager</h1>
+                    <p className="mt-0.5 text-xs sm:text-sm text-stone-500">
+                        Manage artisan showcase portfolio and direct art inquiries.
                     </p>
                 </div>
                 {activeTab === 'gallery' && (
                     <button
                         onClick={openCreate}
-                        className="flex items-center gap-2 rounded-xl bg-purple-600 px-5 py-3 font-bold text-white shadow-sm transition hover:bg-purple-700 whitespace-nowrap"
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-3.5 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95 whitespace-nowrap self-start sm:self-auto"
                     >
-                        <PlusIcon className="w-5 h-5" /> Add Gallery Item
+                        <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 text-[#e1b382]" /> Add Gallery Item
                     </button>
                 )}
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 rounded-xl bg-gray-100 p-1 w-fit">
+            <div className="flex gap-1.5 rounded-xl bg-stone-100 p-1 w-fit">
                 <button
                     onClick={() => setActiveTab('gallery')}
-                    className={`px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'gallery' ? 'bg-white shadow text-purple-700' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === 'gallery' ? 'bg-[#12343b] shadow-sm text-[#e1b382]' : 'text-stone-600 hover:text-stone-900'}`}
                 >
-                    <span className="flex items-center gap-2"><PhotoIcon className="w-4 h-4" /> Gallery Items ({items.length})</span>
+                    <span className="flex items-center gap-1.5"><PhotoIcon className="w-4 h-4" /> Showcase ({items.length})</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('orders')}
-                    className={`px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'orders' ? 'bg-white shadow text-purple-700' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === 'orders' ? 'bg-[#12343b] shadow-sm text-[#e1b382]' : 'text-stone-600 hover:text-stone-900'}`}
                 >
-                    <span className="flex items-center gap-2">
-                        <InboxIcon className="w-4 h-4" /> Orders ({orders.length})
+                    <span className="flex items-center gap-1.5">
+                        <InboxIcon className="w-4 h-4" /> Gallery Inquiries ({orders.length})
                         {pendingCount > 0 && (
-                            <span className="bg-red-500 text-white text-xs font-black rounded-full w-5 h-5 flex items-center justify-center">{pendingCount}</span>
+                            <span className="bg-red-500 text-white text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center">{pendingCount}</span>
                         )}
                     </span>
                 </button>
@@ -205,19 +210,19 @@ export default function AdminGallery() {
                             {/* Image Upload */}
                             <div
                                 onClick={() => fileRef.current?.click()}
-                                className="sm:col-span-2 cursor-pointer rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50/40 hover:bg-purple-50 transition flex flex-col items-center justify-center gap-2 min-h-[160px] overflow-hidden relative p-3"
+                                className="sm:col-span-2 cursor-pointer rounded-2xl border-2 border-dashed border-[#e1b382]/50 bg-[#fcfaf7] hover:bg-stone-50 transition flex flex-col items-center justify-center gap-2 min-h-[160px] overflow-hidden relative p-3"
                             >
                                 {preview ? (
                                     <img src={preview} alt="Preview" className="w-full max-h-56 object-contain rounded-xl" />
                                 ) : (
                                     <>
-                                        <PhotoIcon className="w-10 h-10 text-purple-300" />
-                                        <p className="text-sm text-gray-500 font-medium">Click to upload an image</p>
-                                        <p className="text-xs text-gray-400">JPG, PNG, WEBP up to 5MB</p>
+                                        <PhotoIcon className="w-10 h-10 text-[#c89666]" />
+                                        <p className="text-sm text-stone-600 font-medium">Click to upload an image</p>
+                                        <p className="text-xs text-stone-400">JPG, PNG, WEBP up to 5MB</p>
                                     </>
                                 )}
                                 {preview && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition text-white font-bold text-sm rounded-xl">
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition text-white font-bold text-sm rounded-xl">
                                         Change Image
                                     </div>
                                 )}
@@ -240,16 +245,16 @@ export default function AdminGallery() {
                             </label>
 
                             <label className="sm:col-span-2 flex items-center gap-3 cursor-pointer text-sm font-semibold text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <div onClick={() => setForm(p => ({ ...p, isActive: !p.isActive }))} className={`relative w-11 h-6 rounded-full transition-colors ${form.isActive ? 'bg-purple-600' : 'bg-gray-300'}`}>
+                                <div onClick={() => setForm(p => ({ ...p, isActive: !p.isActive }))} className={`relative w-11 h-6 rounded-full transition-colors ${form.isActive ? 'bg-[#12343b]' : 'bg-gray-300'}`}>
                                     <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isActive ? 'translate-x-5' : 'translate-x-0'}`} />
                                 </div>
-                                {form.isActive ? 'Visible to users' : 'Hidden from users'}
+                                {form.isActive ? 'Visible in client gallery' : 'Hidden from gallery'}
                             </label>
 
-                            <div className="sm:col-span-2 flex justify-end gap-3 pt-3 border-t border-gray-100 mt-2">
-                                <button type="button" onClick={closeForm} className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">Cancel</button>
-                                <button type="submit" disabled={saving} className="flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 font-bold text-white shadow-sm transition hover:bg-purple-700 disabled:bg-gray-400">
-                                    {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4" />{editId ? 'Update Item' : 'Add to Gallery'}</>)}
+                            <div className="sm:col-span-2 flex justify-end gap-2.5 pt-3 border-t border-stone-100 mt-2">
+                                <button type="button" onClick={closeForm} className="px-4 py-2 rounded-xl border border-stone-200 text-xs sm:text-sm font-semibold text-stone-600 hover:bg-stone-50 transition active:scale-95">Cancel</button>
+                                <button type="submit" disabled={saving} className="flex items-center gap-1.5 rounded-xl bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-5 py-2 text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95 disabled:bg-stone-400">
+                                    {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4 text-[#e1b382]" />{editId ? 'Update Item' : 'Add to Gallery'}</>)}
                                 </button>
                             </div>
                         </form>

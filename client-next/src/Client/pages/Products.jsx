@@ -21,6 +21,7 @@ import LogoLoader from "../../components/LogoLoader";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import { useAppStore } from "../../stores/useAppStore";
+import { getOptimizedImageUrl } from "../../utils/imageUtils";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -496,10 +497,15 @@ export default function Products() {
                             className={`h-full group bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all duration-300 overflow-hidden border border-[#c89666]/20 flex ${viewMode === 'list' ? 'flex-row h-40 sm:h-48 md:h-64' : 'flex-col'}`}
                           >
                             <Link href={`/products/${product._id}`} className={`block overflow-hidden relative bg-gray-100 ${viewMode === 'list' ? 'w-2/5 md:w-1/3' : 'w-full aspect-square flex items-center justify-center'}`}>
-                              {(product.images && product.images.length > 0 && product.images[0].url) ? (
+                              {(product.images && product.images.length > 0 && (product.images[0].url || product.images[0].secure_url)) ? (
                                 <img referrerPolicy="no-referrer"
-                                  src={product.images[0].url}
+                                  src={getOptimizedImageUrl(product.images[0].url || product.images[0].secure_url, 600)}
                                   alt={product.name}
+                                  loading="lazy"
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = "/logo.png";
+                                  }}
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                 />
                               ) : (

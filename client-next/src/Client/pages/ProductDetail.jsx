@@ -15,6 +15,7 @@ import { getProduct, getProductReviews, saveProductReview, addToCart, addToWishl
 import WishlistLoginModal from "../Modals/WishlistLoginModal";
 import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
+import { getOptimizedImageUrl } from "../../utils/imageUtils";
 
 export default function ProductDetail() {
     const { id } = useParams();
@@ -196,8 +197,13 @@ export default function ProductDetail() {
                     <div className="flex flex-col gap-2 min-w-0 w-full bg-white pb-4 lg:pb-0 lg:bg-transparent">
                         <div className="aspect-square md:aspect-[4/5] lg:rounded-3xl overflow-hidden bg-white shadow-sm lg:border lg:border-gray-100 relative group">
                             <img
-                                src={product.images[activeImage]?.url}
+                                src={getOptimizedImageUrl(product.images[activeImage]?.url, 1000)}
                                 alt={product.name}
+                                referrerPolicy="no-referrer"
+                                onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = "/logo.png";
+                                }}
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-resin-blue/5 pointer-events-none"></div>
@@ -213,7 +219,16 @@ export default function ProductDetail() {
                                             activeImage === i ? "border-resin-blue shadow-md opacity-100" : "border-transparent opacity-60 hover:opacity-100"
                                         }`}
                                     >
-                                        <img referrerPolicy="no-referrer" src={img.url} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+                                        <img 
+                                            referrerPolicy="no-referrer" 
+                                            src={getOptimizedImageUrl(img.url, 200)} 
+                                            alt={`View ${i + 1}`} 
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = "/logo.png";
+                                            }}
+                                            className="w-full h-full object-cover" 
+                                        />
                                     </button>
                                 ))}
                             </div>

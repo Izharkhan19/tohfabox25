@@ -19,7 +19,7 @@
 // // import Xicon from "../assets/images/x-icon.svg";
 // // import DiscoverIcon from "../assets/images/discoverIcon.jpg";
 
-import moment from "moment";
+// moment removed for bundle optimization
 
 // // import billingsandplans from "../assets/images/billingsandplans.svg";
 // // import Clienticon from "../assets/images/clientsicon.svg";
@@ -2687,7 +2687,13 @@ import moment from "moment";
 //   localStorage.clear();
 // }
 export function getDateInFormat(date) {
-    return date ? moment(date).format("MM/DD/YYYY") : "";
+    if (!date) return "";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${month}/${day}/${year}`;
 }
 
 // function getDateInHHMMSSFormat(date) {

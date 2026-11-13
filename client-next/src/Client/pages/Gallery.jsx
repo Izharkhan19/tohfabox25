@@ -31,6 +31,7 @@ import {
 
 import { getGalleryItems, placeGalleryOrder, getProducts, getCategories } from "../../api-services/apiService";
 import LogoLoader from "../../components/LogoLoader";
+import ArtisanImage from "../components/ArtisanImage";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { toast } from "react-toastify";
@@ -275,6 +276,7 @@ export default function Gallery() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(24);
 
   useEffect(() => {
     const fetchGalleryAndProducts = async () => {
@@ -289,35 +291,45 @@ export default function Gallery() {
 
         let combinedItems = [];
 
-        // 1. Add Gallery Items
+        // 1. Add Gallery Items with validated image URLs
         if (galleryRes?.success) {
-          combinedItems = [...(galleryRes.data?.data || [])];
-        }
-
-        // 2. Add Product Images (formatted to look like gallery items)
-        if (productsRes?.success) {
-          const products = productsRes.data?.data || [];
-          products.forEach(product => {
-            if (product.images && product.images.length > 0) {
-              product.images.forEach((img, idx) => {
-                // Strip HTML tags from description if present
-                const cleanDesc = product.shortDescription || (product.description ? product.description.replace(/<[^>]+>/g, '').substring(0, 100) + '...' : '');
-                
-                combinedItems.push({
-                  _id: `prod_${product._id}_${idx}`,
-                  title: product.name,
-                  description: cleanDesc,
-                  price: product.price,
-                  image: { url: img.url },
-                  isProductImage: true,
-                  category: product.category?._id || product.category
-                });
+          const galleryList = galleryRes.data?.data || [];
+          galleryList.forEach((item) => {
+            const rawUrl = typeof item.image === 'string' ? item.image : (item.image?.url || item.image?.secure_url || item.image?.path || '');
+            if (rawUrl) {
+              combinedItems.push({
+                ...item,
+                image: { url: rawUrl }
               });
             }
           });
         }
 
-        // Optional: shuffle or sort combined items here
+        // 2. Add Product Primary Images (formatted for gallery showcase)
+        if (productsRes?.success) {
+          const products = productsRes.data?.data || [];
+          products.forEach(product => {
+            if (product.images && product.images.length > 0) {
+              const primaryImg = product.images[0];
+              const imgUrl = typeof primaryImg === 'string' ? primaryImg : (primaryImg?.url || primaryImg?.secure_url || primaryImg?.path || '');
+              
+              if (imgUrl) {
+                const cleanDesc = product.shortDescription || (product.description ? product.description.replace(/<[^>]+>/g, '').substring(0, 100) + '...' : '');
+                
+                combinedItems.push({
+                  _id: `prod_${product._id}`,
+                  title: product.name,
+                  description: cleanDesc,
+                  price: product.price,
+                  image: { url: imgUrl },
+                  isProductImage: true,
+                  category: product.category?._id || product.category
+                });
+              }
+            }
+          });
+        }
+
         setItems(combinedItems);
       } catch (error) {
         console.error("Failed to fetch gallery and products", error);
@@ -325,7 +337,11 @@ export default function Gallery() {
         setLoading(false);
       }
     };
-    fetchGalleryAndProducts();
+
+    (async () => {
+      await Promise.resolve();
+      fetchGalleryAndProducts();
+    })();
   }, []);
 
   const currentUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -445,97 +461,116 @@ export default function Gallery() {
             <p className="text-gray-500 font-medium">Our gallery is being curated. Check back soon!</p>
           </div>
         ) : (
-          <Masonry
-            breakpointCols={breakpointCols}
-            className="flex w-auto -ml-3 md:-ml-4"
-            columnClassName="pl-3 md:pl-4 bg-clip-padding"
-          >
-            {filteredItems.map((item, idx) => (
-              <motion.div
-                key={item._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: (idx % 10) * 0.07 }}
-                className="mb-3 md:mb-4 relative group rounded-xl md:rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_15px_40px_rgba(45,84,94,0.15)] transition-all"
-              >
-                {/* Image */}
-                <img
-                  src={item.image?.url}
-                  alt={item.title}
-                  className="w-full block rounded-2xl transform group-hover:scale-105 transition-transform duration-700 cursor-zoom-in"
-                  loading="lazy"
-                  onClick={() => {
-                    setLightboxIndex(idx);
-                    setLightboxOpen(true);
-                  }}
-                />
-
-                {/* Hover Overlay */}
-                <div
-                  className="absolute inset-0 bg-gradient-to-t from-[#12343b]/95 via-[#12343b]/40 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-2 md:p-4"
-                  onClick={(e) => e.stopPropagation()}
+          <>
+            <Masonry
+              breakpointCols={breakpointCols}
+              className="flex w-auto -ml-3 md:-ml-4"
+              columnClassName="pl-3 md:pl-4 bg-clip-padding"
+            >
+              {filteredItems.slice(0, visibleCount).map((item, idx) => (
+                <motion.div
+                  key={item._id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="mb-3 md:mb-4 relative group rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_12px_30px_rgba(18,52,59,0.18)] transition-all bg-stone-100 border border-stone-200/80"
                 >
-                  <div className="flex flex-col gap-1 md:gap-2">
-                    <div>
-                      <p className="text-white font-black text-[11px] md:text-base line-clamp-2 leading-tight md:leading-snug mb-0.5 md:mb-1">{item.title}</p>
-                      <p className="text-[#e1b382] font-bold text-[10px] md:text-sm">
-                        {item.price > 0 ? `₹${Number(item.price).toLocaleString("en-IN")}` : "Price on inquiry"}
-                      </p>
-                    </div>
+                  {/* Stable Aspect-Ratio Image Container */}
+                  <ArtisanImage
+                    src={item.image?.url}
+                    alt={item.title}
+                    fallbackIndex={idx}
+                    aspectRatio="aspect-[4/5]"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 cursor-zoom-in"
+                    onClick={() => {
+                      setLightboxIndex(idx);
+                      setLightboxOpen(true);
+                    }}
+                  />
 
-                    <div className="flex gap-1 md:gap-2 mt-0.5 md:mt-1 items-center">
-                      {/* Quick Order Button */}
-                      <button
-                        onClick={() => setOrderItem(item)}
-                        className="flex-1 flex items-center justify-center gap-1 py-1 md:py-1.5 px-1.5 md:px-4 rounded-lg md:rounded-xl bg-[#e1b382] text-[#12343b] text-[9px] md:text-xs font-black hover:bg-[#c89666] transition-colors whitespace-nowrap overflow-hidden"
-                      >
-                        <ShoppingBagIcon className="w-3 h-3 md:w-4 md:h-4 shrink-0" />
-                        <span className="truncate">Order</span>
-                      </button>
+                  {/* Gradient Card Overlay with Actions */}
+                  <div
+                    className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#12343b] via-[#12343b]/90 to-transparent pt-10 pb-2.5 px-2.5 md:p-4 flex flex-col justify-end"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex flex-col gap-1 md:gap-2">
+                      <div>
+                        <p className="text-white font-bold text-[11px] md:text-base line-clamp-2 leading-tight md:leading-snug mb-0.5 font-serif">
+                          {item.title}
+                        </p>
+                        <p className="text-[#e1b382] font-serif font-bold text-[11px] md:text-sm">
+                          {item.price > 0 ? `₹${Number(item.price).toLocaleString("en-IN")}` : "Custom inquiry"}
+                        </p>
+                      </div>
 
-                      {/* View Details Button */}
-                      <button
-                        onClick={() => setViewDetailsItem(item)}
-                        className="shrink-0 w-7 h-7 md:w-9 md:h-9 bg-white/15 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-[#12343b] transition-colors"
-                        title="View Details"
-                      >
-                        <EyeIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                      </button>
-
-                      {/* Share Button */}
-                      <div className="relative shrink-0">
+                      <div className="flex gap-1 md:gap-2 mt-0.5 md:mt-1 items-center">
+                        {/* Quick Order Button */}
                         <button
-                          onClick={(e) => handleShareClick(e, item)}
-                          className="w-7 h-7 md:w-9 md:h-9 bg-white/15 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white hover:bg-[#e1b382] hover:text-[#12343b] transition-colors"
+                          onClick={() => setOrderItem(item)}
+                          className="flex-1 flex items-center justify-center gap-1 py-1 md:py-1.5 px-1.5 md:px-4 rounded-xl bg-[#e1b382] hover:bg-[#c89666] text-[#12343b] text-[10px] md:text-xs font-bold transition-colors whitespace-nowrap overflow-hidden active:scale-95 shadow-sm"
                         >
-                          <ShareIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                          <ShoppingBagIcon className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" />
+                          <span className="truncate">Order</span>
                         </button>
-                        {/* Share Popup */}
-                        <div
-                          className={`absolute bottom-full right-0 mb-2 bg-white rounded-xl shadow-xl p-2 flex gap-2 transition-all duration-200 z-50 ${
-                            openShareId === item._id
-                              ? "opacity-100 visible translate-y-0"
-                              : "opacity-0 invisible translate-y-2"
-                          }`}
-                          onClick={(e) => e.stopPropagation()}
+
+                        {/* View Details Button */}
+                        <button
+                          onClick={() => setViewDetailsItem(item)}
+                          className="shrink-0 w-7 h-7 md:w-9 md:h-9 bg-white/15 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-[#12343b] transition-colors active:scale-95"
+                          title="View Details"
                         >
-                          <WhatsappShareButton url={`${currentUrl}/gallery?item=${item._id}`} title={`Check out: ${item.title}`}>
-                            <WhatsappIcon size={30} round />
-                          </WhatsappShareButton>
-                          <FacebookShareButton url={`${currentUrl}/gallery?item=${item._id}`} quote={item.title}>
-                            <FacebookIcon size={30} round />
-                          </FacebookShareButton>
-                          <TwitterShareButton url={`${currentUrl}/gallery?item=${item._id}`} title={item.title}>
-                            <XIcon size={30} round />
-                          </TwitterShareButton>
+                          <EyeIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                        </button>
+
+                        {/* Share Button */}
+                        <div className="relative shrink-0">
+                          <button
+                            onClick={(e) => handleShareClick(e, item)}
+                            className="w-7 h-7 md:w-9 md:h-9 bg-white/15 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-[#e1b382] hover:text-[#12343b] transition-colors active:scale-95"
+                            title="Share Creation"
+                          >
+                            <ShareIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                          </button>
+                          {/* Share Popup */}
+                          <div
+                            className={`absolute bottom-full right-0 mb-2 bg-white rounded-xl shadow-xl p-2 flex gap-2 transition-all duration-200 z-50 ${
+                              openShareId === item._id
+                                ? "opacity-100 visible translate-y-0"
+                                : "opacity-0 invisible translate-y-2"
+                            }`}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <WhatsappShareButton url={`${currentUrl}/gallery?item=${item._id}`} title={`Check out: ${item.title}`}>
+                              <WhatsappIcon size={28} round />
+                            </WhatsappShareButton>
+                            <FacebookShareButton url={`${currentUrl}/gallery?item=${item._id}`} quote={item.title}>
+                              <FacebookIcon size={28} round />
+                            </FacebookShareButton>
+                            <TwitterShareButton url={`${currentUrl}/gallery?item=${item._id}`} title={item.title}>
+                              <XIcon size={28} round />
+                            </TwitterShareButton>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </Masonry>
+                </motion.div>
+              ))}
+            </Masonry>
+
+            {/* Load More Button */}
+            {filteredItems.length > visibleCount && (
+              <div className="text-center pt-6 pb-2">
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + 24)}
+                  className="inline-flex items-center gap-2 bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold shadow-md active:scale-95 transition"
+                >
+                  <span>Explore More Creations</span>
+                  <span className="text-[11px] opacity-75">({filteredItems.length - visibleCount} more)</span>
+                </button>
+              </div>
+            )}
+          </>
         )}
       </section>
 
@@ -554,9 +589,10 @@ export default function Gallery() {
         {viewDetailsItem && (
           <div className="flex flex-col bg-white max-h-[85vh]">
             <div className="relative shrink-0">
-              <img 
+              <ArtisanImage 
                 src={viewDetailsItem.image?.url} 
                 alt={viewDetailsItem.title} 
+                aspectRatio="aspect-video"
                 className="w-full h-56 sm:h-64 object-cover"
               />
               <button 

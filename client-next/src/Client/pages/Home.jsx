@@ -25,6 +25,7 @@ import LogoLoader from "../../components/LogoLoader";
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
+import { getOptimizedImageUrl } from "../../utils/imageUtils";
 
 const defaultOccasionsList = [
   { _id: "anniversary", name: "Anniversary", image: { url: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500&q=80" } },
@@ -197,10 +198,11 @@ export default function Home() {
     const index = featuredProducts.findIndex((p) => p.id === product._id);
     const placeholderImage = productImages[index % productImages.length] || productImages[0];
 
-    const imageUrl =
+    const rawImg =
       product.images && product.images.length > 0
         ? product.images[0].url || product.images[0].secure_url
         : placeholderImage;
+    const imageUrl = getOptimizedImageUrl(rawImg, 600);
 
     const ratingValue = product.rating?.average ?? 4.5;
 
@@ -505,9 +507,15 @@ export default function Home() {
                         >
                         <Link href={`/products/${product.id}`} className="block relative aspect-square overflow-hidden bg-gray-100">
                             <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              src={product.image}
+                              alt={product.name}
+                              referrerPolicy="no-referrer"
+                              loading="lazy"
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = "/logo.png";
+                              }}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />
                             {/* Badge */}
                             <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-brand-accent text-brand-dark text-[10px] sm:text-xs font-black px-2 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-md">

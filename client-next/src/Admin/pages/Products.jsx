@@ -5,7 +5,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { Checkbox } from 'primereact/checkbox';
-import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { deleteProduct, deleteMultipleProducts, updateMultipleProductPrices, getProducts, getCategories } from "../../api-services/apiService";
 import { toast } from 'react-toastify';
 import Select from "react-select";
@@ -392,97 +392,136 @@ export default function Products() {
         </div>
       </Dialog>
 
-      {/* Bulk Update Price Modal */}
-      <Dialog
-        header={
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Bulk Catalog Update</p>
-            <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
-              Update Price ({selectedProducts.length} Selected)
-            </h3>
-          </div>
-        }
-        visible={isPriceModalOpen}
-        style={{ width: '92vw', maxWidth: '420px' }}
-        onHide={() => !updatingPrice && setIsPriceModalOpen(false)}
-        dismissableMask={!updatingPrice}
-        className="rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
-        headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
-        contentClassName="p-4 sm:p-6"
-      >
-        <div className="flex flex-col gap-4">
-          <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1.5">
-              New Price for All Selected (₹) <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              value={bulkNewPrice}
-              onChange={(e) => setBulkNewPrice(e.target.value)}
-              placeholder="e.g. 499"
-              className="w-full px-3.5 py-2.5 text-sm border border-stone-200 bg-[#fcfaf7] rounded-xl focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b] focus:bg-white outline-none transition"
-              min="0"
-              disabled={updatingPrice}
-            />
-          </div>
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-stone-100 mt-2">
-            <button
-              onClick={() => setIsPriceModalOpen(false)}
-              disabled={updatingPrice}
-              className="min-h-[40px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleBulkUpdatePrice}
-              disabled={updatingPrice || !bulkNewPrice}
-              className="min-h-[40px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-sm transition active:scale-95 disabled:opacity-50 flex items-center gap-2"
-            >
-              {updatingPrice ? "Updating..." : "Update Prices"}
-            </button>
-          </div>
-        </div>
-      </Dialog>
+      {/* Bulk Update Price Bottom-Sheet Modal */}
+      {isPriceModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onMouseDown={(e) => {
+            if (!updatingPrice && e.target === e.currentTarget) setIsPriceModalOpen(false);
+          }}
+          role="presentation"
+        >
+          <div
+            className="w-full sm:max-w-md max-h-[92vh] sm:max-h-[85vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl border border-[#e1b382]/30 bg-white shadow-2xl animate-in slide-in-from-bottom duration-200"
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Header */}
+            <div className="shrink-0 flex items-center justify-between border-b border-stone-100 bg-[#fcfaf7] px-4 py-3 sm:px-6 sm:py-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Bulk Catalog Update</p>
+                <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
+                  Update Price ({selectedProducts.length} Selected)
+                </h3>
+              </div>
+              <button
+                type="button"
+                disabled={updatingPrice}
+                onClick={() => setIsPriceModalOpen(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 active:scale-95 transition disabled:opacity-50"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
 
-      {/* Add / Edit Product Modal */}
-      <Dialog
-        header={
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Catalog Manager</p>
-            <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
-              {editingProductId ? "Edit Product" : "Add New Product"}
-            </h3>
+            {/* Body */}
+            <div className="p-4 sm:p-6 space-y-4">
+              <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                New Price for All Selected (₹) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={bulkNewPrice}
+                onChange={(e) => setBulkNewPrice(e.target.value)}
+                placeholder="e.g. 499"
+                className="w-full px-3.5 py-2.5 text-sm border border-stone-200 bg-[#fcfaf7] rounded-xl focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b] focus:bg-white outline-none transition"
+                min="0"
+                disabled={updatingPrice}
+                autoFocus
+              />
+            </div>
+
+            {/* Footer */}
+            <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-3.5 border-t border-stone-100 bg-[#fcfaf7]/70 flex items-center justify-end gap-2 sm:gap-2.5">
+              <button
+                type="button"
+                onClick={() => setIsPriceModalOpen(false)}
+                disabled={updatingPrice}
+                className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95 disabled:opacity-50 text-center"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkUpdatePrice}
+                disabled={updatingPrice || !bulkNewPrice}
+                className="flex-1 sm:flex-initial min-h-[42px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-sm transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 text-center"
+              >
+                {updatingPrice ? "Updating..." : "Update Prices"}
+              </button>
+            </div>
           </div>
-        }
-        visible={isProductModalOpen}
-        style={{ width: '96vw', maxWidth: '1050px' }}
-        className="rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
-        headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
-        contentClassName="!p-0 bg-white"
-        onHide={() => {
-          setIsProductModalOpen(false);
-          setEditingProductId(null);
-        }}
-        dismissableMask={false}
-        maximizable
-      >
-        <div className="max-h-[82vh] overflow-y-auto overscroll-contain px-3 sm:px-6 py-4">
-          <AddEditProduct
-            key={editingProductId || 'new'}
-            productId={editingProductId}
-            embedded={true}
-            onClose={() => {
-              setIsProductModalOpen(false);
-              setEditingProductId(null);
-            }}
-            onSuccess={() => {
-              setIsProductModalOpen(false);
-              setEditingProductId(null);
-              fetchAllProducts();
-            }}
-          />
         </div>
-      </Dialog>
+      )}
+
+      {/* Add / Edit Product Bottom-Sheet Modal */}
+      {isProductModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsProductModalOpen(false);
+              setEditingProductId(null);
+            }
+          }}
+          role="presentation"
+        >
+          <div
+            className="w-full sm:max-w-4xl max-h-[92vh] sm:max-h-[88vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl border border-[#e1b382]/30 bg-white shadow-2xl animate-in slide-in-from-bottom duration-200"
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Header */}
+            <div className="shrink-0 flex items-center justify-between border-b border-stone-100 bg-[#fcfaf7] px-4 py-3 sm:px-6 sm:py-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Catalog Manager</p>
+                <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
+                  {editingProductId ? "Edit Product" : "Add New Product"}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsProductModalOpen(false);
+                  setEditingProductId(null);
+                }}
+                aria-label="Close dialog"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 active:scale-95 transition"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Scrollable Form Body */}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-3 sm:px-6 py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <AddEditProduct
+                key={editingProductId || 'new'}
+                productId={editingProductId}
+                embedded={true}
+                onClose={() => {
+                  setIsProductModalOpen(false);
+                  setEditingProductId(null);
+                }}
+                onSuccess={() => {
+                  setIsProductModalOpen(false);
+                  setEditingProductId(null);
+                  fetchAllProducts();
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -37,6 +37,8 @@ export default function ClientLayout({ children }) {
     const [showInstallBanner, setShowInstallBanner] = useState(false);
     const [announcement, setAnnouncement] = useState(null);
     const [openFooterSection, setOpenFooterSection] = useState(null);
+    const headerRef = useRef(null);
+    const [headerHeight, setHeaderHeight] = useState(0);
 
     const storedUser = (typeof window !== 'undefined' ? localStorage.getItem("user") : null);
     const user = storedUser ? JSON.parse(storedUser) : null;
@@ -117,6 +119,25 @@ export default function ClientLayout({ children }) {
         fetchAnnouncement();
     }, []);
 
+    // Dynamically calculate exact header height to avoid artificial gaps or overlaps
+    useEffect(() => {
+        const updateHeight = () => {
+            if (headerRef.current) {
+                setHeaderHeight(headerRef.current.offsetHeight);
+            }
+        };
+        updateHeight();
+        const resizeObserver = new ResizeObserver(() => updateHeight());
+        if (headerRef.current) {
+            resizeObserver.observe(headerRef.current);
+        }
+        window.addEventListener("resize", updateHeight);
+        return () => {
+            resizeObserver.disconnect();
+            window.removeEventListener("resize", updateHeight);
+        };
+    }, [announcement]);
+
     const isActive = (path) => {
         if (path === "/") return pathname === "/";
         return pathname.startsWith(path);
@@ -176,7 +197,7 @@ export default function ClientLayout({ children }) {
             )}
             
             {/* Premium Header */}
-            <header className={`fixed w-full top-0 z-40 transition-all duration-300 border-b ${
+            <header ref={headerRef} className={`fixed w-full top-0 z-40 transition-all duration-300 border-b ${
                 scrolled 
                 ? "bg-[#0f2b31]/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(18,52,59,0.18)] border-[#e1b382]/25" 
                 : "bg-[#12343b] border-[#e1b382]/15"
@@ -338,7 +359,7 @@ export default function ClientLayout({ children }) {
                     </div>
 
                     {/* Mobile: Functional Live Search Input */}
-                    <div className="md:hidden pt-0.5 pb-2">
+                    <div className="md:hidden pt-0.5 pb-1.5">
                         <HeaderSearch isMobile />
                     </div>
                 </div>
@@ -469,7 +490,10 @@ export default function ClientLayout({ children }) {
             )}
 
             {/* Main Content */}
-            <main className={`flex-1 w-full ${announcement ? 'pt-[110px] md:pt-[84px]' : 'pt-[86px] md:pt-[64px]'}`}>
+            <main 
+                className={`flex-1 w-full ${!headerHeight ? (announcement ? 'pt-[106px] md:pt-[84px]' : 'pt-[82px] md:pt-[64px]') : ''}`}
+                style={headerHeight ? { paddingTop: `${headerHeight}px` } : undefined}
+            >
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={pathname}

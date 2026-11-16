@@ -219,18 +219,17 @@ export default function Wishlist() {
   return (
     <div className="bg-gray-50 min-h-screen pb-24">
       <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-2.5 sm:py-4 md:py-6">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-2 sm:py-3.5 md:py-5">
           <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
             <h1 className="flex min-w-0 flex-nowrap items-center gap-1.5 sm:gap-3 text-lg sm:text-2xl md:text-3xl font-bold text-resin-dark font-serif">
               <span className="truncate">My Collection</span>
-              <span className="shrink-0 text-xs sm:text-sm font-sans font-semibold text-gray-400">
-                ({wishlistItems.length}{" "}
-                {wishlistItems.length === 1 ? "item" : "items"})
+              <span className="shrink-0 rounded-full bg-resin-gold/10 px-2 py-0.5 text-[11px] sm:text-xs font-sans font-semibold text-resin-blue">
+                ({wishlistItems.length} {wishlistItems.length === 1 ? "item" : "items"})
               </span>
             </h1>
             <button
               onClick={handleClearAll}
-              className="shrink-0 inline-flex items-center justify-center gap-1 rounded-full border border-red-200 bg-red-50 px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95"
+              className="shrink-0 inline-flex items-center justify-center gap-1 rounded-full border border-red-200 bg-red-50 px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95 shadow-xs"
             >
               Clear All  
             </button>

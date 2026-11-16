@@ -198,89 +198,110 @@ export default function AdminGallery() {
             {/* ─── GALLERY TAB ─── */}
             {activeTab === 'gallery' && (
                 <>
-                    {/* Add / Edit Modal */}
-                    <Dialog
-                        visible={showForm}
-                        onHide={closeForm}
-                        header={
-                            <div>
-                                <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Showcase Management</p>
-                                <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
-                                    {editId ? 'Edit Gallery Item' : 'Add New Gallery Item'}
-                                </h3>
-                            </div>
-                        }
-                        footer={
-                            <div className="flex items-center justify-end gap-2 sm:gap-2.5 w-full">
-                                <button 
-                                    type="button" 
-                                    onClick={closeForm} 
-                                    className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 rounded-xl border border-stone-200 text-xs sm:text-sm font-semibold text-stone-600 hover:bg-stone-100 transition active:scale-95 text-center"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    type="submit" 
-                                    form="admin-gallery-form"
-                                    disabled={saving} 
-                                    className="flex-1 sm:flex-initial min-h-[42px] flex items-center justify-center gap-1.5 rounded-xl bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-5 py-2 text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95 disabled:bg-stone-400 text-center"
-                                >
-                                    {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4 text-[#e1b382]" /><span>{editId ? 'Update Item' : 'Add to Gallery'}</span></>)}
-                                </button>
-                            </div>
-                        }
-                        className="w-[95vw] sm:w-full sm:max-w-xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
-                        headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
-                        contentClassName="p-4 sm:p-6 max-h-[72vh] sm:max-h-[75vh] overflow-y-auto overscroll-contain"
-                        footerClassName="px-4 py-3 sm:px-6 sm:py-3.5 bg-[#fcfaf7]/70 border-t border-stone-100"
-                        breakpoints={{ '960px': '75vw', '640px': '95vw' }}
-                    >
-                        <form id="admin-gallery-form" onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2 pt-1">
-                            {/* Image Upload */}
+                    {/* Add / Edit Bottom-Sheet Modal */}
+                    {showForm && (
+                        <div
+                            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+                            onMouseDown={(e) => {
+                                if (e.target === e.currentTarget) closeForm();
+                            }}
+                            role="presentation"
+                        >
                             <div
-                                onClick={() => fileRef.current?.click()}
-                                className="sm:col-span-2 cursor-pointer rounded-2xl border-2 border-dashed border-[#e1b382]/50 bg-[#fcfaf7] hover:bg-stone-50 transition flex flex-col items-center justify-center gap-2 min-h-[160px] overflow-hidden relative p-3"
+                                className="w-full sm:max-w-xl max-h-[92vh] sm:max-h-[85vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl border border-[#e1b382]/30 bg-white shadow-2xl animate-in slide-in-from-bottom duration-200"
+                                role="dialog"
+                                aria-modal="true"
                             >
-                                {preview ? (
-                                    <img src={preview} alt="Preview" className="w-full max-h-56 object-contain rounded-xl" />
-                                ) : (
-                                    <>
-                                        <PhotoIcon className="w-10 h-10 text-[#c89666]" />
-                                        <p className="text-sm text-stone-600 font-medium">Click to upload an image</p>
-                                        <p className="text-xs text-stone-400">JPG, PNG, WEBP up to 5MB</p>
-                                    </>
-                                )}
-                                {preview && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition text-white font-bold text-sm rounded-xl">
-                                        Change Image
+                                {/* Header (Sticky) */}
+                                <div className="shrink-0 flex items-center justify-between border-b border-stone-100 bg-[#fcfaf7] px-4 py-3 sm:px-6 sm:py-4">
+                                    <div>
+                                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Showcase Management</p>
+                                        <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
+                                            {editId ? 'Edit Gallery Item' : 'Add New Gallery Item'}
+                                        </h3>
                                     </div>
-                                )}
-                            </div>
-                            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
-
-                            <label className="text-xs font-bold text-gray-600">
-                                Title *
-                                <input required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} placeholder="e.g. Handcrafted Gift Hamper" />
-                            </label>
-
-                            <label className="text-xs font-bold text-gray-600">
-                                Price (₹) <span className="font-normal text-gray-400">(optional)</span>
-                                <input type="number" min="0" step="0.01" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} className={inputClass} placeholder="0" />
-                            </label>
-
-                            <label className="sm:col-span-2 text-xs font-bold text-gray-600">
-                                Description <span className="font-normal text-gray-400">(optional)</span>
-                                <textarea rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} className={`${inputClass} resize-none`} placeholder="Brief description shown in the quick order panel..." />
-                            </label>
-
-                            <label className="sm:col-span-2 flex items-center gap-3 cursor-pointer text-sm font-semibold text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <div onClick={() => setForm(p => ({ ...p, isActive: !p.isActive }))} className={`relative w-11 h-6 rounded-full transition-colors ${form.isActive ? 'bg-[#12343b]' : 'bg-gray-300'}`}>
-                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isActive ? 'translate-x-5' : 'translate-x-0'}`} />
+                                    <button
+                                        type="button"
+                                        onClick={closeForm}
+                                        aria-label="Close dialog"
+                                        className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 active:scale-95 transition"
+                                    >
+                                        <XMarkIcon className="h-5 w-5" />
+                                    </button>
                                 </div>
-                                {form.isActive ? 'Visible in client gallery' : 'Hidden from gallery'}
-                            </label>
-                        </form>
-                    </Dialog>
+
+                                {/* Form wrapping body + sticky footer */}
+                                <form id="admin-gallery-form" onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+                                    {/* Body Section (Scrollable with hidden scrollbars) */}
+                                    <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                                        <div className="grid gap-4 sm:grid-cols-2">
+                                            {/* Image Upload */}
+                                            <div
+                                                onClick={() => fileRef.current?.click()}
+                                                className="sm:col-span-2 cursor-pointer rounded-2xl border-2 border-dashed border-[#e1b382]/50 bg-[#fcfaf7] hover:bg-stone-50 transition flex flex-col items-center justify-center gap-2 min-h-[160px] overflow-hidden relative p-3"
+                                            >
+                                                {preview ? (
+                                                    <img src={preview} alt="Preview" className="w-full max-h-56 object-contain rounded-xl" />
+                                                ) : (
+                                                    <>
+                                                        <PhotoIcon className="w-10 h-10 text-[#c89666]" />
+                                                        <p className="text-sm text-stone-600 font-medium">Click to upload an image</p>
+                                                        <p className="text-xs text-stone-400">JPG, PNG, WEBP up to 5MB</p>
+                                                    </>
+                                                )}
+                                                {preview && (
+                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition text-white font-bold text-sm rounded-xl">
+                                                        Change Image
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+
+                                            <label className="text-xs font-bold text-gray-600">
+                                                Title *
+                                                <input required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} placeholder="e.g. Handcrafted Gift Hamper" />
+                                            </label>
+
+                                            <label className="text-xs font-bold text-gray-600">
+                                                Price (₹) <span className="font-normal text-gray-400">(optional)</span>
+                                                <input type="number" min="0" step="0.01" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} className={inputClass} placeholder="0" />
+                                            </label>
+
+                                            <label className="sm:col-span-2 text-xs font-bold text-gray-600">
+                                                Description <span className="font-normal text-gray-400">(optional)</span>
+                                                <textarea rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} className={`${inputClass} resize-none`} placeholder="Brief description shown in the quick order panel..." />
+                                            </label>
+
+                                            <label className="sm:col-span-2 flex items-center gap-3 cursor-pointer text-sm font-semibold text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                <div onClick={() => setForm(p => ({ ...p, isActive: !p.isActive }))} className={`relative w-11 h-6 rounded-full transition-colors ${form.isActive ? 'bg-[#12343b]' : 'bg-gray-300'}`}>
+                                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isActive ? 'translate-x-5' : 'translate-x-0'}`} />
+                                                </div>
+                                                {form.isActive ? 'Visible in client gallery' : 'Hidden from gallery'}
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Footer Section (Sticky) */}
+                                    <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-3.5 border-t border-stone-100 bg-[#fcfaf7]/70 flex items-center justify-end gap-2 sm:gap-2.5">
+                                        <button 
+                                            type="button" 
+                                            onClick={closeForm} 
+                                            className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 rounded-xl border border-stone-200 text-xs sm:text-sm font-semibold text-stone-600 hover:bg-stone-100 transition active:scale-95 text-center"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button 
+                                            type="submit" 
+                                            disabled={saving} 
+                                            className="flex-1 sm:flex-initial min-h-[42px] flex items-center justify-center gap-1.5 rounded-xl bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-5 py-2 text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95 disabled:bg-stone-400 text-center"
+                                        >
+                                            {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4 text-[#e1b382]" /><span>{editId ? 'Update Item' : 'Add to Gallery'}</span></>)}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Gallery Grid */}
                     {loading ? (

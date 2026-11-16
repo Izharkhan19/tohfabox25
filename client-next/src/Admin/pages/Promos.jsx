@@ -8,7 +8,6 @@ import LogoLoader from '../../components/LogoLoader';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
-import { Dialog } from 'primereact/dialog';
 
 const initialForm = {
     code: '', discountType: 'percentage', discountValue: 10, minimumOrderValue: 0,
@@ -166,145 +165,164 @@ export default function Promos() {
             )}
 
             {/* Create Promo Modal */}
-            <Dialog 
-                visible={isModalOpen} 
-                onHide={handleCloseModal}
-                header={
-                    <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Marketing &amp; Discounts</p>
-                        <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">Create Promo Code</h3>
+            {isModalOpen && (
+                <div
+                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+                    onMouseDown={(e) => {
+                        if (e.target === e.currentTarget) handleCloseModal();
+                    }}
+                    role="presentation"
+                >
+                    <div
+                        className="w-full sm:max-w-2xl max-h-[92vh] sm:max-h-[88vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl border border-[#e1b382]/30 bg-white shadow-2xl animate-in slide-in-from-bottom duration-200"
+                        role="dialog"
+                        aria-modal="true"
+                    >
+                        {/* Header */}
+                        <div className="shrink-0 flex items-center justify-between border-b border-stone-100 bg-[#fcfaf7] px-4 py-3 sm:px-6 sm:py-4">
+                            <div>
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Marketing &amp; Discounts</p>
+                                <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">Create Promo Code</h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleCloseModal}
+                                aria-label="Close dialog"
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 active:scale-95 transition"
+                            >
+                                <XMarkIcon className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {/* Scrollable Form Body */}
+                        <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                            <form id="promo-create-form" onSubmit={handleSubmit} className="space-y-4 pt-1">
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700">Promo Code *</label>
+                                        <input 
+                                            required 
+                                            placeholder="e.g. FESTIVE20" 
+                                            value={form.code} 
+                                            onChange={(e) => setForm({ ...form, code: e.target.value })} 
+                                            className={`${inputClass} uppercase font-mono font-semibold`} 
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700">Discount Type *</label>
+                                        <Select 
+                                            value={discountTypeOptions.find((option) => option.value === form.discountType)} 
+                                            onChange={(option) => setForm({ ...form, discountType: option.value })} 
+                                            options={discountTypeOptions} 
+                                            isSearchable={false} 
+                                            className="mt-1 text-sm" 
+                                            styles={{ 
+                                                control: (base, state) => ({ 
+                                                    ...base, 
+                                                    minHeight: 42, 
+                                                    borderRadius: 12, 
+                                                    borderColor: state.isFocused ? '#12343b' : '#e5e7eb', 
+                                                    backgroundColor: state.isFocused ? '#fff' : '#f9fafb', 
+                                                    boxShadow: state.isFocused ? '0 0 0 2px rgba(18,52,59,0.1)' : 'none' 
+                                                })
+                                            }} 
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700">Discount Value *</label>
+                                        <input 
+                                            required 
+                                            type="number" 
+                                            min="0" 
+                                            step="0.01" 
+                                            placeholder="10"
+                                            value={form.discountValue} 
+                                            onChange={(e) => setForm({ ...form, discountValue: e.target.value })} 
+                                            className={inputClass} 
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700">Minimum Order Value (₹)</label>
+                                        <input 
+                                            type="number" 
+                                            min="0" 
+                                            step="0.01" 
+                                            placeholder="0"
+                                            value={form.minimumOrderValue} 
+                                            onChange={(e) => setForm({ ...form, minimumOrderValue: e.target.value })} 
+                                            className={inputClass} 
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700">Starts At *</label>
+                                        <DatePicker 
+                                            selected={form.startsAt} 
+                                            onChange={(date) => setForm({ ...form, startsAt: date })} 
+                                            showTimeSelect 
+                                            dateFormat="dd MMM yyyy, h:mm aa" 
+                                            minDate={new Date()} 
+                                            className={inputClass} 
+                                            wrapperClassName="w-full" 
+                                            required 
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700">Expires At *</label>
+                                        <DatePicker 
+                                            selected={form.expiresAt} 
+                                            onChange={(date) => setForm({ ...form, expiresAt: date })} 
+                                            showTimeSelect 
+                                            dateFormat="dd MMM yyyy, h:mm aa" 
+                                            minDate={form.startsAt || new Date()} 
+                                            className={inputClass} 
+                                            wrapperClassName="w-full" 
+                                            required 
+                                        />
+                                    </div>
+
+                                    <div className="sm:col-span-2">
+                                        <label className="text-xs font-bold text-gray-700">
+                                            Usage Limit <span className="font-normal text-gray-400">(leave blank for unlimited)</span>
+                                        </label>
+                                        <input 
+                                            type="number" 
+                                            min="1" 
+                                            placeholder="e.g. 100 uses" 
+                                            value={form.usageLimit} 
+                                            onChange={(e) => setForm({ ...form, usageLimit: e.target.value })} 
+                                            className={inputClass} 
+                                        />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        {/* Sticky Footer */}
+                        <div className="shrink-0 flex items-center justify-end gap-2 sm:gap-2.5 px-4 py-3 sm:px-6 sm:py-3.5 bg-[#fcfaf7] border-t border-stone-100">
+                            <button
+                                type="button"
+                                onClick={handleCloseModal}
+                                className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95 text-center"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                form="promo-create-form"
+                                disabled={saving}
+                                className="flex-1 sm:flex-initial min-h-[42px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl disabled:bg-stone-400 shadow-sm transition active:scale-95 text-center"
+                            >
+                                {saving ? 'Creating...' : 'Create Promo Code'}
+                            </button>
+                        </div>
                     </div>
-                }
-                footer={
-                    <div className="flex items-center justify-end gap-2 sm:gap-2.5 w-full">
-                        <button
-                            type="button"
-                            onClick={handleCloseModal}
-                            className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95 text-center"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            form="promo-create-form"
-                            disabled={saving}
-                            className="flex-1 sm:flex-initial min-h-[42px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl disabled:bg-stone-400 shadow-sm transition active:scale-95 text-center"
-                        >
-                            {saving ? 'Creating...' : 'Create Promo Code'}
-                        </button>
-                    </div>
-                }
-                className="w-[95vw] sm:w-full sm:max-w-2xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
-                headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
-                contentClassName="p-4 sm:p-6 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto overscroll-contain"
-                footerClassName="px-4 py-3 sm:px-6 sm:py-3.5 bg-[#fcfaf7]/70 border-t border-stone-100"
-                breakpoints={{ '960px': '75vw', '640px': '95vw' }}
-            >
-                <form id="promo-create-form" onSubmit={handleSubmit} className="space-y-4 pt-1">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                        <div>
-                            <label className="text-xs font-bold text-gray-700">Promo Code *</label>
-                            <input 
-                                required 
-                                placeholder="e.g. FESTIVE20" 
-                                value={form.code} 
-                                onChange={(e) => setForm({ ...form, code: e.target.value })} 
-                                className={`${inputClass} uppercase font-mono font-semibold`} 
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-bold text-gray-700">Discount Type *</label>
-                            <Select 
-                                value={discountTypeOptions.find((option) => option.value === form.discountType)} 
-                                onChange={(option) => setForm({ ...form, discountType: option.value })} 
-                                options={discountTypeOptions} 
-                                isSearchable={false} 
-                                className="mt-1 text-sm" 
-                                styles={{ 
-                                    control: (base, state) => ({ 
-                                        ...base, 
-                                        minHeight: 42, 
-                                        borderRadius: 12, 
-                                        borderColor: state.isFocused ? '#3b82f6' : '#e5e7eb', 
-                                        backgroundColor: state.isFocused ? '#fff' : '#f9fafb', 
-                                        boxShadow: state.isFocused ? '0 0 0 2px #dbeafe' : 'none' 
-                                    })
-                                }} 
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-bold text-gray-700">Discount Value *</label>
-                            <input 
-                                required 
-                                type="number" 
-                                min="0" 
-                                step="0.01" 
-                                placeholder="10"
-                                value={form.discountValue} 
-                                onChange={(e) => setForm({ ...form, discountValue: e.target.value })} 
-                                className={inputClass} 
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-bold text-gray-700">Minimum Order Value (₹)</label>
-                            <input 
-                                type="number" 
-                                min="0" 
-                                step="0.01" 
-                                placeholder="0"
-                                value={form.minimumOrderValue} 
-                                onChange={(e) => setForm({ ...form, minimumOrderValue: e.target.value })} 
-                                className={inputClass} 
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-bold text-gray-700">Starts At *</label>
-                            <DatePicker 
-                                selected={form.startsAt} 
-                                onChange={(date) => setForm({ ...form, startsAt: date })} 
-                                showTimeSelect 
-                                dateFormat="dd MMM yyyy, h:mm aa" 
-                                minDate={new Date()} 
-                                className={inputClass} 
-                                wrapperClassName="w-full" 
-                                required 
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-bold text-gray-700">Expires At *</label>
-                            <DatePicker 
-                                selected={form.expiresAt} 
-                                onChange={(date) => setForm({ ...form, expiresAt: date })} 
-                                showTimeSelect 
-                                dateFormat="dd MMM yyyy, h:mm aa" 
-                                minDate={form.startsAt || new Date()} 
-                                className={inputClass} 
-                                wrapperClassName="w-full" 
-                                required 
-                            />
-                        </div>
-
-                        <div className="sm:col-span-2">
-                            <label className="text-xs font-bold text-gray-700">
-                                Usage Limit <span className="font-normal text-gray-400">(leave blank for unlimited)</span>
-                            </label>
-                            <input 
-                                type="number" 
-                                min="1" 
-                                placeholder="e.g. 100 uses" 
-                                value={form.usageLimit} 
-                                onChange={(e) => setForm({ ...form, usageLimit: e.target.value })} 
-                                className={inputClass} 
-                            />
-                        </div>
-                    </div>
-                </form>
-            </Dialog>
+                </div>
+            )}
         </div>
     );
 }

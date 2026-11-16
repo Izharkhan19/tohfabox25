@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import {
@@ -14,6 +13,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   MagnifyingGlassIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 import {
@@ -417,51 +417,41 @@ export default function Orders() {
         </div>
       )}
 
-      {/* Status Modal */}
-      <Dialog 
-        header={
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Order Processing</p>
-            <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
-              Order Details &bull; {selectedOrder?.orderNumber || (selectedOrder?._id && `#${selectedOrder._id.slice(-8)}`)}
-            </h3>
-          </div>
-        }
-        visible={isStatusModalOpen && !!selectedOrder} 
-        onHide={() => setIsStatusModalOpen(false)}
-        footer={
-          <div className="flex items-center justify-end gap-2 sm:gap-2.5 w-full">
-            <button
-              type="button"
-              onClick={() => setIsStatusModalOpen(false)}
-              className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95 text-center"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              disabled={updatingStatus || !newStatus}
-              onClick={handleStatusUpdate}
-              className="flex-1 sm:flex-initial min-h-[42px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-sm transition active:scale-95 disabled:bg-stone-400 flex items-center justify-center gap-1.5 text-center"
-            >
-              {updatingStatus ? (
-                <>
-                  <span className="w-3.5 h-3.5 border-2 border-[#e1b382] border-t-transparent rounded-full animate-spin" />
-                  <span>Updating...</span>
-                </>
-              ) : (
-                <span>Update Status</span>
-              )}
-            </button>
-          </div>
-        }
-        className="w-[95vw] sm:w-full sm:max-w-xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#e1b382]/30"
-        headerClassName="px-4 py-3 sm:px-6 sm:py-4 bg-[#fcfaf7] border-b border-stone-100"
-        contentClassName="p-4 sm:p-6 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto overscroll-contain"
-        footerClassName="px-4 py-3 sm:px-6 sm:py-3.5 bg-[#fcfaf7]/70 border-t border-stone-100"
-        breakpoints={{ '960px': '75vw', '640px': '95vw' }}
-      >
-        <div className="flex flex-col gap-4">
+      {/* Status Bottom-Sheet Modal */}
+      {isStatusModalOpen && !!selectedOrder && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setIsStatusModalOpen(false);
+          }}
+          role="presentation"
+        >
+          <div
+            className="w-full sm:max-w-xl max-h-[92vh] sm:max-h-[88vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl border border-[#e1b382]/30 bg-white shadow-2xl animate-in slide-in-from-bottom duration-200"
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Header */}
+            <div className="shrink-0 flex items-center justify-between border-b border-stone-100 bg-[#fcfaf7] px-4 py-3 sm:px-6 sm:py-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#c89666]">Order Processing</p>
+                <h3 className="text-base sm:text-xl font-serif font-bold text-[#12343b]">
+                  Order Details &bull; {selectedOrder?.orderNumber || (selectedOrder?._id && `#${selectedOrder._id.slice(-8)}`)}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsStatusModalOpen(false)}
+                aria-label="Close dialog"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 active:scale-95 transition"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex flex-col gap-4">
           
           {/* ORDER ITEMS SECTION */}
           {selectedOrder?.items && selectedOrder.items.length > 0 && (
@@ -592,7 +582,36 @@ export default function Orders() {
             className="w-full px-3 py-2.5 text-sm border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#12343b]/20 focus:border-[#12343b]"
           />
         </div>
-      </Dialog>
+      </div>
+
+      {/* Sticky Footer */}
+      <div className="shrink-0 flex items-center justify-end gap-2 sm:gap-2.5 px-4 py-3 sm:px-6 sm:py-3.5 bg-[#fcfaf7] border-t border-stone-100">
+        <button
+          type="button"
+          onClick={() => setIsStatusModalOpen(false)}
+          className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95 text-center"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          disabled={updatingStatus || !newStatus}
+          onClick={handleStatusUpdate}
+          className="flex-1 sm:flex-initial min-h-[42px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-sm transition active:scale-95 disabled:bg-stone-400 flex items-center justify-center gap-1.5 text-center"
+        >
+          {updatingStatus ? (
+            <>
+              <span className="w-3.5 h-3.5 border-2 border-[#e1b382] border-t-transparent rounded-full animate-spin" />
+              <span>Updating...</span>
+            </>
+          ) : (
+            <span>Update Status</span>
+          )}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

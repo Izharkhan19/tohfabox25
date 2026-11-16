@@ -222,14 +222,14 @@ export default function Announcements() {
             {/* Add / Edit Modal */}
             {showModal && (
                 <div 
-                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm"
+                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
                     onMouseDown={(e) => {
                         if (e.target === e.currentTarget) setShowModal(false);
                     }}
                     role="presentation"
                 >
                     <div 
-                        className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md max-h-[92vh] sm:max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-[#e1b382]/30"
+                        className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md max-h-[92vh] sm:max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-[#e1b382]/30 animate-in slide-in-from-bottom duration-200"
                         role="dialog"
                         aria-modal="true"
                     >
@@ -254,7 +254,7 @@ export default function Announcements() {
                         {/* Form wrapping body + sticky footer */}
                         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
                             {/* Body Section (Scrollable) */}
-                            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 overscroll-contain">
+                            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                                 <div>
                                     <label className="block text-xs font-bold text-stone-700 mb-1.5">
                                         Message Text <span className="text-red-500">*</span>

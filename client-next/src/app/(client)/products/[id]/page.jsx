@@ -1,30 +1,79 @@
 import PageComponent from "../../../../Client/pages/ProductDetail";
 
+/**
+ * Optimizes an image specifically for WhatsApp link preview cards:
+ * 1. WhatsApp requires image to be < 300KB (ideally < 100KB).
+ * 2. WhatsApp strongly prefers standard JPEG (WebP/AVIF often fail).
+ * 3. WhatsApp displays preview cards as square (1:1) thumbnails in chat bubbles.
+ */
+function getWhatsAppOgImageUrl(rawUrl, siteUrl) {
+  if (!rawUrl) return `${siteUrl}/logo.png`;
+  let url = rawUrl;
+  if (url.startsWith('/')) {
+    url = `${siteUrl}${url}`;
+  } else if (url.startsWith('http://')) {
+    url = url.replace('http://', 'https://');
+  }
+
+  // Inject Cloudinary optimizations for WhatsApp:
+  // - c_fill,w_800,h_800,g_center: 800x800 square thumbnail
+  // - q_80: crisp quality while keeping file size ~50-80KB (well below 300KB limit)
+  // - f_jpg: force JPEG format for universal WhatsApp mobile/desktop rendering
+  if (url.includes('cloudinary.com') && url.includes('/upload/')) {
+    url = url.replace(
+      /\/upload\/(?:[a-zA-Z0-9_,:]+\/)?/,
+      '/upload/c_fill,w_800,h_800,g_center,q_80,f_jpg/'
+    );
+  }
+
+  return url;
+}
+
 export async function generateMetadata({ params }) {
+  const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://artistarycrafts.vercel.app').replace(/\/$/, '');
+  const { id } = await params;
+
   try {
-    const { id } = await params;
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://artistarycrafts.vercel.app';
+    const rawApi = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
+    const cleanApiBase = rawApi.replace(/\/api\/?$/, '').replace(/\/$/, '');
     
-    const res = await fetch(`${API_URL}/api/products/${id}`, { next: { revalidate: 3600 } });
-    if (!res.ok) throw new Error('Failed to fetch product metadata');
+    // Fetch product with a 7-second timeout to avoid crawler blocking
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 7000);
+
+    const res = await fetch(`${cleanApiBase}/api/products/${id}`, {
+      next: { revalidate: 3600 },
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error(`Product metadata fetch returned ${res.status}`);
     
     const data = await res.json();
-    const product = data.data || data.product || data;
+    const product = data.data?.data || data.data || data.product || data;
 
-    let imageUrl = product.images?.[0]?.url || product.image?.url || "/logo.png";
-    if (imageUrl.startsWith('/')) {
-      imageUrl = `${SITE_URL}${imageUrl}`;
-    } else if (imageUrl.startsWith('http://')) {
-      imageUrl = imageUrl.replace('http://', 'https://');
-    }
+    const rawImageUrl =
+      product.images?.[0]?.secure_url ||
+      product.images?.[0]?.url ||
+      product.image?.secure_url ||
+      product.image?.url ||
+      product.mainImage?.secure_url ||
+      product.mainImage?.url ||
+      (typeof product.images?.[0] === 'string' ? product.images[0] : null) ||
+      '/logo.png';
 
-    const title = `${product.title || product.name || 'Handmade Product'} | Artistary Crafts`;
+    const optimizedImageUrl = getWhatsAppOgImageUrl(rawImageUrl, SITE_URL);
+
+    const productName = product.title || product.name || 'Handmade Creation';
+    const priceText = product.price ? `₹${Number(product.price).toFixed(2)}` : '';
+    const title = `${productName}${priceText ? ` - ${priceText}` : ''} | Artistary Crafts`;
+    
     const cleanDescription = (product.description || "Discover custom handcrafted resin art, luxury crochet creations, and personalized gift hampers at Artistary Crafts.")
       .replace(/<[^>]*>?/gm, '')
+      .replace(/\s+/g, ' ')
+      .trim()
       .slice(0, 160);
 
-    const productName = product.title || product.name || 'Handmade Gift';
     const categoryName = product.category?.name || (typeof product.category === 'string' ? product.category : 'Handcrafted');
     const productKeywords = [
       productName,
@@ -42,6 +91,7 @@ export async function generateMetadata({ params }) {
     ];
 
     return {
+      metadataBase: new URL(SITE_URL),
       title,
       description: cleanDescription,
       keywords: productKeywords,
@@ -52,53 +102,115 @@ export async function generateMetadata({ params }) {
         title,
         description: cleanDescription,
         url: `${SITE_URL}/products/${id}`,
-        siteName: "Artistary Crafts",
+        siteName: "Artistary Crafts (Tohfabox)",
         images: [
           {
-            url: imageUrl,
+            url: optimizedImageUrl,
+            secureUrl: optimizedImageUrl,
             width: 800,
             height: 800,
-            alt: product.title || product.name || "Artistary Crafts Handmade Gift",
+            alt: productName,
+            type: optimizedImageUrl.endsWith('.png') ? 'image/png' : 'image/jpeg',
           },
         ],
+        locale: "en_IN",
         type: 'website',
       },
       twitter: {
         card: "summary_large_image",
         title,
         description: cleanDescription,
-        images: [imageUrl],
+        images: [optimizedImageUrl],
       },
+      other: {
+        'og:image:secure_url': optimizedImageUrl,
+        'og:image:type': optimizedImageUrl.endsWith('.png') ? 'image/png' : 'image/jpeg',
+        'og:image:width': '800',
+        'og:image:height': '800',
+      }
     };
   } catch (error) {
     console.error("Error generating product metadata:", error.message);
+    const fallbackImage = `${SITE_URL}/logo.png`;
     return {
-      title: "Handmade Product Details | Artistary Crafts",
-      description: "Discover custom handcrafted resin art and luxury crochet items at Artistary Crafts.",
+      metadataBase: new URL(SITE_URL),
+      title: "Handmade Product Details | Artistary Crafts (Tohfabox)",
+      description: "Discover custom handcrafted resin art, luxury crochet creations, and personalized gift hampers at Artistary Crafts.",
+      openGraph: {
+        title: "Handmade Product Details | Artistary Crafts (Tohfabox)",
+        description: "Discover custom handcrafted resin art and personalized gifts at Artistary Crafts.",
+        url: `${SITE_URL}/products/${id}`,
+        siteName: "Artistary Crafts (Tohfabox)",
+        images: [
+          {
+            url: fallbackImage,
+            secureUrl: fallbackImage,
+            width: 800,
+            height: 800,
+            alt: "Artistary Crafts",
+            type: "image/png",
+          },
+        ],
+        type: 'website',
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "Handmade Product Details | Artistary Crafts",
+        description: "Discover custom handcrafted resin art and luxury crochet items at Artistary Crafts.",
+        images: [fallbackImage],
+      },
+      other: {
+        'og:image:secure_url': fallbackImage,
+        'og:image:type': 'image/png',
+        'og:image:width': '800',
+        'og:image:height': '800',
+      }
     };
   }
 }
 
 export default async function Page(props) {
   const { id } = await props.params;
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://artistarycrafts.vercel.app';
+  const rawApi = process.env.NEXT_PUBLIC_API_URL || 'https://tohfabox25.onrender.com';
+  const cleanApiBase = rawApi.replace(/\/api\/?$/, '').replace(/\/$/, '');
+  const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://artistarycrafts.vercel.app').replace(/\/$/, '');
 
   let productSchema = null;
+  let ogMeta = null;
+
   try {
-    const res = await fetch(`${API_URL}/api/products/${id}`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${cleanApiBase}/api/products/${id}`, { next: { revalidate: 3600 } });
     if (res.ok) {
       const json = await res.json();
-      const product = json.data || json.product || json;
-      let imageUrl = product.images?.[0]?.url || product.image?.url || `${SITE_URL}/logo.png`;
-      if (imageUrl.startsWith('/')) imageUrl = `${SITE_URL}${imageUrl}`;
+      const product = json.data?.data || json.data || json.product || json;
+      
+      const rawImageUrl =
+        product.images?.[0]?.secure_url ||
+        product.images?.[0]?.url ||
+        product.image?.secure_url ||
+        product.image?.url ||
+        product.mainImage?.secure_url ||
+        product.mainImage?.url ||
+        (typeof product.images?.[0] === 'string' ? product.images[0] : null) ||
+        `${SITE_URL}/logo.png`;
+
+      const imageUrl = getWhatsAppOgImageUrl(rawImageUrl, SITE_URL);
+      const productName = product.title || product.name || 'Handmade Creation';
+      const cleanDesc = (product.description || "").replace(/<[^>]*>?/gm, '').slice(0, 500);
+
+      ogMeta = {
+        title: `${productName} | Artistary Crafts`,
+        description: cleanDesc.slice(0, 160),
+        image: imageUrl,
+        url: `${SITE_URL}/products/${id}`,
+      };
 
       productSchema = {
         "@context": "https://schema.org",
         "@type": "Product",
-        "name": product.title || product.name,
+        "name": productName,
         "image": [imageUrl],
-        "description": (product.description || "").replace(/<[^>]*>?/gm, '').slice(0, 500),
+        "description": cleanDesc,
         "sku": product._id || id,
         "brand": {
           "@type": "Brand",
@@ -116,12 +228,26 @@ export default async function Page(props) {
         }
       };
     }
-  } catch (e) {
+  } catch {
     // Schema fetch is non-blocking
   }
 
   return (
     <>
+      {ogMeta && (
+        <head>
+          <meta property="og:title" content={ogMeta.title} />
+          <meta property="og:description" content={ogMeta.description} />
+          <meta property="og:image" content={ogMeta.image} />
+          <meta property="og:image:secure_url" content={ogMeta.image} />
+          <meta property="og:image:type" content="image/jpeg" />
+          <meta property="og:image:width" content="800" />
+          <meta property="og:image:height" content="800" />
+          <meta property="og:url" content={ogMeta.url} />
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content="Artistary Crafts (Tohfabox)" />
+        </head>
+      )}
       {productSchema && (
         <script
           type="application/ld+json"

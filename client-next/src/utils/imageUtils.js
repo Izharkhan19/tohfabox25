@@ -45,8 +45,8 @@ export function getOptimizedImageUrl(rawUrl, width = 600) {
   if (url.includes('drive.google.com') || url.includes('googleusercontent.com')) {
     const fileId = extractGoogleDriveId(url);
     if (fileId) {
-      // Use Google Drive's high-speed mobile thumbnail endpoint
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${width}`;
+      // Use Google's lh3 edge CDN directly which avoids drive.google.com cookie/CORS blocks
+      return `https://lh3.googleusercontent.com/d/${fileId}=w${width}`;
     }
   }
 
@@ -72,7 +72,7 @@ export function getOptimizedImageUrl(rawUrl, width = 600) {
 export function getBackupGoogleDriveUrl(url) {
   const fileId = extractGoogleDriveId(url);
   if (fileId) {
-    return `https://lh3.googleusercontent.com/d/${fileId}=w600`;
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w600`;
   }
   return null;
 }

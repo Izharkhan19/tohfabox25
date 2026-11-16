@@ -211,11 +211,11 @@ export default function AdminGallery() {
                             </div>
                         }
                         footer={
-                            <div className="flex items-center justify-end gap-2.5 w-full">
+                            <div className="flex items-center justify-end gap-2 sm:gap-2.5 w-full">
                                 <button 
                                     type="button" 
                                     onClick={closeForm} 
-                                    className="min-h-[40px] px-4 py-2 rounded-xl border border-stone-200 text-xs sm:text-sm font-semibold text-stone-600 hover:bg-stone-100 transition active:scale-95"
+                                    className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 rounded-xl border border-stone-200 text-xs sm:text-sm font-semibold text-stone-600 hover:bg-stone-100 transition active:scale-95 text-center"
                                 >
                                     Cancel
                                 </button>
@@ -223,9 +223,9 @@ export default function AdminGallery() {
                                     type="submit" 
                                     form="admin-gallery-form"
                                     disabled={saving} 
-                                    className="min-h-[40px] flex items-center gap-1.5 rounded-xl bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-5 py-2 text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95 disabled:bg-stone-400"
+                                    className="flex-1 sm:flex-initial min-h-[42px] flex items-center justify-center gap-1.5 rounded-xl bg-[#12343b] hover:bg-[#0e272d] text-[#e1b382] border border-[#e1b382]/30 px-5 py-2 text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95 disabled:bg-stone-400 text-center"
                                 >
-                                    {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4 text-[#e1b382]" />{editId ? 'Update Item' : 'Add to Gallery'}</>)}
+                                    {saving ? 'Saving...' : (<><CheckIcon className="w-4 h-4 text-[#e1b382]" /><span>{editId ? 'Update Item' : 'Add to Gallery'}</span></>)}
                                 </button>
                             </div>
                         }

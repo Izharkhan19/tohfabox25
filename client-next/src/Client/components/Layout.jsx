@@ -176,24 +176,24 @@ export default function ClientLayout({ children }) {
             )}
             
             {/* Premium Header */}
-            <header className={`fixed w-full top-0 z-40 transition-all duration-500 border-b ${
+            <header className={`fixed w-full top-0 z-40 transition-all duration-300 border-b ${
                 scrolled 
-                ? "bg-[#0f2b31]/95 backdrop-blur-xl shadow-[0_12px_35px_rgba(18,52,59,0.18)] border-[#e1b382]/25 py-1.5 md:py-3" 
-                : "bg-[#12343b] border-[#e1b382]/15 py-2 md:py-4"
+                ? "bg-[#0f2b31]/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(18,52,59,0.18)] border-[#e1b382]/25" 
+                : "bg-[#12343b] border-[#e1b382]/15"
             }`}>
                 {announcement && (
-                    <div className="bg-[#e1b382] text-[#12343b] text-[10px] sm:text-xs md:text-sm font-bold py-1 px-3 text-center absolute top-0 left-0 w-full shadow-sm z-50">
+                    <div className="bg-[#e1b382] text-[#12343b] text-[10px] sm:text-xs font-bold py-1 px-3 text-center w-full shadow-xs truncate">
                         {announcement.link ? (
                             <Link href={announcement.link} className="hover:underline inline-flex items-center gap-1.5">
-                                {announcement.message} <span aria-hidden="true">&rarr;</span>
+                                <span>{announcement.message}</span> <span aria-hidden="true">&rarr;</span>
                             </Link>
                         ) : (
                             <span>{announcement.message}</span>
                         )}
                     </div>
                 )}
-                <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 ${announcement ? 'mt-5 md:mt-7' : ''}`}>
-                    <div className="flex justify-between items-center h-12 md:h-16">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-11 md:h-16">
                         
                         {/* Mobile: Hamburger Left + Brand */}
                         <div className="md:hidden flex items-center gap-2 flex-1">
@@ -338,7 +338,7 @@ export default function ClientLayout({ children }) {
                     </div>
 
                     {/* Mobile: Functional Live Search Input */}
-                    <div className="md:hidden pt-1 pb-1">
+                    <div className="md:hidden pt-0.5 pb-2">
                         <HeaderSearch isMobile />
                     </div>
                 </div>
@@ -402,15 +402,15 @@ export default function ClientLayout({ children }) {
                         </div>
 
                         {/* Navigation Links */}
-                        <nav className="flex-1 px-2.5 py-1.5 space-y-0.5 overflow-y-auto">
+                        <nav className="flex-1 px-2.5 py-1.5 space-y-0.5 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.to}
                                     href={link.to}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center px-3 py-1.5 rounded-lg font-semibold text-xs tracking-wide transition-colors ${
+                                    className={`flex items-center px-3 py-2 rounded-xl font-semibold text-xs tracking-wide transition-colors ${
                                         isActive(link.to)
-                                        ? "bg-[#e1b382] text-[#12343b]"
+                                        ? "bg-[#e1b382] text-[#12343b] font-bold shadow-sm"
                                         : "text-[#fdfbf9] hover:bg-white/10"
                                     }`}
                                 >
@@ -422,9 +422,9 @@ export default function ClientLayout({ children }) {
                                 <Link
                                     href="/orders"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-semibold text-xs tracking-wide transition-colors ${
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-xl font-semibold text-xs tracking-wide transition-colors ${
                                         isActive("/orders")
-                                        ? "bg-[#e1b382] text-[#12343b]"
+                                        ? "bg-[#e1b382] text-[#12343b] font-bold shadow-sm"
                                         : "text-[#fdfbf9] hover:bg-white/10"
                                     }`}
                                 >
@@ -433,21 +433,23 @@ export default function ClientLayout({ children }) {
                                 </Link>
                             )}
 
-                            <div className="h-px bg-white/10 my-1 mx-1"></div>
+                            <div className="h-px bg-white/10 my-1.5 mx-1"></div>
 
                             {/* Additional Links */}
-                            <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-1 text-[11px] text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors truncate">Our Story</Link>
-                            <Link href="/custom-orders" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-1 text-[11px] text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors truncate">Custom Orders</Link>
-                            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-1 text-[11px] text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors truncate">Support & FAQ</Link>
+                            <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-1.5 text-[11px] text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors truncate">Our Story</Link>
+                            <Link href="/custom-orders" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-1.5 text-[11px] text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors truncate">Custom Orders</Link>
+                            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-1.5 text-[11px] text-[#7a8f94] hover:text-[#fdfbf9] font-medium transition-colors truncate">Support & FAQ</Link>
                             
                             {isAdminLoggedIn && (
-                                <Link 
-                                    href="/admin" 
-                                    onClick={() => setMobileMenuOpen(false)} 
-                                    className="block px-3 py-1.5 mt-1 text-white bg-red-600/90 rounded-lg font-bold text-xs transition-colors truncate text-center"
-                                >
-                                    Go to Admin Panel
-                                </Link>
+                                <div className="pt-2 pb-1">
+                                    <Link 
+                                        href="/admin" 
+                                        onClick={() => setMobileMenuOpen(false)} 
+                                        className="flex items-center justify-center gap-1.5 px-3 py-2 text-red-200 bg-red-950/40 border border-red-500/30 rounded-xl font-bold text-xs hover:bg-red-900/60 transition-colors"
+                                    >
+                                        <span>Admin Panel</span>
+                                    </Link>
+                                </div>
                             )}
                         </nav>
 
@@ -467,7 +469,7 @@ export default function ClientLayout({ children }) {
             )}
 
             {/* Main Content */}
-            <main className={`flex-1 w-full ${announcement ? 'pt-[136px] sm:pt-[128px] md:pt-[96px]' : 'pt-[108px] sm:pt-[100px] md:pt-[76px]'}`}>
+            <main className={`flex-1 w-full ${announcement ? 'pt-[110px] md:pt-[84px]' : 'pt-[86px] md:pt-[64px]'}`}>
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={pathname}

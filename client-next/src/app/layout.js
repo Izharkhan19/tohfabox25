@@ -150,10 +150,12 @@ export const metadata = {
     siteName: "Artistary Crafts",
     images: [
       {
-        url: "/logo.png",
+        url: `${SITE_URL}/logo.png`,
+        secureUrl: `${SITE_URL}/logo.png`,
         width: 1200,
         height: 630,
         alt: "Artistary Crafts Handmade Resin & Crochet Gifts",
+        type: "image/png",
       },
     ],
   },
@@ -161,7 +163,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Artistary Crafts | Handmade Resin & Crochet Gifts",
     description: "Shop custom handmade resin art, luxury crochet creations, and personalized gift hampers crafted with love at Artistary Crafts.",
-    images: ["/logo.png"],
+    images: [`${SITE_URL}/logo.png`],
   },
   appleWebApp: {
     capable: true,

@@ -8,7 +8,8 @@ import {
     ShieldCheckIcon,
     ArrowPathIcon,
     SparklesIcon,
-    ArrowLeftIcon
+    ArrowLeftIcon,
+    ShareIcon
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartFilledIcon } from "@heroicons/react/24/solid";
 import { getProduct, getProductReviews, saveProductReview, addToCart, addToWishlist, removeFromWishlist } from "../../api-services/apiService";
@@ -160,6 +161,47 @@ export default function ProductDetail() {
         }
     };
 
+    const handleShare = async () => {
+        const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+        const shareText = `Check out this handcrafted piece: *${product?.name || "Handmade Gift"}* on Artistary Crafts!`;
+
+        if (typeof navigator !== "undefined" && navigator.share) {
+            try {
+                await navigator.share({
+                    title: `${product?.name || "Product"} | Artistary Crafts`,
+                    text: shareText,
+                    url: shareUrl,
+                });
+                return;
+            } catch (err) {
+                if (err.name !== "AbortError") {
+                    console.error("Error sharing:", err);
+                }
+            }
+        }
+        handleCopyLink();
+    };
+
+    const handleCopyLink = async () => {
+        const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+        if (typeof navigator !== "undefined" && navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                toast.success("Product link copied to clipboard!");
+                return;
+            } catch (err) {
+                console.error("Clipboard copy failed:", err);
+            }
+        }
+        toast.info("Link: " + shareUrl);
+    };
+
+    const handleWhatsAppShare = () => {
+        const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+        const message = `Check out this handcrafted piece on Artistary Crafts:\n*${product?.name || "Handmade Gift"}* (₹${Number(product?.price || 0).toFixed(2)})\n\n${shareUrl}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
+    };
+
     if (loading) {
         return (
             <div className="min-h-[80vh] flex items-center justify-center bg-brand-light soft-grid">
@@ -243,16 +285,30 @@ export default function ProductDetail() {
                                 <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 font-serif leading-tight break-words">
                                     {product.name}
                                 </h1>
-                                <button
-                                    onClick={handleWishlistToggle}
-                                    className="p-2 lg:p-3 bg-gray-50 lg:bg-white rounded-full shadow-sm border border-gray-100 text-gray-400 hover:text-red-500 transition-all hover:shadow-md"
-                                >
-                                    {isWishlisted ? (
-                                        <HeartFilledIcon className="w-6 h-6 lg:w-7 lg:h-7 text-red-500" />
-                                    ) : (
-                                        <HeartIcon className="w-6 h-6 lg:w-7 lg:h-7" />
-                                    )}
-                                </button>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <button
+                                        type="button"
+                                        onClick={handleShare}
+                                        className="p-2 sm:p-2.5 lg:p-3 bg-gray-50 lg:bg-white rounded-full shadow-sm border border-gray-100 text-stone-600 hover:text-[#12343b] hover:bg-stone-100 transition-all hover:shadow-md active:scale-95"
+                                        title="Share Product"
+                                        aria-label="Share Product"
+                                    >
+                                        <ShareIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleWishlistToggle}
+                                        className="p-2 sm:p-2.5 lg:p-3 bg-gray-50 lg:bg-white rounded-full shadow-sm border border-gray-100 text-gray-400 hover:text-red-500 transition-all hover:shadow-md active:scale-95"
+                                        title={isWishlisted ? "Remove from Wishlist" : "Save to Wishlist"}
+                                        aria-label={isWishlisted ? "Remove from Wishlist" : "Save to Wishlist"}
+                                    >
+                                        {isWishlisted ? (
+                                            <HeartFilledIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
+                                        ) : (
+                                            <HeartIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="flex items-center gap-4 mb-4">
@@ -272,7 +328,31 @@ export default function ProductDetail() {
                             <div className="text-3xl sm:text-4xl font-bold text-resin-dark mb-1">
                                 ₹{Number(product.price).toFixed(2)}
                             </div>
-                            <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-widest">Inclusive of all taxes</p>
+                            <p className="text-xs text-gray-500 mb-3 font-medium uppercase tracking-widest">Inclusive of all taxes</p>
+
+                            {/* Share on WhatsApp Quick Action */}
+                            <div className="flex flex-wrap items-center gap-2 mb-4">
+                                <button
+                                    type="button"
+                                    onClick={handleWhatsAppShare}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-semibold transition active:scale-95 shadow-2xs"
+                                    title="Share directly via WhatsApp"
+                                >
+                                    <svg className="w-3.5 h-3.5 fill-emerald-600" viewBox="0 0 24 24">
+                                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.086s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z" />
+                                    </svg>
+                                    <span>Share on WhatsApp</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleCopyLink}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-50 hover:bg-stone-100 border border-stone-200 text-stone-700 text-xs font-semibold transition active:scale-95 shadow-2xs"
+                                    title="Copy product link"
+                                >
+                                    <ShareIcon className="w-3.5 h-3.5 text-stone-500" />
+                                    <span>Copy Link</span>
+                                </button>
+                            </div>
                         </div>
 
                         {/* Description Card */}

@@ -430,11 +430,11 @@ export default function Orders() {
         visible={isStatusModalOpen && !!selectedOrder} 
         onHide={() => setIsStatusModalOpen(false)}
         footer={
-          <div className="flex items-center justify-end gap-2.5 w-full">
+          <div className="flex items-center justify-end gap-2 sm:gap-2.5 w-full">
             <button
               type="button"
               onClick={() => setIsStatusModalOpen(false)}
-              className="min-h-[40px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95"
+              className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 rounded-xl border border-stone-200 hover:bg-stone-100 transition active:scale-95 text-center"
             >
               Close
             </button>
@@ -442,7 +442,7 @@ export default function Orders() {
               type="button"
               disabled={updatingStatus || !newStatus}
               onClick={handleStatusUpdate}
-              className="min-h-[40px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-sm transition active:scale-95 disabled:bg-stone-400 flex items-center gap-1.5"
+              className="flex-1 sm:flex-initial min-h-[42px] px-5 py-2 text-xs sm:text-sm font-semibold text-[#e1b382] bg-[#12343b] hover:bg-[#0e272d] border border-[#e1b382]/30 rounded-xl shadow-sm transition active:scale-95 disabled:bg-stone-400 flex items-center justify-center gap-1.5 text-center"
             >
               {updatingStatus ? (
                 <>

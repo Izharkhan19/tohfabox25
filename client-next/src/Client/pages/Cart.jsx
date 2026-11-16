@@ -345,17 +345,17 @@ export default function Cart() {
     <div className="bg-brand-light min-h-screen pb-24">
       {/* Header */}
       <div className="bg-white/90 border-b border-resin-gold/20 soft-grid">
-        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-4 sm:py-6 md:py-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="flex min-w-0 flex-nowrap items-center gap-2 text-xl font-bold text-resin-dark font-serif sm:gap-3 sm:text-3xl md:gap-4 md:text-4xl">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-2.5 sm:py-4 md:py-6">
+          <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+            <h1 className="flex min-w-0 flex-nowrap items-center gap-1.5 sm:gap-3 text-lg sm:text-2xl md:text-3xl font-bold text-resin-dark font-serif">
               <span className="truncate">Your Cart</span>
-              <span className="shrink-0 rounded-full bg-resin-gold/10 px-2.5 py-0.5 text-xs font-sans font-semibold text-resin-blue sm:px-3 sm:py-1 sm:text-sm md:text-lg">
+              <span className="shrink-0 rounded-full bg-resin-gold/10 px-2 py-0.5 text-[11px] sm:text-xs font-sans font-semibold text-resin-blue">
                 ({totalItemsCount} {totalItemsCount === 1 ? "item" : "items"})
               </span>
             </h1>
             <button
               onClick={clearAll}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95 self-start sm:self-auto"
+              className="shrink-0 inline-flex items-center justify-center gap-1 rounded-full border border-red-200 bg-red-50 px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-95"
             >
               Clear Cart
             </button>

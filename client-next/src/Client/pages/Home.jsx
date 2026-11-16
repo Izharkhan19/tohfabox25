@@ -417,12 +417,12 @@ export default function Home() {
               >
                   {dbOccasions.length > 0 ? dbOccasions.map((occ, i) => (
                       <motion.div variants={itemVariants} key={occ._id}>
-                          <Link href={`/products?occasion=${occ._id}`} className="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-md aspect-square block">
+                          <Link href={`/products?occasion=${occ._id}`} className="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-md aspect-square block border border-brand-accent/20">
                               <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10} scale={1.03} transitionSpeed={2000} className="w-full h-full">
                                   <img referrerPolicy="no-referrer" src={occ.image?.url || defaultOccasionImages[i % defaultOccasionImages.length]} alt={occ.name} loading={i < 2 ? "eager" : "lazy"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/25 to-transparent"></div>
-                                  <div className="absolute bottom-0 left-0 w-full p-2.5 sm:p-4 md:p-6 text-center sm:text-left">
-                                      <h3 className="text-brand-secondary font-black text-xs sm:text-lg md:text-2xl tracking-tight drop-shadow-md truncate">{occ.name}</h3>
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+                                  <div className="absolute bottom-0 left-0 w-full p-2.5 sm:p-4 md:p-5 text-center sm:text-left">
+                                      <h3 className="text-white font-serif font-bold text-xs sm:text-base md:text-xl tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] leading-tight">{occ.name}</h3>
                                   </div>
                               </Tilt>
                           </Link>
@@ -446,15 +446,15 @@ export default function Home() {
                   initial="hidden"
                   whileInView="show"
                   viewport={{ once: true, margin: "250px" }}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-10"
+                  className="grid grid-cols-4 md:grid-cols-4 gap-2.5 sm:gap-6 md:gap-10"
               >
                   {dbRelationships.length > 0 ? dbRelationships.map((rel, i) => (
                       <motion.div variants={itemVariants} key={rel._id}>
-                          <Link href={`/products?relationship=${rel._id}`} className="group flex flex-col items-center gap-2 sm:gap-4">
-                              <Tilt tiltMaxAngleX={15} tiltMaxAngleY={15} scale={1.05} transitionSpeed={1000} className="w-24 h-24 sm:w-36 sm:h-36 md:w-52 md:h-52 rounded-full overflow-hidden shadow-md border-4 sm:border-6 md:border-8 border-white group-hover:border-brand-primary transition-colors">
+                          <Link href={`/products?relationship=${rel._id}`} className="group flex flex-col items-center gap-1.5 sm:gap-3">
+                              <Tilt tiltMaxAngleX={15} tiltMaxAngleY={15} scale={1.05} transitionSpeed={1000} className="w-16 h-16 sm:w-28 sm:h-28 md:w-44 md:h-44 rounded-full overflow-hidden shadow-md border-2 sm:border-4 md:border-6 border-white group-hover:border-brand-primary transition-colors">
                                   <img referrerPolicy="no-referrer" src={rel.image?.url || defaultRelationshipImages[i % defaultRelationshipImages.length]} alt={rel.name} loading={i < 2 ? "eager" : "lazy"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                               </Tilt>
-                              <h3 className="font-black text-brand-dark text-xs sm:text-base md:text-xl group-hover:text-brand-primary transition-colors tracking-tight text-center truncate max-w-full">{rel.name}</h3>
+                              <h3 className="font-bold text-brand-dark text-[11px] sm:text-sm md:text-lg group-hover:text-brand-primary transition-colors tracking-tight text-center truncate max-w-full mt-0.5">{rel.name}</h3>
                           </Link>
                       </motion.div>
                   )) : (

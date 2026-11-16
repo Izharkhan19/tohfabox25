@@ -14,9 +14,18 @@ export default function ArtisanImage({
   onClick,
   fallbackIndex = 0,
 }) {
+  const [prevSrc, setPrevSrc] = useState(src);
   const [currentSrc, setCurrentSrc] = useState(() => getOptimizedImageUrl(src, 600));
   const [isLoaded, setIsLoaded] = useState(false);
-  const [retryStage, setRetryStage] = useState(0); // 0 = primary, 1 = backup CDN, 2 = fallback craft
+  const [retryStage, setRetryStage] = useState(0); // 0 = primary, 1 = backup CDN, 2 = fallback craft, 3 = logo
+
+  // Adjust state during render when prop changes (React recommended pattern)
+  if (prevSrc !== src) {
+    setPrevSrc(src);
+    setCurrentSrc(getOptimizedImageUrl(src, 600));
+    setIsLoaded(false);
+    setRetryStage(0);
+  }
 
   const handleError = () => {
     if (retryStage === 0) {
@@ -32,6 +41,13 @@ export default function ArtisanImage({
       setRetryStage(2);
       const fallback = CRAFT_FALLBACKS[Math.abs(fallbackIndex) % CRAFT_FALLBACKS.length];
       setCurrentSrc(fallback);
+      return;
+    }
+
+    // Ultimate fallback is local static logo so an image NEVER shows broken in UI
+    if (retryStage === 2) {
+      setRetryStage(3);
+      setCurrentSrc("/logo.png");
     }
   };
 

@@ -103,6 +103,68 @@
 // src/api-services/apiService.js
 import api from './api';
 
+// Lightweight in-memory SWR (Stale-While-Revalidate) Cache & Request Deduplication
+const swrCache = new Map();
+const DEFAULT_TTL = 60 * 1000; // 60 seconds fresh
+const STALE_TTL = 5 * 60 * 1000; // 5 minutes stale window
+
+export const clearSwrCache = (pattern = null) => {
+    if (!pattern) {
+        swrCache.clear();
+        return;
+    }
+    for (const key of swrCache.keys()) {
+        if (key.includes(pattern)) swrCache.delete(key);
+    }
+};
+
+const swrFetch = async (key, fetcher, ttl = DEFAULT_TTL) => {
+    const now = Date.now();
+    const cached = swrCache.get(key);
+
+    // 1. Fresh cache hit: Return immediately (0ms latency, zero backend hit)
+    if (cached && (now - cached.timestamp < ttl)) {
+        return cached.data;
+    }
+
+    // 2. Request deduplication: If an identical request is already in-flight, reuse promise
+    if (cached && cached.promise) {
+        return cached.promise;
+    }
+
+    // 3. Stale cache hit: Return stale data immediately and revalidate in background (SWR pattern)
+    if (cached && (now - cached.timestamp < STALE_TTL)) {
+        fetcher().then((res) => {
+            if (res?.success) {
+                swrCache.set(key, { timestamp: Date.now(), data: res });
+            }
+        }).catch(() => {});
+        return cached.data;
+    }
+
+    // 4. Cache miss: Execute fetch with in-flight deduplication
+    const promise = (async () => {
+        try {
+            const res = await fetcher();
+            if (res?.success) {
+                swrCache.set(key, { timestamp: Date.now(), data: res });
+            }
+            return res;
+        } finally {
+            const entry = swrCache.get(key);
+            if (entry) delete entry.promise;
+        }
+    })();
+
+    if (cached) {
+        cached.promise = promise;
+    } else {
+        swrCache.set(key, { timestamp: 0, data: null, promise });
+    }
+
+    return promise;
+};
+
 // Generic handler for consistent response/error flow
 const handleApiCall = async (apiCall, successMessage = null) => {
     try {
@@ -147,10 +209,14 @@ export const changePassword = (data) =>
 
 // ==================== PRODUCTS ====================
 export const getProducts = (filters = {}) =>
-    handleApiCall(() => api.get("/products", { params: filters }));
+    swrFetch(`products:${JSON.stringify(filters)}`, () =>
+        handleApiCall(() => api.get("/products", { params: filters }))
+    );
 
 export const getProduct = (id) =>
-    handleApiCall(() => api.get(`/products/${id}`));
+    swrFetch(`product:${id}`, () =>
+        handleApiCall(() => api.get(`/products/${id}`))
+    );
 
 export const getProductReviews = (productId) =>
     handleApiCall(() => api.get(`/products/${productId}/reviews`));
@@ -159,39 +225,61 @@ export const saveProductReview = (productId, reviewData) =>
     handleApiCall(() => api.post(`/products/${productId}/reviews`, reviewData));
 
 export const getFeaturedProducts = () =>
-    handleApiCall(() => api.get("/products/featured"));
+    swrFetch("products:featured", () =>
+        handleApiCall(() => api.get("/products/featured"))
+    );
 
 // Admin
-export const createProduct = (formData) =>
-    handleApiCall(() => api.post("/products", formData), "Product created!");
+export const createProduct = (formData) => {
+    clearSwrCache("product");
+    return handleApiCall(() => api.post("/products", formData), "Product created!");
+};
 
-export const updateProduct = (id, formData) =>
-    handleApiCall(() => api.put(`/products/${id}`, formData), "Product updated!");
+export const updateProduct = (id, formData) => {
+    clearSwrCache("product");
+    return handleApiCall(() => api.put(`/products/${id}`, formData), "Product updated!");
+};
 
-export const deleteProduct = (id) =>
-    handleApiCall(() => api.delete(`/products/${id}`), "Product deleted!");
+export const deleteProduct = (id) => {
+    clearSwrCache("product");
+    return handleApiCall(() => api.delete(`/products/${id}`), "Product deleted!");
+};
 
-export const deleteMultipleProducts = (productIds) =>
-    handleApiCall(() => api.post(`/products/bulk-delete`, { productIds }), "Products deleted successfully!");
+export const deleteMultipleProducts = (productIds) => {
+    clearSwrCache("product");
+    return handleApiCall(() => api.post(`/products/bulk-delete`, { productIds }), "Products deleted successfully!");
+};
 
-export const updateMultipleProductPrices = (productIds, newPrice) =>
-    handleApiCall(() => api.post(`/products/bulk-update-prices`, { productIds, newPrice }), "Prices updated successfully!");
+export const updateMultipleProductPrices = (productIds, newPrice) => {
+    clearSwrCache("product");
+    return handleApiCall(() => api.post(`/products/bulk-update-prices`, { productIds, newPrice }), "Prices updated successfully!");
+};
 
-export const deleteProductImage = (productId, imageId) =>
-    handleApiCall(() => api.delete(`/products/${productId}/images/${imageId}`));
+export const deleteProductImage = (productId, imageId) => {
+    clearSwrCache("product");
+    return handleApiCall(() => api.delete(`/products/${productId}/images/${imageId}`));
+};
 
 // ==================== CATEGORIES ====================
 export const getCategories = () =>
-    handleApiCall(() => api.get("/categories"));
+    swrFetch("categories", () =>
+        handleApiCall(() => api.get("/categories"))
+    );
 
-export const createCategory = (data) =>
-    handleApiCall(() => api.post("/categories", data), "Category created!");
+export const createCategory = (data) => {
+    clearSwrCache("categories");
+    return handleApiCall(() => api.post("/categories", data), "Category created!");
+};
 
-export const updateCategory = (id, data) =>
-    handleApiCall(() => api.put(`/categories/${id}`, data), "Category updated!");
+export const updateCategory = (id, data) => {
+    clearSwrCache("categories");
+    return handleApiCall(() => api.put(`/categories/${id}`, data), "Category updated!");
+};
 
-export const deleteCategory = (id) =>
-    handleApiCall(() => api.delete(`/categories/${id}`), "Category deleted!");
+export const deleteCategory = (id) => {
+    clearSwrCache("categories");
+    return handleApiCall(() => api.delete(`/categories/${id}`), "Category deleted!");
+};
 
 // ==================== CART (NEW!) ====================
 export const getCart = () =>
@@ -323,25 +411,35 @@ export const deleteCustomRequest = (id) =>
 
 // ==================== GALLERY ====================
 export const getGalleryItems = (params = {}) =>
-    handleApiCall(() => api.get("/gallery", { params }));
+    swrFetch(`gallery:${JSON.stringify(params)}`, () =>
+        handleApiCall(() => api.get("/gallery", { params }))
+    );
 
 export const getGalleryItem = (id) =>
-    handleApiCall(() => api.get(`/gallery/${id}`));
+    swrFetch(`gallery:${id}`, () =>
+        handleApiCall(() => api.get(`/gallery/${id}`))
+    );
 
-export const createGalleryItem = (formData) =>
-    handleApiCall(() =>
+export const createGalleryItem = (formData) => {
+    clearSwrCache("gallery");
+    return handleApiCall(() =>
         api.post("/gallery", formData, { headers: { "Content-Type": "multipart/form-data" } }),
         "Gallery item created!"
     );
+};
 
-export const updateGalleryItem = (id, formData) =>
-    handleApiCall(() =>
+export const updateGalleryItem = (id, formData) => {
+    clearSwrCache("gallery");
+    return handleApiCall(() =>
         api.put(`/gallery/${id}`, formData, { headers: { "Content-Type": "multipart/form-data" } }),
         "Gallery item updated!"
     );
+};
 
-export const deleteGalleryItem = (id) =>
-    handleApiCall(() => api.delete(`/gallery/${id}`), "Gallery item deleted!");
+export const deleteGalleryItem = (id) => {
+    clearSwrCache("gallery");
+    return handleApiCall(() => api.delete(`/gallery/${id}`), "Gallery item deleted!");
+};
 
 // ==================== GALLERY ORDERS ====================
 export const placeGalleryOrder = (data) =>
@@ -358,16 +456,24 @@ export const deleteGalleryOrder = (id) =>
 
 // ==================== ANNOUNCEMENTS ====================
 export const getActiveAnnouncement = () =>
-    handleApiCall(() => api.get("/announcements/active"));
+    swrFetch("announcements:active", () =>
+        handleApiCall(() => api.get("/announcements/active"))
+    );
 
 export const getAnnouncements = () =>
     handleApiCall(() => api.get("/announcements"));
 
-export const createAnnouncement = (data) =>
-    handleApiCall(() => api.post("/announcements", data), "Announcement created!");
+export const createAnnouncement = (data) => {
+    clearSwrCache("announcements");
+    return handleApiCall(() => api.post("/announcements", data), "Announcement created!");
+};
 
-export const updateAnnouncement = (id, data) =>
-    handleApiCall(() => api.put(`/announcements/${id}`, data), "Announcement updated!");
+export const updateAnnouncement = (id, data) => {
+    clearSwrCache("announcements");
+    return handleApiCall(() => api.put(`/announcements/${id}`, data), "Announcement updated!");
+};
 
-export const deleteAnnouncement = (id) =>
-    handleApiCall(() => api.delete(`/announcements/${id}`), "Announcement deleted!");
+export const deleteAnnouncement = (id) => {
+    clearSwrCache("announcements");
+    return handleApiCall(() => api.delete(`/announcements/${id}`), "Announcement deleted!");
+};

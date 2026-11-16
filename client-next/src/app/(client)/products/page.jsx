@@ -34,6 +34,8 @@ export const metadata = {
   },
 };
 
+export const revalidate = 60; // Next.js ISR: Revalidate edge cache every 60 seconds
+
 export default function Page(props) {
   return <PageComponent {...props} />;
 }

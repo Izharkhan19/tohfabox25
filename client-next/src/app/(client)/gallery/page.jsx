@@ -1,6 +1,6 @@
 import PageComponent from "../../../Client/pages/Gallery";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // Next.js ISR: Revalidate edge cache every 60 seconds
 
 function getWhatsAppOgImageUrl(rawUrl, siteUrl) {
   if (!rawUrl) return `${siteUrl}/logo.png`;

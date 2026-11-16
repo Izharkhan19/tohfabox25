@@ -78,10 +78,19 @@ app.use(xss());
 app.use(express.json({ limit: '10mb' })); // Limit body size for security
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Global Rate limiting middleware applied to all API routes
+// Health check route (Exempt from all rate limiters so uptime monitors and keep-alive pings never fail)
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'OK',
+        message: 'Server is running',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// High-Throughput Rate Limiting for standard browsing routes (5,000 requests per 15 minutes)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  max: 5000, // Increased from 100 to 5000 to easily support 1,000-2,000 concurrent browsing users
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
@@ -90,6 +99,39 @@ const apiLimiter = rateLimit({
   }
 });
 app.use('/api', apiLimiter);
+
+// Strict Rate Limiting for sensitive authentication endpoints (prevent brute-force attacks)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30, // Max 30 attempts per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many authentication attempts. Please try again after 15 minutes.'
+  }
+});
+
+// Strict Rate Limiting for order submission endpoints (prevent order spam)
+const orderLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 60, // Max 60 order submissions per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many order requests. Please try again after a few minutes.'
+  }
+});
+
+// Edge & Browser Caching middleware for static catalog GET requests
+// (Enables Cloudflare / Vercel Edge caching for 60s with stale-while-revalidate for 300s)
+const catalogCacheControl = (req, res, next) => {
+  if (req.method === 'GET') {
+    res.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+  }
+  next();
+};
 
 // Static folder for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -107,28 +149,25 @@ mongoose.connect(process.env.MONGODB_URI, {
         process.exit(1);
     });
 
+// Specific strict rate limits
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/forgot-password', authLimiter);
+app.use('/api/orders', orderLimiter);
+
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/categories', categoryRoutes);
+app.use('/api/products', catalogCacheControl, productRoutes);
+app.use('/api/categories', catalogCacheControl, categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/promos', promoRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/custom-requests', customRequestRoutes);
-app.use('/api/gallery', require('./routes/gallery'));
+app.use('/api/gallery', catalogCacheControl, require('./routes/gallery'));
 app.use('/api/gallery-orders', require('./routes/galleryOrders'));
-app.use('/api/announcements', require('./routes/announcementRoutes'));
-
-// Health check route
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'OK',
-        message: 'Server is running',
-        timestamp: new Date().toISOString()
-    });
-});
+app.use('/api/announcements', catalogCacheControl, require('./routes/announcementRoutes'));
 
 // Root route
 app.get('/', (req, res) => {

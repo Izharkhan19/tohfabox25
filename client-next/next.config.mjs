@@ -44,6 +44,29 @@ const nextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+        ],
+      },
+      {
+        // Edge cache static pages and catalog routes on Vercel's Edge Network
+        source: '/(products|gallery|about|contact|support)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=60, stale-while-revalidate=300',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withPWA(nextConfig);

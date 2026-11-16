@@ -1,5 +1,7 @@
 import PageComponent from "../../../../Client/pages/ProductDetail";
 
+export const revalidate = 60; // Next.js ISR: Revalidate edge cache every 60 seconds
+
 /**
  * Optimizes an image specifically for WhatsApp link preview cards:
  * 1. WhatsApp requires image to be < 300KB (ideally < 100KB).
